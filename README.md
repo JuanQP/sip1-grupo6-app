@@ -8,7 +8,7 @@ Integrantes
 
 ## ¿Cómo correr esta app?
 
-Primero, lo obvio: Instalar NodeJS versión LTS para Windows.
+Primero, lo obvio: [Instalar NodeJS versión LTS para Windows](https://nodejs.org/en/download/).
 
 Luego, instalar la aplicación de Expo en sus celulares. Se llama **Expo Go**.
 
