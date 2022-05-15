@@ -76,7 +76,7 @@ const actividades = [
   },
 ];
 
-export default function HomeScreen() {
+export default function HomeScreen({ navigation }) {
 
   const [fechaSeleccionada] = useState(moment());
 
@@ -84,12 +84,16 @@ export default function HomeScreen() {
     Alert.alert("Próximamente...", "😁");
   }
 
+  function onMisPacientesClick() {
+    navigation.navigate("MisPacientes");
+  }
+
   return (
     <View style={styles.container}>
       <Appbar.Header>
         <Appbar.Action icon="menu" onPress={proximamenteAlert} />
         <Appbar.Content title="Actividades" />
-        <Appbar.Action icon="account-group" onPress={proximamenteAlert} />
+        <Appbar.Action icon="account-group" onPress={onMisPacientesClick} />
       </Appbar.Header>
       <PacienteCard paciente={paciente}/>
       <Text style={{margin: 10, alignSelf: 'center'}}>
