@@ -1,26 +1,21 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { StatusBar } from 'expo-status-bar';
 import { Alert, FlatList, StyleSheet, View } from 'react-native';
-import { Appbar, FAB, Text } from 'react-native-paper';
+import { Appbar, FAB, Text, withTheme } from 'react-native-paper';
 import CalendarStrip from 'react-native-calendar-strip';
-import { momentToMarkedDate, range } from '../utils/utils';
+import { momentRange, momentToMarkedDate } from '../utils/utils';
 import moment from 'moment';
 import 'moment/locale/es';
 import EstadoActividad from '../components/EstadoActividad';
 import PacienteCard from '../components/PacienteCard';
 import ActividadRow from '../components/ActividadRow';
 
-// La IP del Backend con su puerto
 moment.locale("es");
 const hoy = moment();
 const fecha = hoy
     .format("dddd[, ]DD[ de ]MMMM[, ]YYYY")
     .toUpperCase();
-// Marcamos 7 días
-const markedDates = [
-  ...range(4).map(i => momentToMarkedDate(hoy.clone().subtract(i, "days"))),
-  ...range(3).map(i => momentToMarkedDate(hoy.clone().add(i+1, "days"))),
-];
+
 // Data del paciente
 const paciente = {
   nombre: 'Mirta Pérez',
@@ -34,51 +29,62 @@ const paciente = {
 const actividades = [
   {
     id: 1,
-    fecha: hoy.clone().set("hour", 16).set('minute', 0),
+    fecha: hoy.clone().set({hour: 16, minute: 0}),
     descripcion: "Consulta con el cardiólogo",
     tipo: 'completada',
   },
   {
     id: 2,
-    fecha: hoy.clone().set("hour", 17).set('minute', 0),
+    fecha: hoy.clone().set({hour: 17, minute: 0}),
     descripcion: "Enalapril",
     tipo: 'pendiente',
   },
   {
     id: 3,
-    fecha: hoy.clone().set("hour", 17).set('minute', 30),
+    fecha: hoy.clone().set({hour: 17, minute: 30}),
     descripcion: "Diurex",
     tipo: 'pendiente',
   },
   {
     id: 4,
-    fecha: hoy.clone().add(1, "days").set("hour", 8).set('minute', 30),
+    fecha: hoy.clone().add(1, "days").set({hour: 8, minute: 30}),
     descripcion: "Aricept",
     tipo: 'pendiente',
   },
   {
     id: 5,
-    fecha: hoy.clone().add(1, "days").set("hour", 9).set('minute', 0),
+    fecha: hoy.clone().add(1, "days").set({hour: 9, minute: 0}),
     descripcion: "Multivitamínico",
     tipo: 'pendiente',
   },
   {
     id: 6,
-    fecha: hoy.clone().add(1, "days").set("hour", 17).set('minute', 0),
+    fecha: hoy.clone().add(1, "days").set({hour: 17, minute: 0}),
     descripcion: "Enalapril",
     tipo: 'pendiente',
   },
   {
     id: 7,
-    fecha: hoy.clone().add(1, "days").set("hour", 17).set('minute', 30),
+    fecha: hoy.clone().add(1, "days").set({hour: 17, minute: 30}),
     descripcion: "Diurex",
     tipo: 'pendiente',
   },
 ];
 
-export default function HomeScreen({ navigation }) {
+function HomeScreen({ navigation, ...props }) {
 
   const [fechaSeleccionada] = useState(moment());
+  const [markedDates, setMarkedDates] = useState([]);
+  const { colors } = props.theme;
+
+  useEffect(() => {
+    const fecha_inicio = hoy.clone().subtract(3, "days");
+    const fecha_fin = hoy.clone().add(4, "days");
+    const fechas = momentRange(fecha_inicio, fecha_fin);
+
+    setMarkedDates(fechas.map((f) => momentToMarkedDate(f, colors)));
+  }, []);
+
 
   function proximamenteAlert() {
     Alert.alert("Próximamente...", "😁");
@@ -100,20 +106,20 @@ export default function HomeScreen({ navigation }) {
         {fecha}
       </Text>
       <View style={styles.containerEstadosActividades}>
-        <EstadoActividad titulo={'COMPLETADAS'} cantidad={14} color="#07ACB9"/>
-        <EstadoActividad titulo={'PENDIENTES'} cantidad={2} color="#ffeb6a"/>
-        <EstadoActividad titulo={'POSPUESTAS'} cantidad={1} color="#f87575"/>
+        <EstadoActividad titulo={'COMPLETADAS'} cantidad={14} color={colors.primary}/>
+        <EstadoActividad titulo={'PENDIENTES'} cantidad={2} color={colors.pendiente}/>
+        <EstadoActividad titulo={'POSPUESTAS'} cantidad={1} color={colors.pospuesta}/>
       </View>
       {/* Date picker */}
       <CalendarStrip
         scrollable
         style={{height: 70, marginTop: 10}}
-        calendarColor={'#FFF'}
+        calendarColor={colors.surface}
         iconContainer={{flex: 0.1}}
         selectedDate={fechaSeleccionada}
-        highlightDateContainerStyle={{backgroundColor: "#07ACB9"}}
-        highlightDateNumberStyle={{color: 'white'}}
-        highlightDateNameStyle={{color: 'white'}}
+        highlightDateContainerStyle={{ backgroundColor: colors.primary }}
+        highlightDateNumberStyle={{color: colors.surface}}
+        highlightDateNameStyle={{color: colors.surface}}
         markedDates={markedDates}
         showMonth={false}
       />
@@ -150,3 +156,5 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between'
   },
 });
+
+export default withTheme(HomeScreen);

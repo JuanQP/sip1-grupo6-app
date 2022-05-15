@@ -6,6 +6,9 @@ function PacienteItem({ paciente, ...props }) {
   const isSelected = id === 1;
   const { colors } = props.theme;
 
+  const iconColor = isSelected ? colors.primary : colors.disabled;
+  const icon = isSelected ? 'checkbox-marked-circle' : 'checkbox-blank-circle-outline';
+
   return (
     <List.Item
       style={styles.row}
@@ -14,8 +17,8 @@ function PacienteItem({ paciente, ...props }) {
       left={() => <Avatar.Image source={imagen}/>}
       right={() =>
       <List.Icon
-        color={isSelected ? colors.primary : colors.disabled}
-        icon={isSelected ? 'checkbox-marked-circle' : 'checkbox-blank-circle-outline'}
+        color={iconColor}
+        icon={icon}
       />}
       onPress={() => Alert.alert(`Paciente clickeado`, JSON.stringify(paciente))}
     />

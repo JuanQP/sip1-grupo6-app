@@ -1,14 +1,14 @@
 import { Alert, StyleSheet, View } from 'react-native';
-import { Caption, IconButton, Text, Title } from 'react-native-paper';
+import { Caption, IconButton, Text, Title, withTheme } from 'react-native-paper';
 
-function colorSegunTipo(tipo) {
+function colorSegunTipo(tipo, colors) {
   switch (tipo.toLowerCase()) {
     case 'completada':
-      return "#07ACB9";
+      return colors.primary;
     case 'pendiente':
-      return "#ffeb6a";
+      return colors.pendiente;
     case 'pospuesta':
-      return "#f87575";
+      return colors.pospuesta;
     default:
       break;
   }
@@ -17,12 +17,13 @@ function colorSegunTipo(tipo) {
 /**
  * El tipo de fecha debe ser Moment
  */
-export default function ActividadRow({ actividad }) {
+function ActividadRow({ actividad, ...props }) {
   const { fecha, descripcion, tipo} = actividad;
   const diaDelMes = fecha.format("DD");
   const nombreDelDia = fecha.format("ddd").toUpperCase().replace(".", "");
   const hora = fecha.format("HH:mm");
-  const color = colorSegunTipo(tipo);
+  const { colors } = props.theme;
+  const color = colorSegunTipo(tipo, colors);
 
   function onActividadClick() {
     Alert.alert(`Actividad clickeada`, JSON.stringify(actividad))
@@ -34,10 +35,11 @@ export default function ActividadRow({ actividad }) {
         <Title>{diaDelMes}</Title>
         <Caption>{nombreDelDia}</Caption>
       </View>
-      <View style={{...styles.card, borderColor: color}}>
+      <View style={{...styles.card, backgroundColor: colors.surface, borderColor: color}}>
         <View style={{flexDirection: 'row'}}>
           <Text>{descripcion}</Text>
           <IconButton
+            color={colors.primary}
             style={{marginLeft: 'auto'}}
             icon="dots-horizontal" mode="text"
             onPress={onActividadClick}
@@ -71,7 +73,9 @@ const styles = StyleSheet.create({
     flex: 6,
     borderLeftWidth: 4,
     flexDirection: 'column',
-    backgroundColor: 'white',
     padding: 10
   },
 });
+
+
+export default withTheme(ActividadRow);

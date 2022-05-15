@@ -8,6 +8,8 @@ const theme = {
   colors: {
     ...DefaultTheme.colors,
     primary: '#07ACB9',
+    pendiente: '#ffeb6a',
+    pospuesta: '#f87575',
   }
 }
 

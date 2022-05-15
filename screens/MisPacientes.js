@@ -1,7 +1,7 @@
 import React from 'react'
 import { StatusBar } from 'expo-status-bar';
 import { Alert, StyleSheet, View } from 'react-native';
-import { Appbar, Button, List } from 'react-native-paper';
+import { Appbar, Button, List, withTheme } from 'react-native-paper';
 import 'moment/locale/es';
 import PacienteItem from '../components/PacienteItem';
 
@@ -20,7 +20,9 @@ const pacientes = [
   }
 ];
 
-export default function MisPacientesScreen({ navigation }) {
+function MisPacientesScreen({ navigation, ...props }) {
+
+  const { colors } = props.theme;
 
   function handleBackActionClick() {
     navigation.goBack();
@@ -33,7 +35,7 @@ export default function MisPacientesScreen({ navigation }) {
         <Appbar.Content title="Mis Pacientes" />
       </Appbar.Header>
       {/* Lista de pacientes */}
-      <List.Section style={styles.listaPacientes}>
+      <List.Section style={{ backgroundColor: colors.surface }}>
         {pacientes.map(p => <PacienteItem key={p.id} paciente={p} />)}
       </List.Section>
       <Button
@@ -51,7 +53,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  listaPacientes: {
-    backgroundColor: 'white',
-  },
 });
+
+export default withTheme(MisPacientesScreen);

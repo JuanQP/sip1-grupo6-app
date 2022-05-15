@@ -1,10 +1,13 @@
-import { View } from 'react-native';
-import { Avatar, Caption, IconButton, Text } from 'react-native-paper';
+import { StyleSheet, View } from 'react-native';
+import { Avatar, Caption, IconButton, Text, withTheme } from 'react-native-paper';
 
-export default function PacienteCard({ paciente }) {
+function PacienteCard({ paciente, ...props }) {
+
   const { nombre, edad, ubicacion, obraSocial, numeroObraSocial, imagen } = paciente;
+  const { colors } = props.theme;
+
   return (
-    <View style={{flexDirection: 'row', backgroundColor: '#FFF', padding: 10}}>
+    <View style={{ ...styles.card, backgroundColor: colors.surface }}>
       <Avatar.Image size={64} source={imagen} />
       <View style={{marginLeft: 10}}>
         <Text>{`${nombre}, ${edad}`}</Text>
@@ -14,8 +17,18 @@ export default function PacienteCard({ paciente }) {
       <IconButton
         style={{marginLeft: 'auto'}}
         icon="dots-horizontal" mode="text"
+        color={colors.primary}
         onPress={() => {}}
       />
     </View>
   )
 }
+
+const styles = StyleSheet.create({
+  card: {
+    flexDirection: 'row',
+    padding: 10,
+  },
+});
+
+export default withTheme(PacienteCard);
