@@ -5,40 +5,10 @@ import { Appbar, Button, IconButton, TextInput, Title, withTheme } from 'react-n
 import DateTimePicker from '@react-native-community/datetimepicker';
 import DropDown from "react-native-paper-dropdown";
 import moment from 'moment';
-import ActividadCreadaModal from '../components/ActividadCreadaModal';
+import ActividadCreadaModal from '../../components/ActividadCreadaModal';
+import { listaDias } from '../../utils/utils';
 
-const listaDias = [
-  {
-    label: 'Lunes',
-    value: 'lunes',
-  },
-  {
-    label: 'Martes',
-    value: 'martes',
-  },
-  {
-    label: 'Miércoles',
-    value: 'miercoles',
-  },
-  {
-    label: 'Jueves',
-    value: 'jueves',
-  },
-  {
-    label: 'Viernes',
-    value: 'viernes',
-  },
-  {
-    label: 'Sábado',
-    value: 'sabado',
-  },
-  {
-    label: 'Domingo',
-    value: 'domingo',
-  }
-];
-
-function NuevaActividadMedicacionScreen({ navigation, ...props }) {
+function NuevaMedicacionScreen({ navigation, ...props }) {
 
   const { colors } = props.theme;
 
@@ -242,12 +212,12 @@ function NuevaActividadMedicacionScreen({ navigation, ...props }) {
             </Button>
           </View>
         </ScrollView>
-        <ActividadCreadaModal
-          visible={modalVisible}
-          onDismiss={hideModal}
-        />
       </View>
       <StatusBar style="auto" />
+      <ActividadCreadaModal
+        visible={modalVisible}
+        onDismiss={hideModal}
+      />
     </View>
   );
 }
@@ -268,4 +238,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default withTheme(NuevaActividadMedicacionScreen);
+export default withTheme(NuevaMedicacionScreen);

@@ -3,8 +3,11 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import HomeScreen from '../screens/Home';
 import MisPacientesScreen from '../screens/MisPacientes';
 import LoginScreen from '../screens/Login';
-import NuevaActividadScreen from '../screens/NuevaActividadScreen';
-import NuevaActividadMedicacionScreen from '../screens/NuevaActividadMedicacionScreen';
+import NuevaActividadScreen from '../screens/NuevaActividad/NuevaActividadScreen';
+import NuevaMedicacionScreen from '../screens/NuevaActividad/NuevaMedicacionScreen';
+import NuevaConsultaScreen from '../screens/NuevaActividad/NuevaConsultaScreen';
+import NuevoEstudioScreen from '../screens/NuevaActividad/NuevoEstudioScreen';
+import NuevoOtroScreen from '../screens/NuevaActividad/NuevoOtroScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -32,9 +35,24 @@ export default function App() {
         options={{ title: 'Nueva Actividad' }}
       />
       <Stack.Screen
-        name="NuevaActividadMedicacion"
-        component={NuevaActividadMedicacionScreen}
+        name="NuevaMedicacion"
+        component={NuevaMedicacionScreen}
         options={{ title: 'Nueva Medicación' }}
+      />
+      <Stack.Screen
+        name="NuevaConsulta"
+        component={NuevaConsultaScreen}
+        options={{ title: 'Nueva Consulta' }}
+      />
+      <Stack.Screen
+        name="NuevoEstudio"
+        component={NuevoEstudioScreen}
+        options={{ title: 'Nuevo Estudio' }}
+      />
+      <Stack.Screen
+        name="NuevoOtro"
+        component={NuevoOtroScreen}
+        options={{ title: 'Otro tipo de Actividad' }}
       />
     </Stack.Navigator>
   )
