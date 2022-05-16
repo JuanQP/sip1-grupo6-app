@@ -34,3 +34,7 @@ export function momentToMarkedDate(moment, colors) {
     }],
   };
 }
+
+export function formatearFecha(moment) {
+  return moment.format("dddd[, ]DD[ de ]MMMM[, ]YYYY").toUpperCase();
+}

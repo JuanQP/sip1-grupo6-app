@@ -1,20 +1,19 @@
 import React, { useEffect, useState } from 'react'
 import { StatusBar } from 'expo-status-bar';
 import { Alert, FlatList, StyleSheet, View } from 'react-native';
-import { Appbar, FAB, Text, withTheme } from 'react-native-paper';
+import { Appbar, FAB, Portal, Text, withTheme } from 'react-native-paper';
 import CalendarStrip from 'react-native-calendar-strip';
-import { momentRange, momentToMarkedDate } from '../utils/utils';
+import { formatearFecha, momentRange, momentToMarkedDate } from '../utils/utils';
 import moment from 'moment';
 import 'moment/locale/es';
 import EstadoActividad from '../components/EstadoActividad';
 import PacienteCard from '../components/PacienteCard';
 import ActividadRow from '../components/ActividadRow';
+import ActividadDetailsModal from '../components/ActividadDetailsModal';
 
 moment.locale("es");
 const hoy = moment();
-const fecha = hoy
-    .format("dddd[, ]DD[ de ]MMMM[, ]YYYY")
-    .toUpperCase();
+const fecha = formatearFecha(hoy);
 
 // Data del paciente
 const paciente = {
@@ -31,43 +30,50 @@ const actividades = [
     id: 1,
     fecha: hoy.clone().set({hour: 16, minute: 0}),
     descripcion: "Consulta con el cardiólogo",
-    tipo: 'completada',
+    observaciones: "Morbi nec velit dolor. Aenean ut elit libero. Lorem ipsum.",
+    estado: 'completada',
   },
   {
     id: 2,
     fecha: hoy.clone().set({hour: 17, minute: 0}),
     descripcion: "Enalapril",
-    tipo: 'pendiente',
+    observaciones: "amet dictum sit amet justo donec enim diam vulputate ut",
+    estado: 'pendiente',
   },
   {
     id: 3,
     fecha: hoy.clone().set({hour: 17, minute: 30}),
     descripcion: "Diurex",
-    tipo: 'pendiente',
+    observaciones: 'viverra vitae congue eu consequat ac felis donec et odio pellentesque diam volutpat commodo sed',
+    estado: 'pendiente',
   },
   {
     id: 4,
     fecha: hoy.clone().add(1, "days").set({hour: 8, minute: 30}),
     descripcion: "Aricept",
-    tipo: 'pendiente',
+    observaciones: 'elementum tempus egestas sed sed risus pretium quam vulputate dignissim',
+    estado: 'pendiente',
   },
   {
     id: 5,
     fecha: hoy.clone().add(1, "days").set({hour: 9, minute: 0}),
     descripcion: "Multivitamínico",
-    tipo: 'pendiente',
+    observaciones: 'mauris pharetra et ultrices neque ornare aenean euismod elementum nisi',
+    estado: 'pendiente',
   },
   {
     id: 6,
     fecha: hoy.clone().add(1, "days").set({hour: 17, minute: 0}),
     descripcion: "Enalapril",
-    tipo: 'pendiente',
+    observaciones: 'nibh venenatis cras sed felis eget velit aliquet sagittis id',
+    estado: 'pendiente',
   },
   {
     id: 7,
     fecha: hoy.clone().add(1, "days").set({hour: 17, minute: 30}),
     descripcion: "Diurex",
-    tipo: 'pendiente',
+    observaciones: 'proin nibh nisl condimentum id venenatis a condimentum vitae sapien',
+    estado: 'pendiente',
   },
 ];
 
@@ -75,6 +81,8 @@ function HomeScreen({ navigation, ...props }) {
 
   const [fechaSeleccionada] = useState(moment());
   const [markedDates, setMarkedDates] = useState([]);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [actividadSeleccionada, setActividadSeleccionada] = useState(null);
   const { colors } = props.theme;
 
   useEffect(() => {
@@ -85,6 +93,9 @@ function HomeScreen({ navigation, ...props }) {
     setMarkedDates(fechas.map((f) => momentToMarkedDate(f, colors)));
   }, []);
 
+  function hideModal() {
+    setModalVisible(false);
+  }
 
   function proximamenteAlert() {
     Alert.alert("Próximamente...", "😁");
@@ -92,6 +103,15 @@ function HomeScreen({ navigation, ...props }) {
 
   function onMisPacientesClick() {
     navigation.navigate("MisPacientes");
+  }
+
+  function handleActividadClick(actividad) {
+    setActividadSeleccionada(actividad);
+    setModalVisible(true);
+  }
+
+  function handleModalSubmit(actividad) {
+    hideModal();
   }
 
   return (
@@ -106,9 +126,21 @@ function HomeScreen({ navigation, ...props }) {
         {fecha}
       </Text>
       <View style={styles.containerEstadosActividades}>
-        <EstadoActividad titulo={'COMPLETADAS'} cantidad={14} color={colors.primary}/>
-        <EstadoActividad titulo={'PENDIENTES'} cantidad={2} color={colors.pendiente}/>
-        <EstadoActividad titulo={'POSPUESTAS'} cantidad={1} color={colors.pospuesta}/>
+        <EstadoActividad
+          titulo={'COMPLETADAS'}
+          cantidad={14}
+          color={colors.primary}
+        />
+        <EstadoActividad
+          titulo={'PENDIENTES'}
+          cantidad={2}
+          color={colors.pendiente}
+        />
+        <EstadoActividad
+          titulo={'POSPUESTAS'}
+          cantidad={1}
+          color={colors.pospuesta}
+        />
       </View>
       {/* Date picker */}
       <CalendarStrip
@@ -126,7 +158,12 @@ function HomeScreen({ navigation, ...props }) {
       {/* Lista de actividades agendadas */}
       <FlatList
         data={actividades}
-        renderItem={({ item }) => <ActividadRow actividad={item}/>}
+        renderItem={({ item }) =>
+          <ActividadRow
+            onActividadClick={handleActividadClick}
+            actividad={item}
+          />
+        }
         keyExtractor={actividad => actividad.id}
       />
       {/* Botón flotante */}
@@ -135,6 +172,14 @@ function HomeScreen({ navigation, ...props }) {
         icon="plus"
         onPress={proximamenteAlert}
       />
+      <Portal>
+        <ActividadDetailsModal
+          actividad={actividadSeleccionada}
+          visible={modalVisible}
+          onDismiss={hideModal}
+          onSubmit={handleModalSubmit}
+        />
+      </Portal>
       <StatusBar style="auto" />
     </View>
   );

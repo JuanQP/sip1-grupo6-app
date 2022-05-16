@@ -17,16 +17,16 @@ function colorSegunTipo(tipo, colors) {
 /**
  * El tipo de fecha debe ser Moment
  */
-function ActividadRow({ actividad, ...props }) {
-  const { fecha, descripcion, tipo} = actividad;
+function ActividadRow({ actividad, onActividadClick, ...props }) {
+  const { fecha, descripcion, estado} = actividad;
   const diaDelMes = fecha.format("DD");
   const nombreDelDia = fecha.format("ddd").toUpperCase().replace(".", "");
   const hora = fecha.format("HH:mm");
   const { colors } = props.theme;
-  const color = colorSegunTipo(tipo, colors);
+  const color = colorSegunTipo(estado, colors);
 
-  function onActividadClick() {
-    Alert.alert(`Actividad clickeada`, JSON.stringify(actividad))
+  function handleIconButtonClick() {
+    onActividadClick(actividad);
   }
 
   return (
@@ -42,7 +42,7 @@ function ActividadRow({ actividad, ...props }) {
             color={colors.primary}
             style={{marginLeft: 'auto'}}
             icon="dots-horizontal" mode="text"
-            onPress={onActividadClick}
+            onPress={handleIconButtonClick}
           />
         </View>
         <View style={{flexDirection: 'row'}}>
