@@ -38,3 +38,34 @@ export function momentToMarkedDate(moment, colors) {
 export function formatearFecha(moment) {
   return moment.format("dddd[, ]DD[ de ]MMMM[, ]YYYY").toUpperCase();
 }
+
+export const listaDias = [
+  {
+    label: 'Lunes',
+    value: 'lunes',
+  },
+  {
+    label: 'Martes',
+    value: 'martes',
+  },
+  {
+    label: 'Miércoles',
+    value: 'miercoles',
+  },
+  {
+    label: 'Jueves',
+    value: 'jueves',
+  },
+  {
+    label: 'Viernes',
+    value: 'viernes',
+  },
+  {
+    label: 'Sábado',
+    value: 'sabado',
+  },
+  {
+    label: 'Domingo',
+    value: 'domingo',
+  }
+];

@@ -1,27 +1,8 @@
-import React, { useRef, useState } from 'react'
+import React from 'react'
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View } from 'react-native';
-import { Appbar, Button, IconButton, Surface, Text, TextInput, Title, withTheme } from 'react-native-paper';
+import { Appbar, IconButton, Surface, Text, withTheme } from 'react-native-paper';
 import 'moment/locale/es';
-
-const categoriaList = [
-  {
-    label: 'Medicación',
-    value: 'medicacion',
-  },
-  {
-    label: 'Consulta Médica',
-    value: 'consulta-medica',
-  },
-  {
-    label: 'Estudio Médico',
-    value: 'estudio-medico',
-  },
-  {
-    label: 'Otra',
-    value: 'otra',
-  },
-]
 
 function NuevaActividadScreen({ navigation, ...props }) {
 
@@ -32,19 +13,19 @@ function NuevaActividadScreen({ navigation, ...props }) {
   }
 
   function handleNuevaMedicacion() {
-    navigation.navigate('NuevaActividadMedicacion');
+    navigation.navigate('NuevaMedicacion');
   }
 
   function handleNuevaConsulta() {
-    navigation.navigate('NuevaActividadConsulta');
+    navigation.navigate('NuevaConsulta');
   }
 
   function handleNuevoEstudio() {
-    navigation.navigate('NuevaActividadEstudio');
+    navigation.navigate('NuevoEstudio');
   }
 
   function handleNuevoOtro() {
-    navigation.navigate('NuevaActividadOtro');
+    navigation.navigate('NuevoOtro');
   }
 
   return (
