@@ -35,8 +35,8 @@ export default function LoginScreen({ navigation }) {
           ¡Bienvenido 😄!
         </Paragraph>
         <TextInput
-          style={styles.textInput}
-          mode='outlined'
+          style={{...styles.textInput, backgroundColor: 'transparent'}}
+          mode='flat'
           label="E-mail"
           value={email}
           placeholder="john.doe@email.com"
@@ -50,8 +50,8 @@ export default function LoginScreen({ navigation }) {
           }}
         />
         <TextInput
-          style={styles.textInput}
-          mode='outlined'
+          style={{...styles.textInput, backgroundColor: 'transparent'}}
+          mode='flat'
           label="Contraseña"
           value={password}
           onChangeText={setPassword}
