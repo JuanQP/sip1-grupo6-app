@@ -83,6 +83,7 @@ function HomeScreen({ navigation, ...props }) {
   const [markedDates, setMarkedDates] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [actividadSeleccionada, setActividadSeleccionada] = useState(null);
+
   const { colors } = props.theme;
 
   useEffect(() => {
@@ -103,6 +104,10 @@ function HomeScreen({ navigation, ...props }) {
 
   function onMisPacientesClick() {
     navigation.navigate("MisPacientes");
+  }
+
+  function handleNuevaActividadClick() {
+    navigation.navigate("NuevaActividad");
   }
 
   function handleActividadClick(actividad) {
@@ -170,7 +175,7 @@ function HomeScreen({ navigation, ...props }) {
       <FAB
         style={styles.fab}
         icon="plus"
-        onPress={proximamenteAlert}
+        onPress={handleNuevaActividadClick}
       />
       <Portal>
         <ActividadDetailsModal
