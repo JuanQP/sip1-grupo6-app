@@ -1,7 +1,7 @@
 import { StyleSheet, View } from 'react-native';
 import { Avatar, Caption, IconButton, Text, withTheme } from 'react-native-paper';
 
-function PacienteCard({ paciente, ...props }) {
+function PacienteCard({ paciente, onPacienteDetailClick, ...props }) {
 
   const { nombre, edad, ubicacion, obraSocial, numeroObraSocial, imagen } = paciente;
   const { colors } = props.theme;
@@ -18,7 +18,7 @@ function PacienteCard({ paciente, ...props }) {
         style={{marginLeft: 'auto'}}
         icon="dots-horizontal" mode="text"
         color={colors.primary}
-        onPress={() => {}}
+        onPress={onPacienteDetailClick}
       />
     </View>
   )

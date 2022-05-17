@@ -11,7 +11,6 @@ import PacienteCard from '../components/PacienteCard';
 import ActividadRow from '../components/ActividadRow';
 import ActividadDetailsModal from '../components/ActividadDetailsModal';
 
-moment.locale("es");
 const hoy = moment();
 const fecha = formatearFecha(hoy);
 
@@ -119,6 +118,10 @@ function HomeScreen({ navigation, ...props }) {
     hideModal();
   }
 
+  function handlePacienteDetailButtonClick() {
+    navigation.navigate('PacienteDetail');
+  }
+
   return (
     <View style={styles.container}>
       <Appbar.Header>
@@ -126,7 +129,10 @@ function HomeScreen({ navigation, ...props }) {
         <Appbar.Content title="Actividades" />
         <Appbar.Action icon="account-group" onPress={onMisPacientesClick} />
       </Appbar.Header>
-      <PacienteCard paciente={paciente}/>
+      <PacienteCard
+        paciente={paciente}
+        onPacienteDetailClick={handlePacienteDetailButtonClick}
+      />
       <Text style={{margin: 10, alignSelf: 'center'}}>
         {fecha}
       </Text>
