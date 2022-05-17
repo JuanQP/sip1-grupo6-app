@@ -2,6 +2,8 @@ import * as React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { DefaultTheme, Provider as PaperProvider } from 'react-native-paper';
 import App from './src/App';
+import moment from 'moment';
+moment.locale("es");
 
 const theme = {
   ...DefaultTheme,
