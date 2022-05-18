@@ -1,5 +1,6 @@
-import { Alert, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { Caption, IconButton, Text, Title, withTheme } from 'react-native-paper';
+import moment from 'moment';
 
 function colorSegunTipo(tipo, colors) {
   switch (tipo.toLowerCase()) {
@@ -18,7 +19,8 @@ function colorSegunTipo(tipo, colors) {
  * El tipo de fecha debe ser Moment
  */
 function ActividadRow({ actividad, onActividadClick, ...props }) {
-  const { fecha, descripcion, estado} = actividad;
+  const { descripcion, estado } = actividad;
+  const fecha = moment(actividad.fecha);
   const diaDelMes = fecha.format("DD");
   const nombreDelDia = fecha.format("ddd").toUpperCase().replace(".", "");
   const hora = fecha.format("HH:mm");

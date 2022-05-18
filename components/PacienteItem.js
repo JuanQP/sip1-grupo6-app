@@ -1,26 +1,31 @@
+import { useState } from 'react';
 import { Alert, StyleSheet } from 'react-native';
 import { Avatar, List, withTheme } from 'react-native-paper';
+import { imagenes } from '../utils/utils';
 
-function PacienteItem({ paciente, ...props }) {
-  const { id, nombre, ubicacion, imagen} = paciente;
-  const isSelected = id === 1;
+function PacienteItem({ paciente, navigation, isSelected, onPacienteClick, ...props }) {
+  const { id, nombre, provincia, localidad, imagen} = paciente;
   const { colors } = props.theme;
 
   const iconColor = isSelected ? colors.primary : colors.disabled;
   const icon = isSelected ? 'checkbox-marked-circle' : 'checkbox-blank-circle-outline';
 
+  function handlePacienteClickeado() {
+    onPacienteClick(id);
+  }
+
   return (
     <List.Item
       style={styles.row}
       title={nombre}
-      description={ubicacion}
-      left={() => <Avatar.Image source={imagen}/>}
+      description={`${provincia}, ${localidad}`}
+      left={() => <Avatar.Image source={imagenes[imagen]}/>}
       right={() =>
       <List.Icon
         color={iconColor}
         icon={icon}
       />}
-      onPress={() => Alert.alert(`Paciente clickeado`, JSON.stringify(paciente))}
+      onPress={handlePacienteClickeado}
     />
   )
 }
