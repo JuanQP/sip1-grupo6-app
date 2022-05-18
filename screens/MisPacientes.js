@@ -1,31 +1,38 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { StatusBar } from 'expo-status-bar';
 import { Alert, StyleSheet, View } from 'react-native';
 import { Appbar, Button, List, withTheme } from 'react-native-paper';
 import 'moment/locale/es';
 import PacienteItem from '../components/PacienteItem';
+const axios = require('axios').default;
 
-const pacientes = [
-  {
-    id: 1,
-    nombre: 'Mirta Pérez',
-    ubicacion: 'Tigre, Buenos Aires',
-    imagen: require('../assets/mirta.png'),
-  },
-  {
-    id: 2,
-    nombre: 'András Arató',
-    ubicacion: 'Budapest, Hungría',
-    imagen: require('../assets/andras.png'),
-  }
-];
+function MisPacientesScreen({ navigation, route, ...props }) {
 
-function MisPacientesScreen({ navigation, ...props }) {
+  const [waitingResponse, setWaitingResponse] = useState(true);
+  const [pacientes, setPacientes] = useState([]);
+  const seleccionado = route.params.pacienteId;
 
   const { colors } = props.theme;
 
+  useEffect(() => {
+    setWaitingResponse(true);
+    const fetchData = async () => {
+      const response = await axios.get('/api/pacientes');
+      setPacientes(response.data.pacientes);
+      setWaitingResponse(false);
+    }
+
+    fetchData()
+      .catch(console.error)
+      .finally(() => setWaitingResponse(false));
+  }, []);
+
   function handleBackActionClick() {
     navigation.goBack();
+  }
+
+  function handlePacienteClick(pacienteId) {
+    navigation.navigate('Home', { pacienteId });
   }
 
   return (
@@ -36,7 +43,14 @@ function MisPacientesScreen({ navigation, ...props }) {
       </Appbar.Header>
       {/* Lista de pacientes */}
       <List.Section style={{ backgroundColor: colors.surface }}>
-        {pacientes.map(p => <PacienteItem key={p.id} paciente={p} />)}
+        {pacientes.map(p =>
+          <PacienteItem
+            key={p.id}
+            paciente={p}
+            isSelected={p.id === seleccionado}
+            onPacienteClick={handlePacienteClick}
+          />
+        )}
       </List.Section>
       <Button
         mode="contained"

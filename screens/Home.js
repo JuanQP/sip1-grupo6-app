@@ -3,7 +3,7 @@ import { StatusBar } from 'expo-status-bar';
 import { Alert, FlatList, StyleSheet, View } from 'react-native';
 import { Appbar, FAB, Portal, Text, withTheme } from 'react-native-paper';
 import CalendarStrip from 'react-native-calendar-strip';
-import { formatearFecha, momentRange, momentToMarkedDate } from '../utils/utils';
+import { dateSort, formatearFecha, formatoFechas, momentRange, momentToMarkedDate, stringToMomentMarkedDate } from '../utils/utils';
 import moment from 'moment';
 import 'moment/locale/es';
 import EstadoActividad from '../components/EstadoActividad';
@@ -11,87 +11,50 @@ import PacienteCard from '../components/PacienteCard';
 import ActividadRow from '../components/ActividadRow';
 import ActividadDetailsModal from '../components/ActividadDetailsModal';
 
+const axios = require('axios').default;
+
 const hoy = moment();
 const fecha = formatearFecha(hoy);
 
-// Data del paciente
-const paciente = {
-  nombre: 'Mirta Pérez',
-  edad: 82,
-  ubicacion: 'Tigre, Buenos Aires',
-  obraSocial: 'Swiss Medical',
-  numeroObraSocial: '12567810901',
-  imagen: require('../assets/mirta.png'),
-};
-// Data de las actividades agendadas
-const actividades = [
-  {
-    id: 1,
-    fecha: hoy.clone().set({hour: 16, minute: 0}),
-    descripcion: "Consulta con el cardiólogo",
-    observaciones: "Morbi nec velit dolor. Aenean ut elit libero. Lorem ipsum.",
-    estado: 'completada',
-  },
-  {
-    id: 2,
-    fecha: hoy.clone().set({hour: 17, minute: 0}),
-    descripcion: "Enalapril",
-    observaciones: "amet dictum sit amet justo donec enim diam vulputate ut",
-    estado: 'pendiente',
-  },
-  {
-    id: 3,
-    fecha: hoy.clone().set({hour: 17, minute: 30}),
-    descripcion: "Diurex",
-    observaciones: 'viverra vitae congue eu consequat ac felis donec et odio pellentesque diam volutpat commodo sed',
-    estado: 'pendiente',
-  },
-  {
-    id: 4,
-    fecha: hoy.clone().add(1, "days").set({hour: 8, minute: 30}),
-    descripcion: "Aricept",
-    observaciones: 'elementum tempus egestas sed sed risus pretium quam vulputate dignissim',
-    estado: 'pendiente',
-  },
-  {
-    id: 5,
-    fecha: hoy.clone().add(1, "days").set({hour: 9, minute: 0}),
-    descripcion: "Multivitamínico",
-    observaciones: 'mauris pharetra et ultrices neque ornare aenean euismod elementum nisi',
-    estado: 'pendiente',
-  },
-  {
-    id: 6,
-    fecha: hoy.clone().add(1, "days").set({hour: 17, minute: 0}),
-    descripcion: "Enalapril",
-    observaciones: 'nibh venenatis cras sed felis eget velit aliquet sagittis id',
-    estado: 'pendiente',
-  },
-  {
-    id: 7,
-    fecha: hoy.clone().add(1, "days").set({hour: 17, minute: 30}),
-    descripcion: "Diurex",
-    observaciones: 'proin nibh nisl condimentum id venenatis a condimentum vitae sapien',
-    estado: 'pendiente',
-  },
-];
+function HomeScreen({ navigation, route, ...props }) {
 
-function HomeScreen({ navigation, ...props }) {
-
+  const [paciente, setPaciente] = useState(null);
+  const [actividades, setActividades] = useState([]);
   const [fechaSeleccionada] = useState(moment());
   const [markedDates, setMarkedDates] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [actividadSeleccionada, setActividadSeleccionada] = useState(null);
+  const [waitingResponse, setWaitingResponse] = useState(true);
 
   const { colors } = props.theme;
 
-  useEffect(() => {
-    const fecha_inicio = hoy.clone().subtract(3, "days");
-    const fecha_fin = hoy.clone().add(4, "days");
-    const fechas = momentRange(fecha_inicio, fecha_fin);
+  const countEstadosActividades = actividades.reduce((acc, a) => {
+    acc[a.estado]++;
+    return acc;
+  }, {completada: 0, pendiente: 0, pospuesta: 0});
 
-    setMarkedDates(fechas.map((f) => momentToMarkedDate(f, colors)));
+  useEffect(() => {
+    setWaitingResponse(true);
+    const fetchData = async () => {
+      const { pacienteId } = route.params;
+      const pacienteResponse = await axios.get(`/api/pacientes/${pacienteId}`);
+      const actividadesResponse = await axios.get(`/api/actividads/`, {
+        params: { pacienteId },
+      });
+      setActividades(actividadesResponse.data.actividads.sort(dateSort));
+      setPaciente(pacienteResponse.data.paciente);
+      setWaitingResponse(false);
+    }
+
+    fetchData()
+      .catch(console.error)
+      .finally(() => setWaitingResponse(false));
   }, []);
+
+  useEffect(() => {
+    const newMarkedDates = actividades.map(a => stringToMomentMarkedDate(a.fecha, colors));
+    setMarkedDates(newMarkedDates);
+  }, [actividades]);
 
   function hideModal() {
     setModalVisible(false);
@@ -102,7 +65,8 @@ function HomeScreen({ navigation, ...props }) {
   }
 
   function onMisPacientesClick() {
-    navigation.navigate("MisPacientes");
+    const { pacienteId } = route.params;
+    navigation.navigate("MisPacientes", { pacienteId });
   }
 
   function handleNuevaActividadClick() {
@@ -110,16 +74,30 @@ function HomeScreen({ navigation, ...props }) {
   }
 
   function handleActividadClick(actividad) {
-    setActividadSeleccionada(actividad);
+    setActividadSeleccionada({...actividad});
     setModalVisible(true);
   }
 
-  function handleModalSubmit(actividad) {
-    hideModal();
+  async function handleActividadModalSubmit(actividad) {
+    try {
+      await axios.patch(`/api/actividads/${actividad.id}`, actividad);
+      const actividadesResponse = await axios.get(`/api/actividads/`, {
+        params: { pacienteId: route.params.pacienteId },
+      });
+      setActividades(actividadesResponse.data.actividads.sort(dateSort));
+      hideModal();
+    } catch (error) {
+      console.log(error);
+      Alert.alert("😞", "No se pudo actualizar esta actividad");
+    }
   }
 
   function handlePacienteDetailButtonClick() {
     navigation.navigate('PacienteDetail');
+  }
+
+  if(waitingResponse || paciente === null) {
+    return null;
   }
 
   return (
@@ -139,17 +117,17 @@ function HomeScreen({ navigation, ...props }) {
       <View style={styles.containerEstadosActividades}>
         <EstadoActividad
           titulo={'COMPLETADAS'}
-          cantidad={14}
+          cantidad={countEstadosActividades.completada}
           color={colors.primary}
         />
         <EstadoActividad
           titulo={'PENDIENTES'}
-          cantidad={2}
+          cantidad={countEstadosActividades.pendiente}
           color={colors.pendiente}
         />
         <EstadoActividad
           titulo={'POSPUESTAS'}
-          cantidad={1}
+          cantidad={countEstadosActividades.pospuesta}
           color={colors.pospuesta}
         />
       </View>
@@ -188,7 +166,7 @@ function HomeScreen({ navigation, ...props }) {
           actividad={actividadSeleccionada}
           visible={modalVisible}
           onDismiss={hideModal}
-          onSubmit={handleModalSubmit}
+          onSubmit={handleActividadModalSubmit}
         />
       </Portal>
       <StatusBar style="auto" />

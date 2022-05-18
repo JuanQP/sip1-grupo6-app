@@ -3,6 +3,8 @@ import { Alert, StyleSheet, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { Appbar, Button, Paragraph, TextInput } from "react-native-paper";
 
+const axios = require('axios').default;
+
 export default function LoginScreen({ navigation }) {
 
   const [email, setEmail] = useState('');
@@ -13,16 +15,16 @@ export default function LoginScreen({ navigation }) {
 
   async function handleLogin() {
     setWaitingResponse(true);
-    // Simulamos una espera de 2 segundos...
-    await new Promise(r => setTimeout(r, 2000));
-    setWaitingResponse(false);
 
-    if(email !== 'test' || password !== 'test') {
-      Alert.alert('Login incorrecto 🤔', 'E-mail o contraseña incorrectos');
-      return;
+    try {
+      const response = await axios.post('/api/login', {email, password});
+      navigation.navigate('MisPacientes', { pacienteId: null });
+    } catch ({ response }) {
+      Alert.alert('', response.data.errors[0]);
     }
-
-    navigation.navigate('Home');
+    finally {
+      setWaitingResponse(false);
+    }
   }
 
   return (

@@ -2,6 +2,7 @@ import { StyleSheet, View } from "react-native";
 import { Button, Caption, IconButton, Modal, Paragraph, Text, ToggleButton, withTheme } from "react-native-paper"
 import { useEffect, useState } from "react";
 import { formatearFecha } from "../utils/utils";
+import moment from "moment";
 
 function ActividadDetailsModal({ actividad, visible, onDismiss, onSubmit, ...props }) {
 
@@ -16,6 +17,8 @@ function ActividadDetailsModal({ actividad, visible, onDismiss, onSubmit, ...pro
     backgroundColor: colors.surface,
     borderRadius: 10,
   };
+
+  const fecha = moment(actividad.fecha);
 
   useEffect(() => {
     if(actividad) {
@@ -46,7 +49,7 @@ function ActividadDetailsModal({ actividad, visible, onDismiss, onSubmit, ...pro
       </View>
       <View style={styles.contenido}>
         <Text style={{alignSelf: "center"}}>
-          {formatearFecha(actividad.fecha)}
+          {formatearFecha(fecha)}
         </Text>
         <View style={{flexDirection: 'column'}}>
           <View style={styles.contenidoRow}>
@@ -58,7 +61,7 @@ function ActividadDetailsModal({ actividad, visible, onDismiss, onSubmit, ...pro
             />
           </View>
           <View style={styles.contenidoRow}>
-            <Text>{actividad.fecha.format("HH:mm")}</Text>
+            <Text>{fecha.format("HH:mm")}</Text>
             <Text>Texto</Text>
           </View>
         </View>

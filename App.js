@@ -3,6 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { DefaultTheme, Provider as PaperProvider } from 'react-native-paper';
 import App from './src/App';
 import moment from 'moment';
+import { crearServer } from './dev-server/server.js'
 moment.locale("es");
 
 const theme = {
@@ -15,6 +16,10 @@ const theme = {
     pospuesta: '#f87575',
   }
 }
+
+const dev = true;
+
+window.server = dev ? crearServer() : null;
 
 export default function Main() {
   return (
