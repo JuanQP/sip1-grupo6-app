@@ -4,28 +4,29 @@ import { StyleSheet, View } from 'react-native';
 import { Appbar, IconButton, Surface, Text, withTheme } from 'react-native-paper';
 import 'moment/locale/es';
 
-function NuevaActividadScreen({ navigation, ...props }) {
+function NuevaActividadScreen({ navigation, route, ...props }) {
 
   const { colors } = props.theme;
+  const { pacienteId } = route.params;
 
   function handleBackActionClick() {
     navigation.goBack();
   }
 
   function handleNuevaMedicacion() {
-    navigation.navigate('NuevaMedicacion');
+    navigation.navigate('NuevaMedicacion', { pacienteId });
   }
 
   function handleNuevaConsulta() {
-    navigation.navigate('NuevaConsulta');
+    navigation.navigate('NuevaConsulta', { pacienteId });
   }
 
   function handleNuevoEstudio() {
-    navigation.navigate('NuevoEstudio');
+    navigation.navigate('NuevoEstudio', {pacienteId });
   }
 
   function handleNuevoOtro() {
-    navigation.navigate('NuevoOtro');
+    navigation.navigate('NuevoOtro', { pacienteId });
   }
 
   return (
