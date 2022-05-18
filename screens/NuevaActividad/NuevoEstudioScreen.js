@@ -6,9 +6,10 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment';
 import ActividadCreadaModal from '../../components/ActividadCreadaModal';
 
-function NuevoEstudioScreen({ navigation, ...props }) {
+function NuevoEstudioScreen({ navigation, route, ...props }) {
 
   const { colors } = props.theme;
+  const { pacienteId } = route.params;
 
   const [nombre, setNombre] = useState('');
   const [observaciones, setObservaciones] = useState('');
@@ -64,7 +65,7 @@ function NuevoEstudioScreen({ navigation, ...props }) {
 
   function hideModal() {
     setModalVisible(false);
-    navigation.navigate('Home');
+    navigation.navigate('Home', { pacienteId });
   }
 
   return (

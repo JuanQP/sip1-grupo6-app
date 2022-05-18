@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { StatusBar } from 'expo-status-bar';
 import { Alert, ScrollView, StyleSheet, View } from 'react-native';
 import {
@@ -14,15 +14,14 @@ import {
 import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment';
 import DropDown from "react-native-paper-dropdown";
-import {
-  listaProvincias,
-  listaSexos,
-  listaTiposDocumentos
-} from '../../utils/utils';
 import FamiliarItem from './FamiliarItem';
+import { imagenes, mapToLabelValue } from '../../utils/utils';
+
+const axios = require('axios').default;
 
 const familiares = [
   {
+    id: 1,
     nombre: 'Jorge Díaz Pérez',
     relacion: 'Hijo',
     telefono: '+54 11 5678 1234',
@@ -31,6 +30,7 @@ const familiares = [
     esContactoDeEmergencia: true,
   },
   {
+    id: 2,
     nombre: 'Florencia Díaz Pérez',
     relacion: 'Hija',
     telefono: '+54 11 9876 2345',
@@ -40,7 +40,7 @@ const familiares = [
   },
 ]
 
-function PacienteDetailScreen({ navigation, ...props }) {
+function PacienteDetailScreen({ navigation, route, ...props }) {
 
   const { colors } = props.theme;
 
@@ -56,11 +56,16 @@ function PacienteDetailScreen({ navigation, ...props }) {
   const [obraSocial, setObraSocial] = useState('');
   const [numeroAfiliado, setNumeroAfiliado] = useState('');
   const [observaciones, setObservaciones] = useState('');
-
+  const [imagen, setImagen] = useState('');
+  
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showSexoDropDown, setShowSexoDropDown] = useState(false);
   const [showDocumentosDropDown, setShowDocumentosDropDown] = useState(false);
   const [showProvinciasDropDown, setShowProvinciasDropDown] = useState(false);
+
+  const [listaProvincias, setListaProvincias] = useState([]);
+  const [listaSexos, setListaSexos] = useState([]);
+  const [listaTiposDocumento, setListaTiposDocumento] = useState([]);
 
   const [waitingResponse, setWaitingResponse] = useState(false);
 
@@ -73,6 +78,31 @@ function PacienteDetailScreen({ navigation, ...props }) {
   function handleBackActionClick() {
     navigation.goBack();
   }
+
+  useEffect(() => {
+    setWaitingResponse(true);
+    const fetchData = async () => {
+      const { pacienteId } = route.params;
+
+      const [tiposDocumentoResponse, provinciasResponse, sexosResponse, pacienteResponse] = await Promise.all([
+        axios.get(`/api/tipos-documento`),
+        axios.get(`/api/provincias`),
+        axios.get(`/api/sexos`),
+        axios.get(`/api/pacientes/${pacienteId}`),
+      ]);
+
+      setListaTiposDocumento(tiposDocumentoResponse.data.tipoDocumentos.map(td => mapToLabelValue(td)));
+      setListaProvincias(provinciasResponse.data.provincia.map(p => mapToLabelValue(p)));
+      setListaSexos(sexosResponse.data.sexos.map(s => mapToLabelValue(s)));
+      setImagen(pacienteResponse.data.paciente.imagen);
+
+      setWaitingResponse(false);
+    }
+
+    fetchData()
+      .catch(console.error)
+      .finally(() => setWaitingResponse(false));
+  }, []);
 
   async function handleSubmit() {
     setWaitingResponse(true);
@@ -114,7 +144,7 @@ function PacienteDetailScreen({ navigation, ...props }) {
           <Avatar.Image
             style={{alignSelf: "center"}}
             size={64}
-            source={require('../../assets/mirta.png')}
+            source={imagenes[imagen]}
           />
           <TextInput
             style={{backgroundColor: 'transparent'}}
@@ -175,7 +205,7 @@ function PacienteDetailScreen({ navigation, ...props }) {
                 onDismiss={() => setShowDocumentosDropDown(false)}
                 value={tipoDocumento}
                 setValue={setTipoDocumento}
-                list={listaTiposDocumentos}
+                list={listaTiposDocumento}
                 dropDownStyle={{ flex: 1}}
                 inputProps={{ style: { backgroundColor: 'transparent' } }}
               />

@@ -60,12 +60,12 @@ export const crearServer = () => createServer({
     }, { timing: 100 });
 
     // Pacientes
-    this.get('/pacientes/:id');
+    this.get('/pacientes/:id', 'pacientes');
     this.get('/pacientes', (schema, request) => {
       return schema.pacientes.where({ usuarioId: 1 });
     });
 
-    //Actividades
+    // Actividades
     this.get('/actividads/:id');
     this.get('/actividads', (schema, request) => {
       const { queryParams } = request;
@@ -75,6 +75,18 @@ export const crearServer = () => createServer({
       const { ...actividad } = JSON.parse(request.requestBody);
       return schema.actividads.find(request.params.id).update(actividad);
     });
+
+    // Dias
+    this.get('/dias', 'dia');
+
+    // Provincias
+    this.get('/provincias', 'provincia');
+
+    // Sexos
+    this.get('/sexos', 'sexo');
+
+    // Tipos documentos
+    this.get('/tipos-documento', 'tipoDocumento');
   },
 
   factories: {
@@ -107,7 +119,6 @@ export const crearServer = () => createServer({
     server.create('sexo', {descripcion: 'Otro'});
 
     // // Días
-    server.schema.dia.create({descripcion: 'Lunes'})
     server.schema.dia.create({descripcion: 'Lunes'});
     server.schema.dia.create({descripcion: 'Martes'});
     server.schema.dia.create({descripcion: 'Miércoles'});

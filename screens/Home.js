@@ -70,7 +70,8 @@ function HomeScreen({ navigation, route, ...props }) {
   }
 
   function handleNuevaActividadClick() {
-    navigation.navigate("NuevaActividad");
+    const { pacienteId } = route.params;
+    navigation.navigate("NuevaActividad", { pacienteId });
   }
 
   function handleActividadClick(actividad) {
@@ -93,7 +94,8 @@ function HomeScreen({ navigation, route, ...props }) {
   }
 
   function handlePacienteDetailButtonClick() {
-    navigation.navigate('PacienteDetail');
+    const { pacienteId } = route.params;
+    navigation.navigate('PacienteDetail', { pacienteId });
   }
 
   if(waitingResponse || paciente === null) {

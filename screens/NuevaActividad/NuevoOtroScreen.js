@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { StatusBar } from 'expo-status-bar';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { Appbar, Button, IconButton, Switch, Text, TextInput, Title, withTheme } from 'react-native-paper';
@@ -6,11 +6,13 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment';
 import DropDown from "react-native-paper-dropdown";
 import ActividadCreadaModal from '../../components/ActividadCreadaModal';
-import { listaDias } from '../../utils/utils';
 
-function NuevoOtroScreen({ navigation, ...props }) {
+const axios = require('axios').default;
+
+function NuevoOtroScreen({ navigation, route, ...props }) {
 
   const { colors } = props.theme;
+  const { pacienteId } = route.params;
 
   const [nombre, setNombre] = useState('');
   const [observaciones, setObservaciones] = useState('');
@@ -19,6 +21,7 @@ function NuevoOtroScreen({ navigation, ...props }) {
   const [duracion, setDuracion] = useState('');
   const [frecuencia, setFrecuencia] = useState('');
   const [dias, setDias] = useState('');
+  const [listaDias, setListaDias] = useState([]);
 
   const [date, setDate] = useState(new Date());
   const [time, setTime] = useState(new Date());
@@ -27,6 +30,7 @@ function NuevoOtroScreen({ navigation, ...props }) {
   const [showMultiSelectDropDown, setShowMultiSelectDropDown] = useState(false);
 
   const [waitingResponse, setWaitingResponse] = useState(false);
+  const [fetchingData, setFetchingData] = useState(true);
 
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -40,6 +44,19 @@ function NuevoOtroScreen({ navigation, ...props }) {
   function handleSwitchChange() {
     setRepeticiones(!repeticiones);
   }
+
+  useEffect(() => {
+    setFetchingData(true);
+    const fetchData = async () => {
+      const diasResponse = await axios.get(`/api/dias`);
+      setFetchingData(false);
+      setListaDias(diasResponse.data.dia.map(d => ({label: d.descripcion, value: d.id})));
+    }
+
+    fetchData()
+      .catch(console.error)
+      .finally(() => setFetchingData(false));
+  }, []);
 
   async function handleSubmit() {
     setWaitingResponse(true);
@@ -76,7 +93,11 @@ function NuevoOtroScreen({ navigation, ...props }) {
 
   function hideModal() {
     setModalVisible(false);
-    navigation.navigate('Home');
+    navigation.navigate('Home', { pacienteId });
+  }
+
+  if(fetchingData) {
+    return null;
   }
 
   return (

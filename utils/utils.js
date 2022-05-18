@@ -59,3 +59,7 @@ export function pickRandom(list) {
 export function dateSort(a, b) {
   return moment(a.fecha).diff(moment(b.fecha));
 }
+
+export function mapToLabelValue(object, labelKey = 'descripcion', valueKey = 'id') {
+  return {label: object[labelKey], value: object[valueKey]};
+}
