@@ -3,7 +3,7 @@ import { StatusBar } from 'expo-status-bar';
 import { Alert, FlatList, StyleSheet, View } from 'react-native';
 import { Appbar, FAB, Portal, Text, withTheme } from 'react-native-paper';
 import CalendarStrip from 'react-native-calendar-strip';
-import { dateSort, formatearFecha, formatoFechas, momentRange, momentToMarkedDate, stringToMomentMarkedDate } from '../utils/utils';
+import { dateSort, formatearFecha, stringToMomentMarkedDate } from '../utils/utils';
 import moment from 'moment';
 import 'moment/locale/es';
 import EstadoActividad from '../components/EstadoActividad';

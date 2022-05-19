@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import { Alert, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { Avatar, List, withTheme } from 'react-native-paper';
 import { imagenes } from '../utils/utils';
 
