@@ -29,7 +29,6 @@ function NuevaMedicacionScreen({ navigation, route, ...props }) {
   const [showMultiSelectDropDown, setShowMultiSelectDropDown] = useState(false);
 
   const [waitingResponse, setWaitingResponse] = useState(false);
-  const [fetchingData, setFetchingData] = useState(true);
 
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -43,16 +42,13 @@ function NuevaMedicacionScreen({ navigation, route, ...props }) {
   }
 
   useEffect(() => {
-    setFetchingData(true);
     const fetchData = async () => {
       const diasResponse = await axios.get(`/api/dias`);
-      setFetchingData(false);
       setListaDias(diasResponse.data.dia.map(d => ({label: d.descripcion, value: d.id})));
     }
 
     fetchData()
       .catch(console.error)
-      .finally(() => setFetchingData(false));
   }, []);
 
   async function handleSubmit() {
@@ -91,10 +87,6 @@ function NuevaMedicacionScreen({ navigation, route, ...props }) {
   function hideModal() {
     setModalVisible(false);
     navigation.navigate('Home', { pacienteId });
-  }
-
-  if(fetchingData) {
-    return null;
   }
 
   return (

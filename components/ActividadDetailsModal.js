@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { formatearFecha } from "../utils/utils";
 import moment from "moment";
 
-function ActividadDetailsModal({ actividad, visible, onDismiss, onSubmit, ...props }) {
+function ActividadDetailsModal({ actividad, waiting, visible, onDismiss, onSubmit, ...props }) {
 
   if(!actividad) {
     return null;
@@ -40,10 +40,20 @@ function ActividadDetailsModal({ actividad, visible, onDismiss, onSubmit, ...pro
       onDismiss={onDismiss}
     >
       <View style={{...styles.header, borderColor: colors.disabled}}>
-        <Button color={colors.accent} mode="text" onPress={onDismiss}>
+        <Button
+          color={colors.accent}
+          mode="text"
+          onPress={onDismiss}
+          disabled={waiting}
+        >
           Cancelar
         </Button>
-        <Button mode="text" onPress={handleConfirmarClick}>
+        <Button
+          mode="text"
+          onPress={handleConfirmarClick}
+          disabled={waiting}
+          loading={waiting}
+        >
           Confirmar
         </Button>
       </View>
