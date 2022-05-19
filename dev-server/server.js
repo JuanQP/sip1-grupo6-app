@@ -57,7 +57,7 @@ export const crearServer = () => createServer({
 
       return usuario;
   
-    }, { timing: 100 });
+    });
 
     // Pacientes
     this.get('/pacientes/:id', 'pacientes');

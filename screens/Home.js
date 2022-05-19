@@ -25,6 +25,7 @@ function HomeScreen({ navigation, route, ...props }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [actividadSeleccionada, setActividadSeleccionada] = useState(null);
   const [waitingResponse, setWaitingResponse] = useState(true);
+  const [waitingActividadResponse, setWaitingActividadResponse] = useState(false);
 
   const { colors } = props.theme;
 
@@ -37,10 +38,10 @@ function HomeScreen({ navigation, route, ...props }) {
     setWaitingResponse(true);
     const fetchData = async () => {
       const { pacienteId } = route.params;
-      const pacienteResponse = await axios.get(`/api/pacientes/${pacienteId}`);
-      const actividadesResponse = await axios.get(`/api/actividads/`, {
-        params: { pacienteId },
-      });
+      const [pacienteResponse, actividadesResponse] = await Promise.all([
+        axios.get(`/api/pacientes/${pacienteId}`),
+        axios.get(`/api/actividads/`, {params: { pacienteId }}),
+      ]);
       setActividades(actividadesResponse.data.actividads.sort(dateSort));
       setPaciente(pacienteResponse.data.paciente);
       setWaitingResponse(false);
@@ -81,6 +82,7 @@ function HomeScreen({ navigation, route, ...props }) {
 
   async function handleActividadModalSubmit(actividad) {
     try {
+      setWaitingActividadResponse(true);
       await axios.patch(`/api/actividads/${actividad.id}`, actividad);
       const actividadesResponse = await axios.get(`/api/actividads/`, {
         params: { pacienteId: route.params.pacienteId },
@@ -91,15 +93,14 @@ function HomeScreen({ navigation, route, ...props }) {
       console.log(error);
       Alert.alert("😞", "No se pudo actualizar esta actividad");
     }
+    finally {
+      setWaitingActividadResponse(false);
+    }
   }
 
   function handlePacienteDetailButtonClick() {
     const { pacienteId } = route.params;
     navigation.navigate('PacienteDetail', { pacienteId });
-  }
-
-  if(waitingResponse || paciente === null) {
-    return null;
   }
 
   return (
@@ -111,6 +112,7 @@ function HomeScreen({ navigation, route, ...props }) {
       </Appbar.Header>
       <PacienteCard
         paciente={paciente}
+        loading={waitingResponse}
         onPacienteDetailClick={handlePacienteDetailButtonClick}
       />
       <Text style={{margin: 10, alignSelf: 'center'}}>
@@ -167,6 +169,7 @@ function HomeScreen({ navigation, route, ...props }) {
         <ActividadDetailsModal
           actividad={actividadSeleccionada}
           visible={modalVisible}
+          waiting={waitingActividadResponse}
           onDismiss={hideModal}
           onSubmit={handleActividadModalSubmit}
         />

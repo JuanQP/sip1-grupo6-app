@@ -80,7 +80,6 @@ function PacienteDetailScreen({ navigation, route, ...props }) {
   }
 
   useEffect(() => {
-    setWaitingResponse(true);
     const fetchData = async () => {
       const { pacienteId } = route.params;
 
@@ -95,8 +94,6 @@ function PacienteDetailScreen({ navigation, route, ...props }) {
       setListaProvincias(provinciasResponse.data.provincia.map(p => mapToLabelValue(p)));
       setListaSexos(sexosResponse.data.sexos.map(s => mapToLabelValue(s)));
       setImagen(pacienteResponse.data.paciente.imagen);
-
-      setWaitingResponse(false);
     }
 
     fetchData()

@@ -43,7 +43,11 @@ function MisPacientesScreen({ navigation, route, ...props }) {
       </Appbar.Header>
       {/* Lista de pacientes */}
       <List.Section style={{ backgroundColor: colors.surface }}>
-        {pacientes.map(p =>
+        {waitingResponse ?
+          <List.Item
+            title="Cargando..."
+          />
+        : pacientes.map(p =>
           <PacienteItem
             key={p.id}
             paciente={p}
