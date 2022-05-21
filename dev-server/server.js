@@ -1,4 +1,4 @@
-import { belongsTo, createServer, Factory, hasMany, Model, Response } from "miragejs"
+import { belongsTo, createServer, Factory, hasMany, Model, Response, RestSerializer } from "miragejs"
 import moment from 'moment';
 import { pickRandom, random } from "../utils/utils";
 
@@ -29,6 +29,16 @@ const estados = [
 ];
 
 export const crearServer = () => createServer({
+  serializers: {
+    paciente: RestSerializer.extend({
+      include: ['sexo', 'provincia', 'tipoDocumento', 'familiars'],
+      embed: true,
+    }),
+    familiar: RestSerializer.extend({
+      include: ['provincia'],
+      embed: true,
+    }),
+  },
   models: {
     usuario: Model.extend({
       pacientes: hasMany(),
@@ -36,11 +46,18 @@ export const crearServer = () => createServer({
     paciente: Model.extend({
       usuario: belongsTo('usuario', {inverse: 'pacientes'}),
       actividads: hasMany(),
+      provincia: belongsTo('provincia', {inverse: 'pacientes'}),
+      tipoDocumento: belongsTo('tipoDocumento', {inverse: 'pacientes'}),
+      sexo: belongsTo('sexo', {inverse: 'pacientes'}),
+      familiars: hasMany('familiar', {inverse: 'paciente'}),
     }),
     actividad: Model.extend({
       paciente: belongsTo('paciente', {inverse: 'actividads'}),
     }),
-    familiar: Model,
+    familiar: Model.extend({
+      paciente: belongsTo('paciente', {inverse: 'familiars'}),
+      provincia: belongsTo('provincia', {inverse: 'familiars'}),
+    }),
     provincia: Model,
     tipoActividad: Model,
     dia: Model,
@@ -70,6 +87,16 @@ export const crearServer = () => createServer({
     this.get('/pacientes', (schema, request) => {
       return schema.pacientes.where({ usuarioId: 1 });
     });
+    this.patch('/pacientes/:id', (schema, request) => {
+      const {provincia, sexo, tipoDocumento, ...paciente} = JSON.parse(request.requestBody);
+
+      return schema.pacientes.find(request.params.id).update(paciente);
+    });
+    this.post('/pacientes/', (schema, request) => {
+      const paciente = JSON.parse(request.requestBody);
+
+      return schema.pacientes.create(paciente);
+    })
 
     // Actividades
     this.get('/actividads/:id');
@@ -79,12 +106,12 @@ export const crearServer = () => createServer({
       return schema.actividads.where(queryParams);
     });
     this.patch('/actividads/:id', (schema, request) => {
-      const { ...actividad } = JSON.parse(request.requestBody);
+      const actividad = JSON.parse(request.requestBody);
 
       return schema.actividads.find(request.params.id).update(actividad);
     });
     this.post('/actividads/', (schema, request) => {
-      const { ...actividad } = JSON.parse(request.requestBody);
+      const actividad = JSON.parse(request.requestBody);
 
       if(!('estado' in actividad)) {
         actividad['estado'] = 'pendiente';
@@ -212,32 +239,53 @@ export const crearServer = () => createServer({
 
     const mirta = server.schema.pacientes.create({
       nombre: 'Mirta Pérez',
-      fechaNacimiento: '10/04/1940',
-      sexo: 'Femenino',
-      tipoDocumento: 'DNI',
+      fechaNacimiento: '1940-10-04',
+      sexoId: 2,
+      tipoDocumentoId: 1,
       numeroDocumento: '12678345',
       telefono: '1143215678',
-      provincia: 'Buenos Aires',
+      provinciaId: 2,
       localidad: 'Tigre',
       obraSocial: 'Swiss Medical',
-      numeroObraSocial: '12567810901',
+      numeroAfiliado: '12567810901',
       observaciones: 'Paciente con artrosis, antecedentes de patologías cardiovasculares y Alzheimer en etapa temprana.',
       imagen: 'mirta.png',
+      domicilio: 'Lima 775',
     });
 
     const andras = server.schema.pacientes.create({
       nombre: 'András Arató',
-      fechaNacimiento: '11/07/1945',
-      sexo: 'Masculino',
-      tipoDocumento: 'DNI',
+      fechaNacimiento: '1945-11-07',
+      sexoId: 1,
+      tipoDocumentoId: 1,
       numeroDocumento: '92574666',
       telefono: '0602527232',
-      provincia: 'CABA',
+      provinciaId: 1,
       localidad: 'Retiro',
       obraSocial: 'OSDE',
-      numeroObraSocial: '47234659631',
+      numeroAfiliado: '47234659631',
       observaciones: 'Tiene mala suerte',
       imagen: 'andras.png',
+      domicilio: 'Falsa 123',
+    });
+
+    console.log(mirta);
+
+    mirta.newFamiliar({
+      nombre: 'Jorge Díaz Pérez',
+      relacion: 'Hijo',
+      localidad: 'Barracas',
+      provinciaId: 1,
+      telefono: '1122334455',
+      esContactoDeEmergencia: true,
+    });
+    mirta.newFamiliar({
+      nombre: 'Florencia Díez Pérez',
+      relacion: 'Hija',
+      localidad: 'Villa Lugano',
+      provinciaId: 1,
+      telefono: '1150750012',
+      esContactoDeEmergencia: false,
     });
 
     mirta.actividads = server.createList('actividad', random(5, 15)).sort((a,b) => {

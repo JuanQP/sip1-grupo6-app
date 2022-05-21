@@ -8,7 +8,8 @@ import MedicacionScreen from '../screens/Actividades/MedicacionScreen';
 import ConsultaScreen from '../screens/Actividades/ConsultaScreen';
 import EstudioScreen from '../screens/Actividades/EstudioScreen';
 import OtroScreen from '../screens/Actividades/OtroScreen';
-import PacienteDetailScreen from '../screens/Paciente/PacienteDetailScreen';
+import PacienteScreen from '../screens/PacienteScreen';
+import NuevoPacienteScreen from '../screens/Pacientes/NuevoPacienteScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -56,9 +57,14 @@ export default function App() {
         options={{ title: 'Otro tipo de Actividad' }}
       />
       <Stack.Screen
-        name="PacienteDetail"
-        component={PacienteDetailScreen}
+        name="Paciente"
+        component={PacienteScreen}
         options={{ title: 'Mi Paciente' }}
+      />
+      <Stack.Screen
+        name="NuevoPaciente"
+        component={NuevoPacienteScreen}
+        options={{ title: 'Nuevo Paciente' }}
       />
     </Stack.Navigator>
   )

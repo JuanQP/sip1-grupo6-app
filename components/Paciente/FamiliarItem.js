@@ -1,7 +1,7 @@
 import { Alert, StyleSheet } from 'react-native';
 import { IconButton, List, withTheme } from 'react-native-paper';
 
-function FamiliarItem({ familiar, ...props }) {
+function FamiliarItem({ familiar, onEditFamiliar, ...props }) {
   const {
     nombre,
     relacion,
@@ -19,12 +19,12 @@ function FamiliarItem({ familiar, ...props }) {
     <List.Item
       style={styles.row}
       title={`${nombre}, ${relacion}`}
-      description={`${localidad}, ${provincia}`}
+      description={`${localidad}, ${provincia.descripcion}`}
       left={() =>
       <IconButton
         color={colors.primary}
         icon="pencil"
-        onPress={() => {}}
+        onPress={onEditFamiliar}
       />}
       right={() =>
       <IconButton

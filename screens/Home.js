@@ -113,7 +113,7 @@ function HomeScreen({ navigation, route, ...props }) {
 
   function handlePacienteDetailButtonClick() {
     const { pacienteId } = route.params;
-    navigation.navigate('PacienteDetail', { pacienteId });
+    navigation.navigate('Paciente', { pacienteId });
   }
 
   function handleActividadEditClick(actividadId) {
