@@ -1,7 +1,7 @@
 import { StyleSheet, View } from 'react-native';
 import { Avatar, Caption, IconButton, Text, withTheme } from 'react-native-paper';
 import moment from 'moment';
-import { imagenes } from '../utils/utils';
+import { imagenes } from '../../utils/utils';
 
 function PacienteCard({ paciente, loading, onPacienteDetailClick, ...props }) {
 
