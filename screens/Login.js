@@ -1,23 +1,20 @@
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { Alert, StyleSheet, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { Appbar, Button, Paragraph, TextInput } from "react-native-paper";
+import { Appbar, Paragraph } from "react-native-paper";
+import LoginForm from '../components/Login/LoginForm';
 
 const axios = require('axios').default;
 
 export default function LoginScreen({ navigation }) {
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [waitingResponse, setWaitingResponse] = useState(false);
 
-  const passwordRef = useRef();
-
-  async function handleLogin() {
+  async function handleLogin(credentials) {
+    const { email, password } = credentials;
     setWaitingResponse(true);
-
     try {
-      const response = await axios.post('/api/login', {email, password});
+      await axios.post('/api/login', {email, password});
       navigation.navigate('MisPacientes', { pacienteId: null });
     } catch ({ response }) {
       Alert.alert('', response.data.errors[0]);
@@ -32,45 +29,11 @@ export default function LoginScreen({ navigation }) {
       <Appbar.Header>
         <Appbar.Content title="Login" />
       </Appbar.Header>
-      <View style={styles.loginForm}>
+      <View style={styles.loginView}>
         <Paragraph>
           ¡Bienvenido 😄!
         </Paragraph>
-        <TextInput
-          style={{...styles.textInput, backgroundColor: 'transparent'}}
-          mode='flat'
-          label="E-mail"
-          value={email}
-          placeholder="john.doe@email.com"
-          onChangeText={setEmail}
-          textContentType="username"
-          keyboardType='email-address'
-          returnKeyType='next'
-          blurOnSubmit={false}
-          onSubmitEditing={() => {
-            passwordRef.current.focus();
-          }}
-        />
-        <TextInput
-          style={{...styles.textInput, backgroundColor: 'transparent'}}
-          mode='flat'
-          label="Contraseña"
-          value={password}
-          onChangeText={setPassword}
-          textContentType="password"
-          secureTextEntry
-          ref={passwordRef}
-          onSubmitEditing={handleLogin}
-        />
-        <Button
-          style={styles.button}
-          mode='contained'
-          onPress={handleLogin}
-          loading={waitingResponse}
-          disabled={waitingResponse || password === '' || email === ''}
-        >
-          Acceder
-        </Button>
+        <LoginForm loading={waitingResponse} onSubmit={handleLogin}/>
       </View>
       <StatusBar style="auto" />
     </View>
@@ -81,18 +44,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  loginForm: {
+  loginView: {
     padding: 32,
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
     flex: 1,
-  },
-  textInput: {
-    width: '100%',
-  },
-  button: {
-    marginTop: 10,
-    width: '100%',
   },
 });
