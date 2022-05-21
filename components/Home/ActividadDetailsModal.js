@@ -1,7 +1,7 @@
 import { StyleSheet, View } from "react-native";
 import { Button, Caption, IconButton, Modal, Paragraph, Text, ToggleButton, withTheme } from "react-native-paper"
 import { useEffect, useState } from "react";
-import { formatearFecha } from "../utils/utils";
+import { formatearFecha } from "../../utils/utils";
 import moment from "moment";
 
 function ActividadDetailsModal({ actividad, waiting, visible, onEditClick, onDismiss, onSubmit, ...props }) {

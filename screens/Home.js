@@ -1,16 +1,16 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { StatusBar } from 'expo-status-bar';
-import { Alert, FlatList, StyleSheet, View } from 'react-native';
+import { Alert, StyleSheet, View } from 'react-native';
 import { Appbar, FAB, Portal, Text, withTheme } from 'react-native-paper';
 import CalendarStrip from 'react-native-calendar-strip';
 import { dateSort, formatearFecha, stringToMomentMarkedDate } from '../utils/utils';
 import moment from 'moment';
 import 'moment/locale/es';
-import EstadoActividad from '../components/EstadoActividad';
-import PacienteCard from '../components/PacienteCard';
-import ActividadRow from '../components/ActividadRow';
-import ActividadDetailsModal from '../components/ActividadDetailsModal';
+import EstadoActividad from '../components/Home/EstadoActividad';
+import PacienteCard from '../components/Home/PacienteCard';
+import ActividadDetailsModal from '../components/Home/ActividadDetailsModal';
 import { useFocusEffect } from '@react-navigation/native';
+import ActividadesList from '../components/Home/ActividadesList';
 
 const axios = require('axios').default;
 
@@ -94,7 +94,9 @@ function HomeScreen({ navigation, route, ...props }) {
   async function handleActividadModalSubmit(actividad) {
     try {
       setWaitingActividadResponse(true);
-      await axios.patch(`/api/actividads/${actividad.id}`, actividad);
+      await axios.patch(`/api/actividads/${actividad.id}`, {
+        estado: actividad.estado,
+      });
       const actividadesResponse = await axios.get(`/api/actividads/`, {
         params: { pacienteId: route.params.pacienteId },
       });
@@ -166,18 +168,10 @@ function HomeScreen({ navigation, route, ...props }) {
         markedDates={markedDates}
         showMonth={false}
       />
-      {/* Lista de actividades agendadas */}
-      <FlatList
-        data={actividades}
-        renderItem={({ item }) =>
-          <ActividadRow
-            onActividadClick={handleActividadClick}
-            actividad={item}
-          />
-        }
-        keyExtractor={actividad => actividad.id}
+      <ActividadesList
+        actividades={actividades}
+        onActividadClick={handleActividadClick}
       />
-      {/* Botón flotante */}
       <FAB
         style={styles.fab}
         icon="plus"
