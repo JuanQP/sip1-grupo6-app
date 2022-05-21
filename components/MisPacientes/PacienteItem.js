@@ -1,8 +1,8 @@
 import { StyleSheet } from 'react-native';
 import { Avatar, List, withTheme } from 'react-native-paper';
-import { imagenes } from '../utils/utils';
+import { imagenes } from '../../utils/utils';
 
-function PacienteItem({ paciente, navigation, isSelected, onPacienteClick, ...props }) {
+function PacienteItem({ paciente, isSelected, onPacienteClick, ...props }) {
   const { id, nombre, provincia, localidad, imagen} = paciente;
   const { colors } = props.theme;
 
@@ -18,12 +18,8 @@ function PacienteItem({ paciente, navigation, isSelected, onPacienteClick, ...pr
       style={styles.row}
       title={nombre}
       description={`${provincia}, ${localidad}`}
-      left={() => <Avatar.Image source={imagenes[imagen]}/>}
-      right={() =>
-      <List.Icon
-        color={iconColor}
-        icon={icon}
-      />}
+      left={() => <Avatar.Image source={imagenes[imagen]} />}
+      right={() => <List.Icon color={iconColor} icon={icon} />}
       onPress={handlePacienteClickeado}
     />
   )
