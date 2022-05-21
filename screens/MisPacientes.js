@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { StatusBar } from 'expo-status-bar';
-import { Alert, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { Appbar, Button, withTheme } from 'react-native-paper';
 import 'moment/locale/es';
 import PacienteList from '../components/MisPacientes/PacienteList';
@@ -32,6 +32,10 @@ function MisPacientesScreen({ navigation, route }) {
     navigation.navigate('Home', { pacienteId });
   }
 
+  function handleAgregarPacienteClick() {
+    navigation.navigate('NuevoPaciente');
+  }
+
   return (
     <View style={styles.container}>
       <Appbar.Header>
@@ -49,7 +53,7 @@ function MisPacientesScreen({ navigation, route }) {
       }
       <Button
         mode="contained"
-        onPress={() => Alert.alert("😳", "Nada por aquí...")}
+        onPress={handleAgregarPacienteClick}
       >
         Agregar Paciente
       </Button>

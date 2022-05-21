@@ -5,10 +5,10 @@ import { imagenes } from '../../utils/utils';
 
 function PacienteCard({ paciente, loading, onPacienteDetailClick, ...props }) {
 
-  const { nombre, provincia, localidad, obraSocial, numeroObraSocial, imagen } = paciente ?? {};
+  const { nombre, provincia, localidad, obraSocial, numeroAfiliado, imagen } = paciente ?? {};
   const hoy = moment();
-  const edad = hoy.diff(moment(paciente?.fechaNacimiento, "DD/MM/YYYY"), 'years');
-  const ubicacion = `${provincia}, ${localidad}`;
+  const edad = hoy.diff(moment(paciente?.fechaNacimiento, "YYYY-MM-DD"), 'years');
+  const ubicacion = `${provincia?.descripcion}, ${localidad}`;
   const { colors } = props.theme;
 
   return (
@@ -17,7 +17,7 @@ function PacienteCard({ paciente, loading, onPacienteDetailClick, ...props }) {
       <View style={{marginLeft: 10}}>
         <Text>{nombre ? `${nombre}, ${edad}` : ''}</Text>
         <Caption>{provincia ? ubicacion : ''}</Caption>
-        <Caption>{obraSocial ? `${obraSocial} - ${numeroObraSocial}` : ''}</Caption>
+        <Caption>{obraSocial ? `${obraSocial} - ${numeroAfiliado}` : ''}</Caption>
       </View>
       <IconButton
         style={{marginLeft: 'auto'}}
