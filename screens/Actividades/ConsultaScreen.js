@@ -3,7 +3,7 @@ import { StatusBar } from 'expo-status-bar';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { Appbar, Title, withTheme } from 'react-native-paper';
 import ActividadMessageModal from '../../components/ActividadMessageModal';
-import ConsultaForm from './Forms/ConsultaForm';
+import ConsultaForm from '../../components/Actividades/ConsultaForm';
 
 const axios = require('axios').default;
 
