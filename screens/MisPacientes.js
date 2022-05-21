@@ -1,18 +1,16 @@
 import React, { useEffect, useState } from 'react'
 import { StatusBar } from 'expo-status-bar';
 import { Alert, StyleSheet, View } from 'react-native';
-import { Appbar, Button, List, withTheme } from 'react-native-paper';
+import { Appbar, Button, withTheme } from 'react-native-paper';
 import 'moment/locale/es';
-import PacienteItem from '../components/PacienteItem';
+import PacienteList from '../components/MisPacientes/PacienteList';
 const axios = require('axios').default;
 
-function MisPacientesScreen({ navigation, route, ...props }) {
+function MisPacientesScreen({ navigation, route }) {
 
   const [waitingResponse, setWaitingResponse] = useState(true);
   const [pacientes, setPacientes] = useState([]);
-  const seleccionado = route.params.pacienteId;
-
-  const { colors } = props.theme;
+  const { pacienteId } = route.params;
 
   useEffect(() => {
     setWaitingResponse(true);
@@ -21,7 +19,6 @@ function MisPacientesScreen({ navigation, route, ...props }) {
       setPacientes(response.data.pacientes);
       setWaitingResponse(false);
     }
-
     fetchData()
       .catch(console.error)
       .finally(() => setWaitingResponse(false));
@@ -42,20 +39,14 @@ function MisPacientesScreen({ navigation, route, ...props }) {
         <Appbar.Content title="Mis Pacientes" />
       </Appbar.Header>
       {/* Lista de pacientes */}
-      <List.Section style={{ backgroundColor: colors.surface }}>
-        {waitingResponse ?
-          <List.Item
-            title="Cargando..."
-          />
-        : pacientes.map(p =>
-          <PacienteItem
-            key={p.id}
-            paciente={p}
-            isSelected={p.id === seleccionado}
-            onPacienteClick={handlePacienteClick}
-          />
-        )}
-      </List.Section>
+      {waitingResponse ?
+        null :
+        <PacienteList
+          selectedId={pacienteId}
+          pacientes={pacientes}
+          onPacienteClick={handlePacienteClick}
+        />
+      }
       <Button
         mode="contained"
         onPress={() => Alert.alert("😳", "Nada por aquí...")}
