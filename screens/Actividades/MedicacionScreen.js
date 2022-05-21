@@ -3,7 +3,7 @@ import { StatusBar } from 'expo-status-bar';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { Appbar, Title, withTheme } from 'react-native-paper';
 import ActividadMessageModal from '../../components/ActividadMessageModal';
-import MedicacionForm from './Forms/MedicacionForm';
+import MedicacionForm from '../../components/Actividades/MedicacionForm';
 
 const axios = require('axios').default;
 

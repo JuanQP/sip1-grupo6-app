@@ -1,8 +1,9 @@
 import React from 'react'
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View } from 'react-native';
-import { Appbar, IconButton, Surface, Text, withTheme } from 'react-native-paper';
+import { Appbar, withTheme } from 'react-native-paper';
 import 'moment/locale/es';
+import ActividadTouchableCard from '../../components/Actividades/ActividadTouchableCard';
 
 function ActividadesScreen({ navigation, route, ...props }) {
 
@@ -38,24 +39,32 @@ function ActividadesScreen({ navigation, route, ...props }) {
       {/* Formulario */}
       <View style={styles.cardsContainer}>
         <View style={styles.row}>
-          <Surface style={styles.card} onTouchStart={handleNuevaMedicacion}>
-            <Text>Medicación</Text>
-            <IconButton color={colors.primary} icon="pill" />
-          </Surface>
-          <Surface style={styles.card} onTouchStart={handleNuevaConsulta}>
-            <Text>Consulta Médica</Text>
-            <IconButton color={colors.primary} icon="doctor" />
-          </Surface>
+          <ActividadTouchableCard
+            title="Medicación"
+            icon="pill"
+            color={colors.primary}
+            onPress={handleNuevaMedicacion}
+          />
+          <ActividadTouchableCard
+            title="Consulta Médica"
+            icon="doctor"
+            color={colors.primary}
+            onPress={handleNuevaConsulta}
+          />
         </View>
         <View style={styles.row}>
-          <Surface style={styles.card} onTouchStart={handleNuevoEstudio}>
-            <Text>Estudio Médico</Text>
-            <IconButton color={colors.primary} icon="hospital-building" />
-          </Surface>
-          <Surface style={styles.card} onTouchStart={handleNuevoOtro}>
-            <Text>Otro</Text>
-            <IconButton color={colors.primary} icon="dots-horizontal" />
-          </Surface>
+          <ActividadTouchableCard
+            title="Estudio Médico"
+            icon="hospital-building"
+            color={colors.primary}
+            onPress={handleNuevoEstudio}
+          />
+          <ActividadTouchableCard
+            title="Otro"
+            icon="dots-horizontal"
+            color={colors.primary}
+            onPress={handleNuevoOtro}
+          />
         </View>
       </View>
       <StatusBar style="auto" />
@@ -69,14 +78,6 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: 'row',
-  },
-  card: {
-    height: 100,
-    margin: 10,
-    elevation: 4,
-    flex: 1,
-    alignItems: "center",
-    justifyContent: 'center',
   },
   cardsContainer: {
     padding: 20,

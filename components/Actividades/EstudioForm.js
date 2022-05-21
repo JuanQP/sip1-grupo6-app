@@ -1,24 +1,17 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { StyleSheet, View } from 'react-native';
-import { Button, IconButton, TextInput, withTheme } from 'react-native-paper';
-import DateTimePicker from '@react-native-community/datetimepicker';
-import moment from 'moment';
+import { Button, TextInput, withTheme } from 'react-native-paper';
+import FechaPicker from '../FechaPicker';
 
 const axios = require('axios').default;
 
-function EstudioForm({ actividadId, waitingResponse, onCancel, onSubmit, ...props }) {
-
-  const { colors } = props.theme;
+function EstudioForm({ actividadId, waitingResponse, onCancel, onSubmit }) {
 
   const [nombre, setNombre] = useState('');
   const [observaciones, setObservaciones] = useState('');
   const [direccion, setDireccion] = useState('');
-  const [date, setDate] = useState(new Date());
-  const [time, setTime] = useState(new Date());
+  const [fecha, setFecha] = useState(new Date());
 
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [showTimePicker, setShowTimePicker] = useState(false);
-  
   const observacionesTextInput = useRef();
 
   useEffect(() => {
@@ -29,8 +22,7 @@ function EstudioForm({ actividadId, waitingResponse, onCancel, onSubmit, ...prop
         setNombre(nombre);
         setObservaciones(observaciones);
         setDireccion(direccion);
-        setDate(new Date(fecha));
-        setTime(new Date(fecha));
+        setFecha(new Date(fecha));
       }
     }
 
@@ -38,36 +30,7 @@ function EstudioForm({ actividadId, waitingResponse, onCancel, onSubmit, ...prop
       .catch(console.error)
   }, []);
 
-  function onDateChange (event, selectedDate) {
-    setShowDatePicker(false);
-    if(event.type === "dismissed")
-      return;
-    setDate(selectedDate);
-    setShowTimePicker(true);
-  };
-
-  function onTimeChange (event, selectedTime) {
-    setShowTimePicker(false);
-    if(event.type === "dismissed")
-      return;
-    setTime(selectedTime);
-  };
-
-  function beginDatePicker() {
-    hideAllCalendars();
-    setShowDatePicker(true);
-  }
-
-  function hideAllCalendars() {
-    setShowDatePicker(false);
-    setShowTimePicker(false);
-  }
-
   function handleSubmit() {
-    const fecha = new Date(date);
-    fecha.setHours(time.getHours());
-    fecha.setMinutes(time.getMinutes());
-
     onSubmit({
       nombre,
       observaciones,
@@ -89,35 +52,11 @@ function EstudioForm({ actividadId, waitingResponse, onCancel, onSubmit, ...prop
       returnKeyType="next"
       onChangeText={setNombre}
     />
-    {/* DateTime Picker */}
-    <View style={{flexDirection: "row", alignItems: "center"}}>
-      <IconButton
-        color={colors.primary}
-        icon="calendar"
-        onPress={beginDatePicker}
-      />
-      <TextInput
-        style={{backgroundColor: 'transparent'}}
-        mode='flat'
-        label='Fecha'
-        value={moment(date).set({hour: time.getHours(), minute: time.getMinutes()}).format("DD/MM/YYYY HH:mm")}
-        placeholder="14/10/1991 22:00"
-        disabled
-      />
-      {(showDatePicker && <DateTimePicker
-        testID="datePicker"
-        value={date}
-        mode={"date"}
-        onChange={onDateChange}
-      />)}
-      {(showTimePicker && <DateTimePicker
-        testID="timePicker"
-        value={time}
-        mode={"time"}
-        onChange={onTimeChange}
-        is24Hour
-      />)}
-    </View>
+    <FechaPicker
+      label="Fecha"
+      fecha={fecha}
+      onChange={setFecha}
+    />
     <TextInput
       style={{backgroundColor: 'transparent'}}
       mode='flat'
@@ -155,7 +94,7 @@ function EstudioForm({ actividadId, waitingResponse, onCancel, onSubmit, ...prop
         loading={waitingResponse}
         disabled={waitingResponse}
       >
-        Crear Actividad
+        {actividadId ? 'Modificar' : 'Crear'} Actividad
       </Button>
     </View>
     </>

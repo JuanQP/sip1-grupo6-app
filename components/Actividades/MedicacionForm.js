@@ -1,15 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { StyleSheet, View } from 'react-native';
-import { Button, IconButton, TextInput, withTheme } from 'react-native-paper';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import { Button, TextInput, withTheme } from 'react-native-paper';
 import DropDown from "react-native-paper-dropdown";
-import moment from 'moment';
+import FechaPicker from "../FechaPicker";
 
 const axios = require('axios').default;
 
-function MedicacionForm({ actividadId, waitingResponse, onCancel, onSubmit, ...props }) {
-
-  const { colors } = props.theme;
+function MedicacionForm({ actividadId, waitingResponse, onCancel, onSubmit }) {
 
   const [nombre, setNombre] = useState('');
   const [observaciones, setObservaciones] = useState('');
@@ -18,11 +15,8 @@ function MedicacionForm({ actividadId, waitingResponse, onCancel, onSubmit, ...p
   const [frecuencia, setFrecuencia] = useState('');
   const [dias, setDias] = useState('');
   const [listaDias, setListaDias] = useState([]);
-  const [date, setDate] = useState(new Date());
-  const [time, setTime] = useState(new Date());
-
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [showTimePicker, setShowTimePicker] = useState(false);
+  const [fecha, setFecha] = useState(new Date());
+  
   const [showMultiSelectDropDown, setShowMultiSelectDropDown] = useState(false);
   
   const observacionesTextInput = useRef();
@@ -42,8 +36,7 @@ function MedicacionForm({ actividadId, waitingResponse, onCancel, onSubmit, ...p
         setDuracion(String(duracion));
         setFrecuencia(String(frecuencia));
         setDias(`,${dias.join(",")}`);
-        setDate(new Date(fecha));
-        setTime(new Date(fecha));
+        setFecha(new Date(fecha));
       }
       setListaDias(response.data.dia.map(d => ({label: d.descripcion, value: d.id})));
     }
@@ -53,10 +46,6 @@ function MedicacionForm({ actividadId, waitingResponse, onCancel, onSubmit, ...p
   }, []);
 
   function handleSubmit() {
-    const fecha = new Date(date);
-    fecha.setHours(time.getHours());
-    fecha.setMinutes(time.getMinutes());
-
     onSubmit({
       nombre,
       observaciones,
@@ -67,35 +56,6 @@ function MedicacionForm({ actividadId, waitingResponse, onCancel, onSubmit, ...p
       tipo: 'Medicación',
       dias: dias.split(",").slice(1).map(id => Number(id)),
     });
-  }
-
-  function onDateChange (event, selectedDate) {
-    setShowDatePicker(false);
-    if(event.type === "dismissed")
-      return;
-    setDate(selectedDate);
-    setShowTimePicker(true);
-  };
-
-  function onTimeChange (event, selectedTime) {
-    setShowTimePicker(false);
-    if(event.type === "dismissed")
-      return;
-    setTime(selectedTime);
-  };
-
-  function beginDatePicker() {
-    hideAllCalendars();
-    setShowDatePicker(true);
-  }
-
-  function hideAllCalendars() {
-    setShowDatePicker(false);
-    setShowTimePicker(false);
-  }
-
-  function handleBackActionClick() {
-
   }
 
   return (
@@ -138,35 +98,11 @@ function MedicacionForm({ actividadId, waitingResponse, onCancel, onSubmit, ...p
       ref={dosisTextInput}
       onChangeText={setDosis}
     />
-    {/* DateTime Picker */}
-    <View style={{flexDirection: "row", alignItems: "center"}}>
-      <IconButton
-        color={colors.primary}
-        icon="calendar"
-        onPress={beginDatePicker}
-      />
-      <TextInput
-        style={{backgroundColor: 'transparent'}}
-        mode='flat'
-        label='Fecha de Inicio'
-        value={moment(date).set({hour: time.getHours(), minute: time.getMinutes()}).format("DD/MM/YYYY HH:mm")}
-        placeholder="14/10/1991 22:00"
-        disabled
-      />
-      {(showDatePicker && <DateTimePicker
-        testID="datePicker"
-        value={date}
-        mode={"date"}
-        onChange={onDateChange}
-      />)}
-      {(showTimePicker && <DateTimePicker
-        testID="timePicker"
-        value={time}
-        mode={"time"}
-        onChange={onTimeChange}
-        is24Hour
-      />)}
-    </View>
+    <FechaPicker
+      label="Fecha de Inicio"
+      fecha={fecha}
+      onChange={setFecha}
+    />
     <TextInput
       style={{backgroundColor: 'transparent'}}
       mode='flat'
