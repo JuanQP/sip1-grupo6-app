@@ -4,7 +4,7 @@ import { StyleSheet, View } from 'react-native';
 import { Appbar, IconButton, Surface, Text, withTheme } from 'react-native-paper';
 import 'moment/locale/es';
 
-function NuevaActividadScreen({ navigation, route, ...props }) {
+function ActividadesScreen({ navigation, route, ...props }) {
 
   const { colors } = props.theme;
   const { pacienteId } = route.params;
@@ -14,19 +14,19 @@ function NuevaActividadScreen({ navigation, route, ...props }) {
   }
 
   function handleNuevaMedicacion() {
-    navigation.navigate('NuevaMedicacion', { pacienteId });
+    navigation.navigate('Medicacion', { pacienteId });
   }
 
   function handleNuevaConsulta() {
-    navigation.navigate('NuevaConsulta', { pacienteId });
+    navigation.navigate('Consulta', { pacienteId });
   }
 
   function handleNuevoEstudio() {
-    navigation.navigate('NuevoEstudio', {pacienteId });
+    navigation.navigate('Estudio', {pacienteId });
   }
 
   function handleNuevoOtro() {
-    navigation.navigate('NuevoOtro', { pacienteId });
+    navigation.navigate('Otro', { pacienteId });
   }
 
   return (
@@ -83,4 +83,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default withTheme(NuevaActividadScreen);
+export default withTheme(ActividadesScreen);

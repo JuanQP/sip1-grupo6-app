@@ -2,8 +2,23 @@ import { StyleSheet, View } from 'react-native';
 import { Caption, IconButton, Text, Title, withTheme } from 'react-native-paper';
 import moment from 'moment';
 
-function colorSegunTipo(tipo, colors) {
+function iconSegunTipo(tipo) {
   switch (tipo.toLowerCase()) {
+    case 'medicación':
+      return 'pill';
+    case 'estudio médico':
+      return 'hospital-building';
+    case 'consulta médica':
+      return 'doctor';
+    case 'otro':
+      return 'dots-horizontal';
+    default:
+      break;
+  }
+}
+
+function colorSegunEstado(estado, colors) {
+  switch (estado.toLowerCase()) {
     case 'completada':
       return colors.primary;
     case 'pendiente':
@@ -19,13 +34,13 @@ function colorSegunTipo(tipo, colors) {
  * El tipo de fecha debe ser Moment
  */
 function ActividadRow({ actividad, onActividadClick, ...props }) {
-  const { descripcion, estado } = actividad;
+  const { nombre, estado } = actividad;
   const fecha = moment(actividad.fecha);
   const diaDelMes = fecha.format("DD");
   const nombreDelDia = fecha.format("ddd").toUpperCase().replace(".", "");
   const hora = fecha.format("HH:mm");
   const { colors } = props.theme;
-  const color = colorSegunTipo(estado, colors);
+  const color = colorSegunEstado(estado, colors);
 
   function handleIconButtonClick() {
     onActividadClick(actividad);
@@ -38,18 +53,24 @@ function ActividadRow({ actividad, onActividadClick, ...props }) {
         <Caption>{nombreDelDia}</Caption>
       </View>
       <View style={{...styles.card, backgroundColor: colors.surface, borderColor: color}}>
-        <View style={{flexDirection: 'row'}}>
-          <Text>{descripcion}</Text>
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          <Text>{nombre}</Text>
           <IconButton
             color={colors.primary}
             style={{marginLeft: 'auto'}}
-            icon="dots-horizontal" mode="text"
+            icon="dots-horizontal"
+            mode="text"
             onPress={handleIconButtonClick}
           />
         </View>
-        <View style={{flexDirection: 'row'}}>
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
           <Text>{hora}</Text>
-          <Text></Text>
+          <IconButton
+            color={colors.disabled}
+            style={{marginLeft: 'auto'}}
+            icon={iconSegunTipo(actividad.tipo)}
+            mode="text"
+          />
         </View>
       </View>
     </View>

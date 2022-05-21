@@ -3,11 +3,11 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import HomeScreen from '../screens/Home';
 import MisPacientesScreen from '../screens/MisPacientes';
 import LoginScreen from '../screens/Login';
-import NuevaActividadScreen from '../screens/NuevaActividad/NuevaActividadScreen';
-import NuevaMedicacionScreen from '../screens/NuevaActividad/NuevaMedicacionScreen';
-import NuevaConsultaScreen from '../screens/NuevaActividad/NuevaConsultaScreen';
-import NuevoEstudioScreen from '../screens/NuevaActividad/NuevoEstudioScreen';
-import NuevoOtroScreen from '../screens/NuevaActividad/NuevoOtroScreen';
+import ActividadesScreen from '../screens/Actividades/ActividadesScreen';
+import MedicacionScreen from '../screens/Actividades/MedicacionScreen';
+import ConsultaScreen from '../screens/Actividades/ConsultaScreen';
+import EstudioScreen from '../screens/Actividades/EstudioScreen';
+import OtroScreen from '../screens/Actividades/OtroScreen';
 import PacienteDetailScreen from '../screens/Paciente/PacienteDetailScreen';
 
 const Stack = createNativeStackNavigator();
@@ -31,28 +31,28 @@ export default function App() {
         options={{ title: 'Mis Pacientes' }}
       />
       <Stack.Screen
-        name="NuevaActividad"
-        component={NuevaActividadScreen}
-        options={{ title: 'Nueva Actividad' }}
+        name="Actividad"
+        component={ActividadesScreen}
+        options={{ title: 'Actividad' }}
       />
       <Stack.Screen
-        name="NuevaMedicacion"
-        component={NuevaMedicacionScreen}
-        options={{ title: 'Nueva Medicación' }}
+        name="Medicacion"
+        component={MedicacionScreen}
+        options={{ title: 'Medicación' }}
       />
       <Stack.Screen
-        name="NuevaConsulta"
-        component={NuevaConsultaScreen}
-        options={{ title: 'Nueva Consulta' }}
+        name="Consulta"
+        component={ConsultaScreen}
+        options={{ title: 'Consulta' }}
       />
       <Stack.Screen
-        name="NuevoEstudio"
-        component={NuevoEstudioScreen}
-        options={{ title: 'Nuevo Estudio' }}
+        name="Estudio"
+        component={EstudioScreen}
+        options={{ title: 'Estudio' }}
       />
       <Stack.Screen
-        name="NuevoOtro"
-        component={NuevoOtroScreen}
+        name="Otro"
+        component={OtroScreen}
         options={{ title: 'Otro tipo de Actividad' }}
       />
       <Stack.Screen
