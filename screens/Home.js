@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { StatusBar } from 'expo-status-bar';
 import { Alert, FlatList, StyleSheet, View } from 'react-native';
 import { Appbar, FAB, Portal, Text, withTheme } from 'react-native-paper';
@@ -10,11 +10,19 @@ import EstadoActividad from '../components/EstadoActividad';
 import PacienteCard from '../components/PacienteCard';
 import ActividadRow from '../components/ActividadRow';
 import ActividadDetailsModal from '../components/ActividadDetailsModal';
+import { useFocusEffect } from '@react-navigation/native';
 
 const axios = require('axios').default;
 
 const hoy = moment();
 const fecha = formatearFecha(hoy);
+
+const pantallasActividades = {
+  'Medicación': 'Medicacion',
+  'Consulta Médica': 'Consulta',
+  'Estudio Médico': 'Estudio',
+  'Otro': 'Otro',
+};
 
 function HomeScreen({ navigation, route, ...props }) {
 
@@ -34,23 +42,26 @@ function HomeScreen({ navigation, route, ...props }) {
     return acc;
   }, {completada: 0, pendiente: 0, pospuesta: 0});
 
-  useEffect(() => {
-    setWaitingResponse(true);
-    const fetchData = async () => {
-      const { pacienteId } = route.params;
-      const [pacienteResponse, actividadesResponse] = await Promise.all([
-        axios.get(`/api/pacientes/${pacienteId}`),
-        axios.get(`/api/actividads/`, {params: { pacienteId }}),
-      ]);
-      setActividades(actividadesResponse.data.actividads.sort(dateSort));
-      setPaciente(pacienteResponse.data.paciente);
-      setWaitingResponse(false);
-    }
 
-    fetchData()
-      .catch(console.error)
-      .finally(() => setWaitingResponse(false));
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      setWaitingResponse(true);
+      const fetchData = async () => {
+        const { pacienteId } = route.params;
+        const [pacienteResponse, actividadesResponse] = await Promise.all([
+          axios.get(`/api/pacientes/${pacienteId}`),
+          axios.get(`/api/actividads/`, {params: { pacienteId }}),
+        ]);
+        setActividades(actividadesResponse.data.actividads.sort(dateSort));
+        setPaciente(pacienteResponse.data.paciente);
+        setWaitingResponse(false);
+      }
+
+      fetchData()
+        .catch(console.error)
+        .finally(() => setWaitingResponse(false));
+    }, [])
+  );
 
   useEffect(() => {
     const newMarkedDates = actividades.map(a => stringToMomentMarkedDate(a.fecha, colors));
@@ -72,7 +83,7 @@ function HomeScreen({ navigation, route, ...props }) {
 
   function handleNuevaActividadClick() {
     const { pacienteId } = route.params;
-    navigation.navigate("NuevaActividad", { pacienteId });
+    navigation.navigate("Actividad", { pacienteId });
   }
 
   function handleActividadClick(actividad) {
@@ -103,6 +114,14 @@ function HomeScreen({ navigation, route, ...props }) {
     navigation.navigate('PacienteDetail', { pacienteId });
   }
 
+  function handleActividadEditClick(actividadId) {
+    const { pacienteId } = route.params;
+    const actividad = actividades.find(a => a.id === actividadId);
+    const proximaPantalla = pantallasActividades[actividad.tipo];
+    setModalVisible(false);
+    navigation.navigate(proximaPantalla, { pacienteId, actividadId });
+  }
+
   return (
     <View style={styles.container}>
       <Appbar.Header>
@@ -112,7 +131,6 @@ function HomeScreen({ navigation, route, ...props }) {
       </Appbar.Header>
       <PacienteCard
         paciente={paciente}
-        loading={waitingResponse}
         onPacienteDetailClick={handlePacienteDetailButtonClick}
       />
       <Text style={{margin: 10, alignSelf: 'center'}}>
@@ -170,6 +188,7 @@ function HomeScreen({ navigation, route, ...props }) {
           actividad={actividadSeleccionada}
           visible={modalVisible}
           waiting={waitingActividadResponse}
+          onEditClick={handleActividadEditClick}
           onDismiss={hideModal}
           onSubmit={handleActividadModalSubmit}
         />

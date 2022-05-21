@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { formatearFecha } from "../utils/utils";
 import moment from "moment";
 
-function ActividadDetailsModal({ actividad, waiting, visible, onDismiss, onSubmit, ...props }) {
+function ActividadDetailsModal({ actividad, waiting, visible, onEditClick, onDismiss, onSubmit, ...props }) {
 
   if(!actividad) {
     return null;
@@ -31,6 +31,10 @@ function ActividadDetailsModal({ actividad, waiting, visible, onDismiss, onSubmi
       ...actividad,
       estado,
     });
+  }
+
+  function handleEditClick() {
+    onEditClick(actividad.id);
   }
 
   return (
@@ -63,16 +67,16 @@ function ActividadDetailsModal({ actividad, waiting, visible, onDismiss, onSubmi
         </Text>
         <View style={{flexDirection: 'column'}}>
           <View style={styles.contenidoRow}>
-            <Text>{actividad.descripcion}</Text>
+            <Text>{actividad.nombre}</Text>
             <IconButton
               color={colors.primary}
               icon="pencil-outline"
-              onPress={() => {}}
+              onPress={handleEditClick}
             />
           </View>
           <View style={styles.contenidoRow}>
             <Text>{fecha.format("HH:mm")}</Text>
-            <Text>Texto</Text>
+            <Text>{actividad.dosis}</Text>
           </View>
         </View>
         <Caption>Observaciones</Caption>

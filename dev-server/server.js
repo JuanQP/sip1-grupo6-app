@@ -10,6 +10,12 @@ if (window.server) {
 
 const hoy = moment();
 const horarios = [0, 15, 30, 45];
+const tiposActividades = [
+  'Medicación',
+  'Consulta Médica',
+  'Estudio Médico',
+  'Otro',
+]
 const medicaciones = [
   'Diurex',
   'Enalapril',
@@ -69,11 +75,22 @@ export const crearServer = () => createServer({
     this.get('/actividads/:id');
     this.get('/actividads', (schema, request) => {
       const { queryParams } = request;
+
       return schema.actividads.where(queryParams);
     });
     this.patch('/actividads/:id', (schema, request) => {
       const { ...actividad } = JSON.parse(request.requestBody);
+
       return schema.actividads.find(request.params.id).update(actividad);
+    });
+    this.post('/actividads/', (schema, request) => {
+      const { ...actividad } = JSON.parse(request.requestBody);
+
+      if(!('estado' in actividad)) {
+        actividad['estado'] = 'pendiente';
+      }
+
+      return schema.actividads.create(actividad);
     });
 
     // Dias
@@ -95,16 +112,44 @@ export const crearServer = () => createServer({
         return hoy.clone().add(random(-15, 15), "days").set({hour: random(9, 18), minute: pickRandom(horarios)});
       },
 
-      descripcion() {
-        return pickRandom(medicaciones);
+      nombre() {
+        return this.tipo === 'Medicación' ? pickRandom(medicaciones) : 'Lorem ipsum';
       },
 
       observaciones() {
-        return "Lorem ipsum"
+        return "Lorem ipsum";
       },
 
       estado() {
         return pickRandom(estados);
+      },
+
+      dosis() {
+        return `${String(random(10, 50))} mg`;
+      },
+
+      duracion() {
+        return random(1, 30);
+      },
+
+      frecuencia() {
+        return pickRandom([6, 12, 24]);
+      },
+
+      dias() {
+        return [1, 3, 5];
+      },
+
+      tipo() {
+        return pickRandom(tiposActividades);
+      },
+
+      repeticiones() {
+        return this.tipo === 'Otro' ? pickRandom([true, false]) : false; 
+      },
+
+      direccion() {
+        return 'Lorem ipsum';
       },
     })
   },
@@ -209,4 +254,4 @@ export const crearServer = () => createServer({
   },
 });
 
-console.log('Listo!');
+console.log('MirageJS Server is up!');

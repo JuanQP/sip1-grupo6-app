@@ -1,7 +1,7 @@
 import { StyleSheet, View } from "react-native";
 import { IconButton, Modal, Paragraph, withTheme } from "react-native-paper"
 
-function ActividadCreadaModal({ visible, onDismiss, ...props }) {
+function ActividadMessageModal({ visible, onDismiss, ...props }) {
 
   const { colors } = props.theme;
   const modalStyles = {
@@ -26,7 +26,7 @@ function ActividadCreadaModal({ visible, onDismiss, ...props }) {
           icon="check"
           size={64}
         />
-        <Paragraph>¡Nueva actividad creada exitosamente!</Paragraph>
+        <Paragraph>¡Actividad guardada exitosamente!</Paragraph>
       </View>
     </Modal>
   )
@@ -43,4 +43,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default withTheme(ActividadCreadaModal);
+export default withTheme(ActividadMessageModal);

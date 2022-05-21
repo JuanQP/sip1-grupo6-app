@@ -15,9 +15,9 @@ function PacienteCard({ paciente, loading, onPacienteDetailClick, ...props }) {
     <View style={{ ...styles.card, backgroundColor: colors.surface }}>
       <Avatar.Image size={64} source={imagenes[imagen]} />
       <View style={{marginLeft: 10}}>
-        <Text>{loading ? '' : `${nombre}, ${edad}`}</Text>
-        <Caption>{loading ? '' : ubicacion}</Caption>
-        <Caption>{loading ? '' : `${obraSocial} - ${numeroObraSocial}`}</Caption>
+        <Text>{nombre ? `${nombre}, ${edad}` : ''}</Text>
+        <Caption>{provincia ? ubicacion : ''}</Caption>
+        <Caption>{obraSocial ? `${obraSocial} - ${numeroObraSocial}` : ''}</Caption>
       </View>
       <IconButton
         style={{marginLeft: 'auto'}}

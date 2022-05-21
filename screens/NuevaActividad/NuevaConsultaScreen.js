@@ -1,12 +1,14 @@
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { StatusBar } from 'expo-status-bar';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { Appbar, Button, IconButton, TextInput, Title, withTheme } from 'react-native-paper';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment';
-import ActividadCreadaModal from '../../components/ActividadCreadaModal';
+import ActividadMessageModal from '../../components/ActividadMessageModal';
 
-function NuevaConsultaScreen({ navigation, route, ...props }) {
+const axios = require('axios').default;
+
+function ConsultaScreen({ navigation, route, ...props }) {
 
   const { colors } = props.theme;
   const { pacienteId } = route.params;
@@ -14,17 +16,28 @@ function NuevaConsultaScreen({ navigation, route, ...props }) {
   const [nombre, setNombre] = useState('');
   const [observaciones, setObservaciones] = useState('');
   const [direccion, setDireccion] = useState('');
-
+  
   const [date, setDate] = useState(new Date());
   const [time, setTime] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
-
+  
   const [waitingResponse, setWaitingResponse] = useState(false);
+  const [pacienteNombre, setPacienteNombre] = useState('');
 
   const [modalVisible, setModalVisible] = useState(false);
 
   const observacionesTextInput = useRef();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const pacienteResponse = await axios.get(`/api/pacientes/${pacienteId}`);
+      setPacienteNombre(pacienteResponse.data.paciente.nombre);
+    }
+
+    fetchData()
+      .catch(console.error)
+  }, []);
 
   function handleBackActionClick() {
     navigation.goBack();
@@ -32,10 +45,23 @@ function NuevaConsultaScreen({ navigation, route, ...props }) {
 
   async function handleSubmit() {
     setWaitingResponse(true);
-    // Simulamos una espera de 2 segundos...
-    await new Promise(r => setTimeout(r, 2000));
-    setWaitingResponse(false);
-    setModalVisible(true);
+    const nuevaActividad = {
+      pacienteId,
+      nombre,
+      fecha: date,
+      direccion,
+      observaciones,
+      tipo: 'Consulta Médica',
+    };
+    try {
+      await axios.post(`/api/actividads/`, nuevaActividad);
+      setModalVisible(true);
+    } catch (error) {
+      console.error(error.message);
+    }
+    finally {
+      setWaitingResponse(false);
+    }
   }
 
   function onDateChange (event, selectedDate) {
@@ -77,7 +103,7 @@ function NuevaConsultaScreen({ navigation, route, ...props }) {
       {/* Formulario */}
       <View style={styles.formContainer}>
         <ScrollView>
-          <Title>Mirta Pérez</Title>
+          <Title>{pacienteNombre}</Title>
           <TextInput
             style={{backgroundColor: 'transparent'}}
             mode='flat'
@@ -160,7 +186,7 @@ function NuevaConsultaScreen({ navigation, route, ...props }) {
         </ScrollView>
       </View>
       <StatusBar style="auto" />
-      <ActividadCreadaModal
+      <ActividadMessageModal
         visible={modalVisible}
         onDismiss={hideModal}
       />
@@ -184,4 +210,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default withTheme(NuevaConsultaScreen);
+export default withTheme(ConsultaScreen);
