@@ -103,7 +103,6 @@ function HomeScreen({ navigation, route, ...props }) {
       setActividades(actividadesResponse.data.actividads.sort(dateSort));
       hideModal();
     } catch (error) {
-      console.log(error);
       Alert.alert("😞", "No se pudo actualizar esta actividad");
     }
     finally {

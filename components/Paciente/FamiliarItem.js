@@ -15,6 +15,10 @@ function FamiliarItem({ familiar, onEditFamiliar, ...props }) {
   const iconColor = isSelected ? colors.primary : colors.disabled;
   const icon = isSelected ? 'phone-check' : 'phone';
 
+  function handleEditFamiliarClick() {
+    onEditFamiliar(familiar);
+  }
+
   return (
     <List.Item
       style={styles.row}
@@ -24,7 +28,7 @@ function FamiliarItem({ familiar, onEditFamiliar, ...props }) {
       <IconButton
         color={colors.primary}
         icon="pencil"
-        onPress={onEditFamiliar}
+        onPress={handleEditFamiliarClick}
       />}
       right={() =>
       <IconButton

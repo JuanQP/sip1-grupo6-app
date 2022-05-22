@@ -10,6 +10,7 @@ import EstudioScreen from '../screens/Actividades/EstudioScreen';
 import OtroScreen from '../screens/Actividades/OtroScreen';
 import PacienteScreen from '../screens/PacienteScreen';
 import NuevoPacienteScreen from '../screens/Pacientes/NuevoPacienteScreen';
+import FamiliarScreen from '../screens/FamiliarScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -65,6 +66,11 @@ export default function App() {
         name="NuevoPaciente"
         component={NuevoPacienteScreen}
         options={{ title: 'Nuevo Paciente' }}
+      />
+      <Stack.Screen
+        name="FamiliarScreen"
+        component={FamiliarScreen}
+        options={{ title: 'Familiar' }}
       />
     </Stack.Navigator>
   )

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { StatusBar } from 'expo-status-bar';
 import { Alert, ScrollView, StyleSheet, View } from 'react-native';
 import {
@@ -11,6 +11,7 @@ import {
 import { imagenes } from '../utils/utils';
 import PacienteForm from '../components/Paciente/PacienteForm';
 import FamiliaresList from '../components/Paciente/FamiliaresList';
+import { useFocusEffect } from '@react-navigation/native';
 
 const axios = require('axios').default;
 
@@ -26,22 +27,29 @@ function PacienteScreen({ navigation, route, ...props }) {
     navigation.goBack();
   }
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const { pacienteId } = route.params;
-      const response = await axios.get(`/api/pacientes/${pacienteId}`);
-      setPaciente({...response.data.paciente});
-    }
-    fetchData()
-      .catch(console.error)
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      const fetchData = async () => {
+        const { pacienteId } = route.params;
+        const response = await axios.get(`/api/pacientes/${pacienteId}`);
+        setPaciente({...response.data.paciente});
+      }
+      fetchData()
+        .catch(console.error)
+    }, [])
+  );
 
   function handleNewFamiliar() {
-    Alert.alert("🤔", "Falta implementar");
+    const { pacienteId } = route.params;
+    navigation.navigate('FamiliarScreen', { pacienteId });
   }
 
-  function handleEditFamiliar() {
-    console.log("Nuevo")
+  function handleEditFamiliar(familiar) {
+    const { pacienteId } = route.params;
+    navigation.navigate('FamiliarScreen',{
+      pacienteId,
+      familiarId: familiar.id
+    });
   }
 
   return (

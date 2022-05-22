@@ -120,6 +120,24 @@ export const crearServer = () => createServer({
       return schema.actividads.create(actividad);
     });
 
+    // Familiares
+    this.get('/familiars/:id');
+    this.get('/familiars', (schema, request) => {
+      const { queryParams } = request;
+
+      return schema.familiars.where(queryParams);
+    });
+    this.patch('/familiars/:id', (schema, request) => {
+      const familiar = JSON.parse(request.requestBody);
+
+      return schema.familiars.find(request.params.id).update(familiar);
+    });
+    this.post('/familiars/', (schema, request) => {
+      const familiar = JSON.parse(request.requestBody);
+
+      return schema.familiars.create(familiar);
+    });
+
     // Dias
     this.get('/dias', 'dia');
 
@@ -268,8 +286,6 @@ export const crearServer = () => createServer({
       imagen: 'andras.png',
       domicilio: 'Falsa 123',
     });
-
-    console.log(mirta);
 
     mirta.newFamiliar({
       nombre: 'Jorge Díaz Pérez',
