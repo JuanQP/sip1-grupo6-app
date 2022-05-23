@@ -1,103 +1,105 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useRef } from 'react'
 import { StyleSheet, View } from 'react-native';
 import { Button, TextInput, withTheme } from 'react-native-paper';
 import FechaPicker from '../FechaPicker';
+import { Formik } from 'formik';
+import * as yup from 'yup';
 
-const axios = require('axios').default;
+const reviewSchema = yup.object({
+  nombre: yup.string().required(),
+  observaciones: yup.string().required(),
+  direccion: yup.string().required(),
+  fecha: yup.date().required(),
+});
 
-function EstudioForm({ actividadId, waitingResponse, onCancel, onSubmit }) {
-
-  const [nombre, setNombre] = useState('');
-  const [observaciones, setObservaciones] = useState('');
-  const [direccion, setDireccion] = useState('');
-  const [fecha, setFecha] = useState(new Date());
+function EstudioForm({ initialValues, loading, onCancel, onSubmit }) {
 
   const observacionesTextInput = useRef();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      if(actividadId) {
-        const response = await axios.get(`/api/actividads/${actividadId}`);
-        const { nombre, observaciones, direccion, fecha } = response.data.actividad;
-        setNombre(nombre);
-        setObservaciones(observaciones);
-        setDireccion(direccion);
-        setFecha(new Date(fecha));
-      }
-    }
-
-    fetchData()
-      .catch(console.error)
-  }, []);
-
-  function handleSubmit() {
+  function handleFormikSubmit(values, actions) {
     onSubmit({
-      nombre,
-      observaciones,
-      direccion,
-      fecha,
+      ...values,
       tipo: 'Estudio Médico',
-    });
+    }, actions);
   }
 
   return (
-    <>
-    <TextInput
-      style={{backgroundColor: 'transparent'}}
-      mode='flat'
-      label='Nombre de la Actividad'
-      value={nombre}
-      placeholder="Rayos X"
-      blurOnSubmit={true}
-      returnKeyType="next"
-      onChangeText={setNombre}
-    />
-    <FechaPicker
-      label="Fecha"
-      fecha={fecha}
-      onChange={setFecha}
-    />
-    <TextInput
-      style={{backgroundColor: 'transparent'}}
-      mode='flat'
-      label='Dirección'
-      value={direccion}
-      placeholder="Lima 775"
-      blurOnSubmit={false}
-      returnKeyType="next"
-      onSubmitEditing={() => {
-        observacionesTextInput.current.focus();
-      }}
-      onChangeText={setDireccion}
-    />
-    <TextInput
-      style={{backgroundColor: 'transparent'}}
-      mode='flat'
-      label='Observaciones'
-      value={observaciones}
-      placeholder="Ir en ayunas..."
-      blurOnSubmit={true}
-      returnKeyType="done"
-      ref={observacionesTextInput}
-      onChangeText={setObservaciones}
-    />
-    <View style={styles.bottomView}>
-      <Button
-        mode='outlined'
-        onPress={onCancel}
-      >
-        Cancelar
-      </Button>
-      <Button
-        mode='contained'
-        onPress={handleSubmit}
-        loading={waitingResponse}
-        disabled={waitingResponse}
-      >
-        {actividadId ? 'Modificar' : 'Crear'} Actividad
-      </Button>
-    </View>
-    </>
+    <Formik
+      initialValues={initialValues}
+      validationSchema={reviewSchema}
+      enableReinitialize
+      onSubmit={handleFormikSubmit}
+    >
+      {({ handleChange, handleBlur, handleSubmit, setFieldValue, isValid, errors, touched, values }) => (
+      <>
+      <TextInput
+        style={{backgroundColor: 'transparent'}}
+        mode='flat'
+        label='Nombre de la Actividad'
+        placeholder="Rayos X"
+        blurOnSubmit={true}
+        returnKeyType="next"
+        value={values.nombre}
+        onChangeText={handleChange('nombre')}
+        onBlur={handleBlur('nombre')}
+        error={touched.nombre && errors.nombre}
+      />
+      <FechaPicker
+        label="Fecha"
+        mode="datetime"
+        placeholder="14/10/1991 22:00"
+        formatString="DD/MM/YYYY HH:mm"
+        datetime={values.fecha || new Date()}
+        onChange={(fecha) => setFieldValue('fecha', fecha)}
+      />
+      <TextInput
+        style={{backgroundColor: 'transparent'}}
+        mode='flat'
+        label='Dirección'
+        placeholder="Lima 775"
+        blurOnSubmit={false}
+        returnKeyType="next"
+        onSubmitEditing={() => {
+          observacionesTextInput.current.focus();
+        }}
+        value={values.direccion}
+        onChangeText={handleChange('direccion')}
+        onBlur={handleBlur('direccion')}
+        error={touched.direccion && errors.direccion}
+      />
+      <TextInput
+        style={{backgroundColor: 'transparent'}}
+        mode='flat'
+        label='Observaciones'
+        placeholder="Ir en ayunas..."
+        blurOnSubmit={true}
+        returnKeyType="done"
+        ref={observacionesTextInput}
+        value={values.observaciones}
+        onChangeText={handleChange('observaciones')}
+        onBlur={handleBlur('observaciones')}
+        error={touched.observaciones && errors.observaciones}
+      />
+      <View style={styles.bottomView}>
+        <Button
+          mode='outlined'
+          onPress={onCancel}
+        >
+          Cancelar
+        </Button>
+        <Button
+          mode='contained'
+          onPress={handleSubmit}
+          loading={loading}
+          disabled={!isValid || loading}
+          icon="content-save"
+        >
+          Guardar
+        </Button>
+      </View>
+      </>
+      )}
+    </Formik>
   )
 }
 

@@ -3,10 +3,20 @@ import { StyleSheet, View } from 'react-native';
 import { Button, Checkbox, Text, TextInput, withTheme } from 'react-native-paper';
 import DropDown from 'react-native-paper-dropdown';
 import { mapToLabelValue } from "../../utils/utils";
+import { Formik } from 'formik';
+import * as yup from 'yup';
 
 const axios = require('axios').default;
+const reviewSchema = yup.object({
+  nombre: yup.string().required(),
+  relacion: yup.string().required(),
+  provinciaId: yup.number().integer().required(),
+  localidad: yup.string().required(),
+  telefono: yup.string().required(),
+  esContactoDeEmergencia: yup.bool().required(),
+});
 
-function FamiliarForm({ familiar, waitingResponse, onChange, onCancel, onSubmit, ...props }) {
+function FamiliarForm({ initialValues, loading, onCancel, onSubmit, ...props }) {
 
   const { colors } = props.theme;
   const [showProvinciasDropDown, setShowProvinciasDropDown] = useState(false);
@@ -19,27 +29,11 @@ function FamiliarForm({ familiar, waitingResponse, onChange, onCancel, onSubmit,
       const response = await axios.get(`/api/provincias/`);
       setListaProvincias(response.data.provincia.map(p => mapToLabelValue(p)));
     }
-    fetchData()
-      .catch(console.error)
+    fetchData().catch(console.error);
   }, []);
 
-  function handleNombreChange(nombre) {
-    onChange('nombre', nombre);
-  }
-  function handleRelacionChange(relacion) {
-    onChange('relacion', relacion);
-  }
-  function handleProvinciaChange(provinciaId) {
-    onChange('provinciaId', provinciaId);
-  }
-  function handleLocalidadChange(localidad) {
-    onChange('localidad', localidad );
-  }
-  function handleTelefonoChange(telefono) {
-    onChange('telefono', telefono);
-  }
-  function handleContactoEmergenciaChange() {
-    onChange('esContactoDeEmergencia', !familiar.esContactoDeEmergencia);
+  function handleContactoEmergenciaChange(esContactoDeEmergencia, setFieldValue) {
+    setFieldValue('esContactoDeEmergencia', !esContactoDeEmergencia)
   }
 
   function handleShowDropDown() {
@@ -50,89 +44,114 @@ function FamiliarForm({ familiar, waitingResponse, onChange, onCancel, onSubmit,
     setShowProvinciasDropDown(false);
   }
 
+  function handleFormikSubmit(values, actions) {
+    onSubmit(values, actions);
+  }
+
   return (
     <View>
-      <TextInput
-        style={{backgroundColor: 'transparent'}}
-        mode='flat'
-        label='Nombre'
-        value={familiar.nombre}
-        placeholder="Juan Pérez"
-        blurOnSubmit={true}
-        returnKeyType="next"
-        onChangeText={handleNombreChange}
-        onSubmitEditing={() => relacionTextInput.current.focus()}
-      />
-      <TextInput
-        style={{backgroundColor: 'transparent'}}
-        mode='flat'
-        label='Relación'
-        value={familiar.relacion}
-        placeholder="Hijo, Hija, Esposo..."
-        blurOnSubmit={true}
-        returnKeyType="next"
-        onChangeText={handleRelacionChange}
-        ref={relacionTextInput}
-      />
-      <DropDown
-        label={"Provincia"}
-        mode={"flat"}
-        visible={showProvinciasDropDown}
-        showDropDown={handleShowDropDown}
-        onDismiss={handleDismissDropDown}
-        value={familiar.provinciaId}
-        setValue={handleProvinciaChange}
-        list={listaProvincias}
-        dropDownStyle={{ flex: 1}}
-        inputProps={{ style: { backgroundColor: 'transparent' } }}
-      />
-      <TextInput
-        style={{backgroundColor: 'transparent'}}
-        mode='flat'
-        label='Localidad'
-        value={familiar.localidad}
-        placeholder="Tigre, Pilar..."
-        blurOnSubmit={true}
-        returnKeyType="next"
-        onChangeText={handleLocalidadChange}
-        onSubmitEditing={() => telefonoTextInput.current.focus()}
-      />
-      <TextInput
-        style={{backgroundColor: 'transparent'}}
-        mode='flat'
-        label='Teléfono'
-        value={familiar.telefono}
-        placeholder="1122334455"
-        blurOnSubmit={true}
-        returnKeyType="next"
-        onChangeText={handleTelefonoChange}
-        keyboardType="number-pad"
-        ref={telefonoTextInput}
-      />
-      <View style={styles.checkbox}>
-        <Text>CONTACTO DE EMERGENCIA?</Text>
-        <Checkbox
-          color={colors.primary}
-          status={familiar.esContactoDeEmergencia ? 'checked' : 'unchecked'}
-          onPress={handleContactoEmergenciaChange}
+      <Formik
+        initialValues={initialValues}
+        validationSchema={reviewSchema}
+        enableReinitialize
+        onSubmit={handleFormikSubmit}
+      >
+        {({ handleChange, handleBlur, handleSubmit, setFieldValue, isValid, errors, touched, values }) => (
+        <>
+        <TextInput
+          style={{backgroundColor: 'transparent'}}
+          mode='flat'
+          label='Nombre'
+          placeholder="Juan Pérez"
+          blurOnSubmit={true}
+          returnKeyType="next"
+          onSubmitEditing={() => relacionTextInput.current.focus()}
+          value={values.nombre}
+          onChangeText={handleChange('nombre')}
+          onBlur={handleBlur('nombre')}
+          error={touched.nombre && errors.nombre}
         />
-      </View>
-      <View style={styles.bottomView}>
-        <Button
-          mode='outlined'
-          onPress={onCancel}
-        >
-          Cancelar
-        </Button>
-        <Button
-          mode='contained'
-          onPress={onSubmit}
-          loading={waitingResponse}
-          disabled={waitingResponse}
-        >
-          {familiar.id ? 'Modificar' : 'Crear'} Familiar
-        </Button>
-      </View>
+        <TextInput
+          style={{backgroundColor: 'transparent'}}
+          mode='flat'
+          label='Relación'
+          placeholder="Hijo, Hija, Esposo..."
+          blurOnSubmit={true}
+          returnKeyType="next"
+          ref={relacionTextInput}
+          value={values.relacion}
+          onChangeText={handleChange('relacion')}
+          onBlur={handleBlur('relacion')}
+          error={touched.relacion && errors.relacion}
+        />
+        <DropDown
+          label={"Provincia"}
+          mode={"flat"}
+          visible={showProvinciasDropDown}
+          showDropDown={handleShowDropDown}
+          onDismiss={handleDismissDropDown}
+          list={listaProvincias}
+          dropDownStyle={{ flex: 1}}
+          inputProps={{ style: { backgroundColor: 'transparent' } }}
+          value={values.provinciaId || ''}
+          setValue={handleChange('provinciaId')}
+        />
+        <TextInput
+          style={{backgroundColor: 'transparent'}}
+          mode='flat'
+          label='Localidad'
+          placeholder="Tigre, Pilar..."
+          blurOnSubmit={true}
+          returnKeyType="next"
+          onSubmitEditing={() => telefonoTextInput.current.focus()}
+          value={values.localidad}
+          onChangeText={handleChange('localidad')}
+          onBlur={handleBlur('localidad')}
+          error={touched.localidad && errors.localidad}
+        />
+        <TextInput
+          style={{backgroundColor: 'transparent'}}
+          mode='flat'
+          label='Teléfono'
+          placeholder="1122334455"
+          blurOnSubmit={true}
+          returnKeyType="next"
+          keyboardType="number-pad"
+          ref={telefonoTextInput}
+          value={values.telefono}
+          onChangeText={handleChange('telefono')}
+          onBlur={handleBlur('telefono')}
+          error={touched.telefono && errors.telefono}
+        />
+        <View style={styles.checkbox}>
+          <Text>CONTACTO DE EMERGENCIA?</Text>
+          <Checkbox
+            color={colors.primary}
+            status={values.esContactoDeEmergencia ? 'checked' : 'unchecked'}
+            onPress={() => handleContactoEmergenciaChange(values.esContactoDeEmergencia, setFieldValue)}
+          />
+        </View>
+        <View style={styles.bottomView}>
+          <Button
+            mode='outlined'
+            onPress={onCancel}
+          >
+            Cancelar
+          </Button>
+          <Button
+            mode='contained'
+            onPress={handleSubmit}
+            loading={loading}
+            disabled={!isValid || loading}
+            icon="content-save"
+          >
+            Guardar
+          </Button>
+        </View>
+        </>
+        )}
+
+      </Formik>
     </View>
   )
 }

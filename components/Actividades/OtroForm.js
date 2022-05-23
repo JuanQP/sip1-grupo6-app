@@ -3,25 +3,34 @@ import { StyleSheet, View } from 'react-native';
 import { Button, Switch, Text, TextInput, withTheme } from 'react-native-paper';
 import FechaPicker from '../FechaPicker';
 import DropDown from "react-native-paper-dropdown";
+import { Formik } from 'formik';
+import * as yup from 'yup';
 
 const axios = require('axios').default;
+const reviewSchema = yup.object({
+  nombre: yup.string().required(),
+  observaciones: yup.string().required(),
+  direccion: yup.string().required(),
+  repeticiones: yup.boolean().required(),
+  duracion: yup.number(),
+  frecuencia: yup.number(),
+  diaIds: yup.array().of(yup.number()).min(0).required(),
+  fecha: yup.date(),
+});
 
-function OtroForm({ actividadId, waitingResponse, onCancel, onSubmit, ...props }) {
+function OtroForm({ initialValues, loading, onCancel, onSubmit, ...props }) {
 
   const { colors } = props.theme;
-
-  const [nombre, setNombre] = useState('');
-  const [observaciones, setObservaciones] = useState('');
-  const [direccion, setDireccion] = useState('');
-  const [repeticiones, setRepeticiones] = useState(false);
-  const [duracion, setDuracion] = useState('');
-  const [frecuencia, setFrecuencia] = useState('');
-  const [dias, setDias] = useState('');
+  // const [nombre, setNombre] = useState('');
+  // const [observaciones, setObservaciones] = useState('');
+  // const [direccion, setDireccion] = useState('');
+  // const [repeticiones, setRepeticiones] = useState(false);
+  // const [duracion, setDuracion] = useState('');
+  // const [frecuencia, setFrecuencia] = useState('');
+  // const [dias, setDias] = useState('');
+  // const [fecha, setFecha] = useState(new Date());
   const [listaDias, setListaDias] = useState([]);
-  const [fecha, setFecha] = useState(new Date());
-
   const [showMultiSelectDropDown, setShowMultiSelectDropDown] = useState(false);
-  
   const observacionesTextInput = useRef();
   const frecuenciaTextInput = useRef();
 
@@ -29,163 +38,164 @@ function OtroForm({ actividadId, waitingResponse, onCancel, onSubmit, ...props }
     const fetchData = async () => {
       const response = await axios.get(`/api/dias`);
       setListaDias(response.data.dia.map(d => ({label: d.descripcion, value: d.id})));
-      if(actividadId) {
-        const response = await axios.get(`/api/actividads/${actividadId}`);
-        const {
-          nombre,
-          observaciones,
-          direccion,
-          repeticiones,
-          duracion,
-          frecuencia,
-          dias,
-          fecha,
-        } = response.data.actividad;
-        setNombre(nombre);
-        setObservaciones(observaciones);
-        setDireccion(direccion);
-        setRepeticiones(repeticiones);
-        setDuracion(String(duracion));
-        setFrecuencia(String(frecuencia));
-        setDias(`,${dias.join(",")}`);
-        setFecha(new Date(fecha));
-      }
     }
-
-    fetchData()
-      .catch(console.error)
+    fetchData().catch(console.error);
   }, []);
 
-  function handleSwitchChange() {
-    setRepeticiones(!repeticiones);
+  function handleFormikSubmit(values, actions) {
+    onSubmit({
+      ...values,
+      tipo: 'Otro',
+    }, actions);
+  }
+  
+  function handleDiasChange(diasString, setFieldValue) {
+    const ids = diasString.split(",").filter(id => id !== "");
+    setFieldValue('diaIds', ids);
   }
 
-  function handleSubmit() {
-    onSubmit({
-      nombre,
-      observaciones,
-      direccion,
-      repeticiones,
-      fecha,
-      duracion: Number(duracion),
-      frecuencia: Number(frecuencia),
-      dias: dias.split(",").slice(1).map(id => Number(id)),
-      tipo: 'Otro',
-    });
+  function handleSwitchChange(value, setFieldValue) {
+    setFieldValue(!value);
+  }
+
+  function handleFechaChange(fecha, setFieldValue) {
+    setFieldValue('fecha', fecha);
   }
 
   return (
-    <>
-    <TextInput
-      style={{backgroundColor: 'transparent'}}
-      mode='flat'
-      label='Nombre de la Actividad'
-      value={nombre}
-      blurOnSubmit={true}
-      returnKeyType="next"
-      onChangeText={setNombre}
-    />
-    <FechaPicker
-      label="Fecha"
-      fecha={fecha}
-      onChange={setFecha}
-    />
-    <TextInput
-      style={{backgroundColor: 'transparent'}}
-      mode='flat'
-      label='Dirección'
-      value={direccion}
-      placeholder="Lima 775"
-      blurOnSubmit={false}
-      returnKeyType="next"
-      onSubmitEditing={() => {
-        observacionesTextInput.current.focus();
-      }}
-      onChangeText={setDireccion}
-    />
-    <TextInput
-      style={{backgroundColor: 'transparent'}}
-      mode='flat'
-      label='Observaciones'
-      value={observaciones}
-      placeholder="Llevar carnet de Obra Social"
-      blurOnSubmit={true}
-      returnKeyType="send"
-      ref={observacionesTextInput}
-      onChangeText={setObservaciones}
-    />
-    <View style={styles.switch}>
-      <Text>REPETICIONES</Text>
-      <Switch
-        color={colors.primary}
-        value={repeticiones}
-        onValueChange={handleSwitchChange}
-      />
-    </View>
-    {/* Si hay repeticiones mostrar lo siguiente: */}
-    {!repeticiones ? null : (
-    <>
+    <Formik
+      initialValues={initialValues}
+      validationSchema={reviewSchema}
+      enableReinitialize
+      onSubmit={handleFormikSubmit}
+    >
+      {({ handleChange, handleBlur, handleSubmit, setFieldValue, isValid, errors, touched, values }) => (
+      <>
       <TextInput
-        style={{ backgroundColor: 'transparent' }}
+        style={{backgroundColor: 'transparent'}}
         mode='flat'
-        label='Duración (en días)'
-        value={duracion}
-        placeholder="30"
+        label='Nombre de la Actividad'
+        blurOnSubmit={true}
+        returnKeyType="next"
+        value={values.nombre}
+        onChangeText={handleChange('nombre')}
+        onBlur={handleBlur('nombre')}
+        error={touched.nombre && errors.nombre}
+      />
+      <FechaPicker
+        label="Fecha de Inicio"
+        mode="datetime"
+        placeholder="14/10/1991"
+        formatString="DD/MM/YYYY HH:mm"
+        datetime={values.fecha || new Date()}
+        onChange={(fecha) => handleFechaChange(fecha, setFieldValue)}
+      />
+      <TextInput
+        style={{backgroundColor: 'transparent'}}
+        mode='flat'
+        label='Dirección'
+        placeholder="Lima 775"
         blurOnSubmit={false}
         returnKeyType="next"
         onSubmitEditing={() => {
-          frecuenciaTextInput.current.focus();
+          observacionesTextInput.current.focus();
         }}
-        onChangeText={setDuracion}
-        keyboardType="number-pad"
+        value={values.direccion}
+        onChangeText={handleChange('direccion')}
+        onBlur={handleBlur('direccion')}
+        error={touched.direccion && errors.direccion}
       />
       <TextInput
-        style={{ backgroundColor: 'transparent' }}
+        style={{backgroundColor: 'transparent'}}
         mode='flat'
-        label='Frecuencia (en horas)'
-        value={frecuencia}
-        placeholder="24"
+        label='Observaciones'
+        placeholder="Llevar carnet de Obra Social"
         blurOnSubmit={true}
-        returnKeyType="next"
-        ref={frecuenciaTextInput}
-        onSubmitEditing={() => {
-          setShowMultiSelectDropDown(true);
-        }}
-        onChangeText={setFrecuencia}
-        keyboardType="number-pad"
+        returnKeyType="send"
+        ref={observacionesTextInput}
+        value={values.observaciones}
+        onChangeText={handleChange('observaciones')}
+        onBlur={handleBlur('observaciones')}
+        error={touched.observaciones && errors.observaciones}
       />
-      <DropDown
-        label={"Días"}
-        mode={"flat"}
-        visible={showMultiSelectDropDown}
-        showDropDown={() => setShowMultiSelectDropDown(true)}
-        onDismiss={() => setShowMultiSelectDropDown(false)}
-        value={dias}
-        setValue={setDias}
-        list={listaDias}
-        multiSelect
-        inputProps={{ style: { backgroundColor: 'transparent' } }}
-      />
-    </>
-    )
-    }
-    <View style={styles.bottomView}>
-      <Button
-        mode='outlined'
-        onPress={onCancel}
-      >
-        Cancelar
-      </Button>
-      <Button
-        mode='contained'
-        onPress={handleSubmit}
-        loading={waitingResponse}
-        disabled={waitingResponse}
-      >
-        {actividadId ? 'Modificar' : 'Crear'} Actividad
-      </Button>
-    </View>
-    </>
+      <View style={styles.switch}>
+        <Text>REPETICIONES</Text>
+        <Switch
+          color={colors.primary}
+          value={values.repeticiones}
+          onValueChange={() => handleSwitchChange(values.repeticiones, setFieldValue)}
+        />
+      </View>
+      {/* Si hay repeticiones mostrar lo siguiente: */}
+      {!values.repeticiones ? null : (
+      <>
+        <TextInput
+          style={{ backgroundColor: 'transparent' }}
+          mode='flat'
+          label='Duración (en días)'
+          placeholder="30"
+          blurOnSubmit={false}
+          returnKeyType="next"
+          onSubmitEditing={() => {
+            frecuenciaTextInput.current.focus();
+          }}
+          keyboardType="number-pad"
+          value={values.duracion}
+          onChangeText={handleChange('duracion')}
+          onBlur={handleBlur('duracion')}
+          error={touched.duracion && errors.duracion}
+        />
+        <TextInput
+          style={{ backgroundColor: 'transparent' }}
+          mode='flat'
+          label='Frecuencia (en horas)'
+          placeholder="24"
+          blurOnSubmit={true}
+          returnKeyType="next"
+          ref={frecuenciaTextInput}
+          onSubmitEditing={() => {
+            setShowMultiSelectDropDown(true);
+          }}
+          keyboardType="number-pad"
+          value={values.frecuencia}
+          onChangeText={handleChange('frecuencia')}
+          onBlur={handleBlur('frecuencia')}
+          error={touched.frecuencia && errors.frecuencia}
+        />
+        <DropDown
+          label={"Días"}
+          mode={"flat"}
+          visible={showMultiSelectDropDown}
+          showDropDown={() => setShowMultiSelectDropDown(true)}
+          onDismiss={() => setShowMultiSelectDropDown(false)}
+          list={listaDias}
+          multiSelect
+          inputProps={{ style: { backgroundColor: 'transparent' } }}
+          value={values.diaIds?.join(",") || ''} // "1,2,3..."
+          setValue={(diasString) => handleDiasChange(diasString, setFieldValue)}
+        />
+      </>
+      )}
+      <View style={styles.bottomView}>
+        <Button
+          mode='outlined'
+          onPress={onCancel}
+        >
+          Cancelar
+        </Button>
+        <Button
+          mode='contained'
+          onPress={handleSubmit}
+          loading={loading}
+          disabled={!isValid || loading}
+          icon="content-save"
+        >
+          Guardar
+        </Button>
+      </View>
+      </>
+      )}
+    </Formik>
   )
 }
 

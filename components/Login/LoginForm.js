@@ -1,57 +1,78 @@
-import { useRef, useState } from "react";
+import React, { useRef } from "react";
 import { StyleSheet, View } from "react-native";
-import { Button, TextInput, withTheme } from "react-native-paper";
+import { Button, HelperText, TextInput, withTheme } from "react-native-paper";
+import { Formik } from 'formik';
+import * as yup from 'yup';
 
-function LoginForm({ loading, onSubmit }) {
+const reviewSchema = yup.object({
+  email: yup.string().email().required(),
+  password: yup.string().required(),
+});
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+function LoginForm({ initialValues, loading, onSubmit }) {
+
   const passwordRef = useRef();
 
-  function handleLogin() {
-    onSubmit({
-      email,
-      password,
-    });
+  function handleFormikSubmit(values, actions) {
+    onSubmit(values, actions);
   }
 
   return (
     <View style={styles.form}>
-      <TextInput
-        style={{...styles.textInput, backgroundColor: 'transparent'}}
-        mode='flat'
-        label="E-mail"
-        value={email}
-        placeholder="john.doe@email.com"
-        onChangeText={setEmail}
-        textContentType="username"
-        keyboardType='email-address'
-        returnKeyType='next'
-        blurOnSubmit={false}
-        onSubmitEditing={() => {
-          passwordRef.current.focus();
-        }}
-      />
-      <TextInput
-        style={{...styles.textInput, backgroundColor: 'transparent'}}
-        mode='flat'
-        label="Contraseña"
-        value={password}
-        onChangeText={setPassword}
-        textContentType="password"
-        secureTextEntry
-        ref={passwordRef}
-        onSubmitEditing={handleLogin}
-      />
-      <Button
-        style={styles.button}
-        mode='contained'
-        onPress={handleLogin}
-        loading={loading}
-        disabled={loading || password === '' || email === ''}
+      <Formik
+        initialValues={initialValues}
+        validationSchema={reviewSchema}
+        enableReinitialize
+        onSubmit={handleFormikSubmit}
       >
-        Acceder
-      </Button>
+        {({ handleChange, handleBlur, handleSubmit, isValid, errors, touched, values }) => (
+        <>
+        <TextInput
+          style={{...styles.textInput, backgroundColor: 'transparent'}}
+          mode='flat'
+          label="E-mail"
+          placeholder="john.doe@email.com"
+          textContentType="emailAddress"
+          keyboardType='email-address'
+          returnKeyType='next'
+          blurOnSubmit={false}
+          onSubmitEditing={() => { passwordRef.current.focus() }}
+          value={values.email}
+          onChangeText={handleChange('email')}
+          onBlur={handleBlur('email')}
+          error={touched.email && errors.email}
+        />
+        <HelperText type="error" visible={touched.email && errors.email}>
+          {errors.email}
+        </HelperText>
+        <TextInput
+          style={{...styles.textInput, backgroundColor: 'transparent'}}
+          mode='flat'
+          label="Contraseña"
+          onChangeText={handleChange('password')}
+          textContentType="password"
+          secureTextEntry
+          ref={passwordRef}
+          value={values.password}
+          onSubmitEditing={handleSubmit}
+          onBlur={handleBlur('password')}
+          error={touched.password && errors.password}
+        />
+        <HelperText type="error" visible={touched.password && errors.password}>
+          {errors.password}
+        </HelperText>
+        <Button
+          style={styles.button}
+          mode='contained'
+          onPress={handleSubmit}
+          loading={loading}
+          disabled={!isValid}
+        >
+          Acceder
+        </Button>
+        </>
+        )}
+      </Formik>
     </View>
   )
 }

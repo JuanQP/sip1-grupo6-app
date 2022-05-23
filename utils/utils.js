@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import moment from 'moment';
 
 export const formatoFechas = "YYYY-MM-DD HH:mm:ss";
@@ -40,4 +41,20 @@ export function dateSort(a, b) {
 
 export function mapToLabelValue(object, labelKey = 'descripcion', valueKey = 'id') {
   return {label: object[labelKey], value: object[valueKey]};
+}
+
+export function keyExtractor(object) {
+  return object.id;
+}
+
+export function useToggle(defaultValue) {
+  const [value, setValue] = useState(defaultValue);
+
+  function toggleValue(value) {
+    setValue(current =>
+      typeof value === "boolean" ? value : !current
+    );
+  }
+
+  return [value, toggleValue];
 }

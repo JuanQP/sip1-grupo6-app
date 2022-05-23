@@ -12,7 +12,9 @@ const axios = require('axios').default;
 function FamiliarScreen({ navigation, route, ...props }) {
 
   const { colors } = props.theme;
-  const [familiar, setFamiliar] = useState({
+  const [waitingResponse, setWaitingResponse] = useState(false);
+  const [editando, setEditando] = useState(false);
+  const [initialValues, setInitialValues] = useState({
     id: undefined,
     nombre: '',
     relacion: '',
@@ -22,10 +24,6 @@ function FamiliarScreen({ navigation, route, ...props }) {
     esContactoDeEmergencia: false,
   });
 
-  function handleBackActionClick() {
-    navigation.goBack();
-  }
-
   useEffect(() => {
     const fetchData = async () => {
       const familiarId = route.params?.familiarId;
@@ -33,35 +31,45 @@ function FamiliarScreen({ navigation, route, ...props }) {
 
       const response = await axios.get(`/api/familiars/${familiarId}`);
       const {provincia, ...familiarNuevo} = response.data.familiar;
-      setFamiliar({
+
+      setInitialValues({
         ...familiarNuevo,
-        provinciaId: provincia.id,
+        provinciaId: provincia.id
       });
+      setEditando(true);
     }
-    fetchData()
-      .catch(console.error)
+
+    fetchData().catch(console.error);
   }, []);
 
-  async function handleSubmit() {
+  async function handleSubmit(familiar, actions) {
     const { pacienteId } = route.params;
-    const axiosQuery = familiar.id ? axios.patch : axios.post;
-    const response = await axiosQuery(`/api/familiars/${familiar.id ?? ''}`, {
+    const axiosMethod = familiar.id ? axios.patch : axios.post;
+    const data = {
       ...familiar,
       pacienteId,
-    });
+    }
+
+    setWaitingResponse(true);
+    const response = await axiosMethod(`/api/familiars/${familiar.id ?? ''}`, data);
+    setWaitingResponse(false);
+
     const {provincia, ...nuevoFamiliar} = response.data.familiar;
-    setFamiliar({
+    navigation.setParams({ familiarId: nuevoFamiliar.id });
+    actions.setValues({
       ...nuevoFamiliar,
       provinciaId: provincia.id,
     });
+    setEditando(true);
+    Alert.alert("✅", "Familiar guardado");
+  }
+
+  function handleBackActionClick() {
+    navigation.goBack();
   }
 
   function handleCancel() {
     navigation.goBack();
-  }
-
-  function handleChange(field, value) {
-    setFamiliar((prev) => ({...prev, [field]: value}));
   }
 
   return (
@@ -70,15 +78,14 @@ function FamiliarScreen({ navigation, route, ...props }) {
         <Appbar.BackAction onPress={handleBackActionClick} />
         <Appbar.Content title="Familiar" />
       </Appbar.Header>
-      {/* Formulario */}
       <View style={styles.formContainer}>
         <ScrollView>
           <FamiliarForm
-            familiarId={route.params?.pacienteId}
-            familiar={familiar}
+            initialValues={initialValues}
+            editando={editando}
+            waitingResponse={waitingResponse}
             onCancel={handleCancel}
             onSubmit={handleSubmit}
-            onChange={handleChange}
           />
         </ScrollView>
       </View>

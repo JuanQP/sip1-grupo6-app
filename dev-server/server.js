@@ -38,6 +38,10 @@ export const crearServer = () => createServer({
       include: ['provincia'],
       embed: true,
     }),
+    actividad: RestSerializer.extend({
+      include: ['dias'],
+      embed: true,
+    })
   },
   models: {
     usuario: Model.extend({
@@ -53,6 +57,7 @@ export const crearServer = () => createServer({
     }),
     actividad: Model.extend({
       paciente: belongsTo('paciente', {inverse: 'actividads'}),
+      dias: hasMany('dia', {inverse: 'dias'}),
     }),
     familiar: Model.extend({
       paciente: belongsTo('paciente', {inverse: 'familiars'}),
@@ -60,7 +65,9 @@ export const crearServer = () => createServer({
     }),
     provincia: Model,
     tipoActividad: Model,
-    dia: Model,
+    dia: Model.extend({
+      actividads: hasMany('actividad', {inverse: 'actividads'}),
+    }),
     tipoDocumento: Model,
     sexo: Model,
   },
@@ -181,7 +188,7 @@ export const crearServer = () => createServer({
         return pickRandom([6, 12, 24]);
       },
 
-      dias() {
+      diaIds() {
         return [1, 3, 5];
       },
 
@@ -201,7 +208,7 @@ export const crearServer = () => createServer({
 
   seeds(server) {
     // Usuarios
-    const usuarioTest = server.create('usuario', {email: 'test', password: 'test'})
+    const usuarioTest = server.create('usuario', {email: 'test@email.com', password: 'test'})
 
     // Sexos
     server.create('sexo', {descripcion: 'Masculino'});
