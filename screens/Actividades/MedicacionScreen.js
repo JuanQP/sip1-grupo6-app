@@ -4,6 +4,7 @@ import { ScrollView, StyleSheet, View } from 'react-native';
 import { Appbar, Title, withTheme } from 'react-native-paper';
 import ActividadMessageModal from '../../components/ActividadMessageModal';
 import MedicacionForm from '../../components/Actividades/MedicacionForm';
+import { keyExtractor } from '../../utils/utils';
 
 const axios = require('axios').default;
 
@@ -11,40 +12,62 @@ function MedicacionScreen({ navigation, route, ...props }) {
 
   const { colors } = props.theme;
   const { pacienteId, actividadId } = route.params;
-
+  const [initialValues, setInitialValues] = useState({
+    id: undefined,
+    nombre: '',
+    observaciones: '',
+    dosis: '',
+    duracion: '',
+    frecuencia: '',
+    diaIds: [],
+    fecha: new Date(),
+  });
   const [modalVisible, setModalVisible] = useState(false);
   const [pacienteNombre, setPacienteNombre] = useState('');
   const [waitingResponse, setWaitingResponse] = useState(false);
 
-  function handleBackActionClick() {
-    navigation.goBack();
-  }
-
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchPaciente = async () => {
       const response = await axios.get(`/api/pacientes/${pacienteId}`);
       setPacienteNombre(response.data.paciente.nombre);
     }
-
-    fetchData()
-      .catch(console.error)
+    const fetchActividad = async () => {
+      if(!actividadId) return;
+      const {dias, ...actividad} = (await axios.get(`/api/actividads/${actividadId}`)).data.actividad;
+      setInitialValues({
+        ...actividad,
+        pacienteId,
+        diaIds: dias.map(keyExtractor),
+        fecha: new Date(actividad.fecha),
+        frecuencia: String(actividad.frecuencia),
+        duracion: String(actividad.duracion),
+      });
+    }
+    fetchPaciente().catch(console.error);
+    fetchActividad().catch(console.error);
   }, []);
 
-  async function handleSubmit(actividad) {
+  async function handleSubmit(formValues, actions) {
     setWaitingResponse(true);
-    const nuevaActividad = {
-      pacienteId,
-      ...actividad,
-    };
     try {
-      if(actividadId) {
-        await axios.patch(`/api/actividads/${actividadId}`, nuevaActividad);
-      }
-      else {
-        await axios.post(`/api/actividads/`, nuevaActividad);
-      }
+      const nuevaActividad = {
+        ...formValues,
+        pacienteId,
+      };
+      const axiosMethod = nuevaActividad.id ? axios.patch : axios.post;
+      const url = `/api/actividads/${nuevaActividad?.id ?? ''}`;
+      const { dias, ...actividad } = (await axiosMethod(url, nuevaActividad)).data.actividad;
+      actions.setValues({
+        ...actividad,
+        pacienteId,
+        diaIds: dias.map(keyExtractor),
+        fecha: new Date(actividad.fecha),
+        frecuencia: String(actividad.frecuencia),
+        duracion: String(actividad.duracion),
+      });
       setModalVisible(true);
-    } catch (error) {
+    }
+    catch (error) {
       console.error(error.message);
     }
     finally {
@@ -54,30 +77,32 @@ function MedicacionScreen({ navigation, route, ...props }) {
 
   function hideModal() {
     setModalVisible(false);
-    navigation.navigate('Home', { pacienteId });
+  }
+
+  function handleBackActionClick() {
+    navigation.goBack();
   }
 
   return (
     <View style={{...styles.container, backgroundColor: colors.surface}}>
       <Appbar.Header>
         <Appbar.BackAction onPress={handleBackActionClick} />
-        <Appbar.Content title={`${actividadId ? '' : 'Nueva '}Medicación`} />
+        <Appbar.Content title={`${initialValues.id ? '' : 'Nueva '}Medicación`} />
       </Appbar.Header>
       <View style={styles.formContainer}>
         <Title>{pacienteNombre}</Title>
         <ScrollView>
           <MedicacionForm
-            actividadId={actividadId}
-            waitingResponse={waitingResponse}
-            onSubmit={handleSubmit}
+            initialValues={initialValues}
+            loading={waitingResponse}
             onCancel={handleBackActionClick}
+            onSubmit={handleSubmit}
           />
         </ScrollView>
       </View>
       <StatusBar style="auto" />
       <ActividadMessageModal
         visible={modalVisible}
-        message={""}
         onDismiss={hideModal}
       />
     </View>

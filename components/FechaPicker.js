@@ -1,87 +1,95 @@
+import React, { useEffect } from "react";
 import moment from "moment";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { View } from "react-native";
 import { IconButton, TextInput, withTheme } from "react-native-paper";
 import DateTimePicker from '@react-native-community/datetimepicker';
 
-function FechaPicker({ label, fecha, onChange, ...props }) {
+function FechaPicker({ label, datetime, mode, placeholder, formatString, onChange, ...props }) {
 
   const { colors } = props.theme
-  const [date, setDate] = useState(new Date());
-  const [time, setTime] = useState(new Date());
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [showTimePicker, setShowTimePicker] = useState(false);
+  const [show, setShow] = useState(false);
+  const [actualMode, setMode] = useState('date');
 
   useEffect(() => {
-    setDate(fecha);
-    setTime(fecha);
-  }, [fecha]);
+    setShow(false);
+  }, []);
 
-  function onDateChange (event, selectedDate) {
-    setShowDatePicker(false);
+  function onDateTimeChange (event, selectedDateTime) {
     if(event.type === "dismissed") {
-      setDate(fecha);
       return;
     }
-    setDate(selectedDate);
-    setShowTimePicker(true);
-  };
-
-  function onTimeChange (event, selectedTime) {
-    setShowTimePicker(false);
-    if(event.type === "dismissed") {
-      setDate(fecha);
-      setTime(fecha);
-      return;
+    setShow(false);
+    const newDateTime = new Date(datetime);
+    
+    if(actualMode === 'date') {
+      newDateTime.setFullYear(
+        selectedDateTime.getFullYear(),
+        selectedDateTime.getMonth(),
+        selectedDateTime.getDate(),
+      );
     }
-    setTime(selectedTime);
-
-    const fechaNueva = new Date(date);
-    fechaNueva.setHours(selectedTime.getHours());
-    fechaNueva.setMinutes(selectedTime.getMinutes());
-    onChange(fechaNueva);
-  };
-
-  function beginDatePicker() {
-    hideAllCalendars();
-    setShowDatePicker(true);
+    else if(actualMode === 'time') {
+      newDateTime.setHours(
+        selectedDateTime.getHours(),
+        selectedDateTime.getMinutes(),
+      );
+    }
+    onChange(newDateTime);
   }
 
-  function hideAllCalendars() {
-    setShowDatePicker(false);
-    setShowTimePicker(false);
+  function beginDatePicker() {
+    setMode('date');
+    setShow(true);
+  }
+
+  function beginTimePicker() {
+    setMode('time');
+    setShow(true);
+  }
+
+  function textInputDate() {
+    return moment(datetime).format(formatString);
   }
 
   return (
     <View style={{flexDirection: "row", alignItems: "center"}}>
-      <IconButton
+      { mode.includes('date') && <IconButton
         color={colors.primary}
         icon="calendar"
         onPress={beginDatePicker}
-      />
+      />}
+      { mode.includes('time') && <IconButton
+        color={colors.primary}
+        icon="clock-outline"
+        onPress={beginTimePicker}
+      />}
       <TextInput
         style={{backgroundColor: 'transparent'}}
         mode='flat'
         label={label}
-        value={moment(date).set({hour: time.getHours(), minute: time.getMinutes()}).format("DD/MM/YYYY HH:mm")}
-        placeholder="14/10/1991 22:00"
+        value={textInputDate()}
+        placeholder={placeholder}
         disabled
       />
-      {(showDatePicker && <DateTimePicker
-        testID={`${label}DatePicker`}
-        value={date}
-        mode={"date"}
-        onChange={onDateChange}
-      />)}
-      {(showTimePicker && <DateTimePicker
-        testID={`${label}DatePicker`}
-        value={time}
-        mode={"time"}
-        onChange={onTimeChange}
+      {(show && <DateTimePicker
+        testID={`${label}DateTimePicker`}
+        value={datetime}
+        mode={actualMode}
+        onChange={onDateTimeChange}
         is24Hour
       />)}
     </View>
   )
 }
+
+FechaPicker.defaultProps = {
+  label: '',
+  mode: 'date',
+  placeholder: '',
+  datetime: new Date(),
+  formatString: 'YYYY-MM-DD',
+  onChange: () => {},
+};
 
 export default withTheme(FechaPicker);

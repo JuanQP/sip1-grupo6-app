@@ -11,7 +11,13 @@ function EstudioScreen({ navigation, route, ...props }) {
 
   const { colors } = props.theme;
   const { pacienteId, actividadId } = route.params;
-
+  const [initialValues, setInitialValues] = useState({
+    id: undefined,
+    nombre: '',
+    observaciones: '',
+    direccion: '',
+    fecha: new Date(),
+  });
   const [waitingResponse, setWaitingResponse] = useState(false);
   const [pacienteNombre, setPacienteNombre] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
@@ -21,30 +27,37 @@ function EstudioScreen({ navigation, route, ...props }) {
       const pacienteResponse = await axios.get(`/api/pacientes/${pacienteId}`);
       setPacienteNombre(pacienteResponse.data.paciente.nombre);
     }
-
-    fetchData()
-      .catch(console.error)
+    const fetchActividad = async () => {
+      if(!actividadId) return;
+      const { actividad } = (await axios.get(`/api/actividads/${actividadId}`)).data;
+      setInitialValues({
+        ...actividad,
+        pacienteId,
+        fecha: new Date(actividad.fecha),
+      });
+    }
+    fetchData().catch(console.error);
+    fetchActividad().catch(console.error);
   }, []);
 
-  function handleBackActionClick() {
-    navigation.goBack();
-  }
-
-  async function handleSubmit(actividad) {
+  async function handleSubmit(formValues, actions) {
     setWaitingResponse(true);
     const nuevaActividad = {
       pacienteId,
-      ...actividad,
+      ...formValues,
     };
     try {
-      if(actividadId) {
-        await axios.patch(`/api/actividads/${actividadId}`, nuevaActividad);
-      }
-      else {
-        await axios.post(`/api/actividads/`, nuevaActividad);
-      }
+      const axiosMethod = formValues.id ? axios.patch : axios.post;
+      const url = `/api/actividads/${nuevaActividad.id ?? ''}`;
+      const { actividad } = (await axiosMethod(url, nuevaActividad)).data;
+      actions.setValues({
+        ...actividad,
+        pacienteId,
+        fecha: new Date(actividad.fecha),
+      });
       setModalVisible(true);
-    } catch (error) {
+    }
+    catch (error) {
       console.error(error.message);
     }
     finally {
@@ -57,21 +70,25 @@ function EstudioScreen({ navigation, route, ...props }) {
     navigation.navigate('Home', { pacienteId });
   }
 
+  function handleBackActionClick() {
+    navigation.goBack();
+  }
+  
   return (
     <View style={{...styles.container, backgroundColor: colors.surface}}>
       <Appbar.Header>
         <Appbar.BackAction onPress={handleBackActionClick} />
-        <Appbar.Content title={`${actividadId ? '' : 'Nuevo '}Estudio Médico`} />
+        <Appbar.Content title={`${initialValues.id ? '' : 'Nuevo '}Estudio Médico`} />
       </Appbar.Header>
       {/* Formulario */}
       <View style={styles.formContainer}>
         <ScrollView>
           <Title>{pacienteNombre}</Title>
           <EstudioForm
-            actividadId={actividadId}
-            waitingResponse={waitingResponse}
-            onSubmit={handleSubmit}
+            initialValues={initialValues}
+            loading={waitingResponse}
             onCancel={handleBackActionClick}
+            onSubmit={handleSubmit}
           />
         </ScrollView>
       </View>
