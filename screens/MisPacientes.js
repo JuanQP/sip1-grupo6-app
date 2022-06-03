@@ -1,28 +1,20 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View } from 'react-native';
 import { Appbar, Button, withTheme } from 'react-native-paper';
 import 'moment/locale/es';
 import PacienteList from '../components/MisPacientes/PacienteList';
+import { useQuery } from 'react-query';
+import { getPacientes } from '../src/api/paciente';
 const axios = require('axios').default;
 
 function MisPacientesScreen({ navigation, route }) {
-
-  const [waitingResponse, setWaitingResponse] = useState(true);
-  const [pacientes, setPacientes] = useState([]);
-  const { pacienteId } = route.params;
-
-  useEffect(() => {
-    setWaitingResponse(true);
-    const fetchData = async () => {
-      const response = await axios.get('/api/pacientes');
-      setPacientes(response.data.pacientes);
-      setWaitingResponse(false);
-    }
-    fetchData()
-      .catch(console.error)
-      .finally(() => setWaitingResponse(false));
-  }, []);
+  const { data, isLoading } = useQuery('pacientes', getPacientes, {
+    placeholderData: {
+      pacientes: [],
+    },
+  });
+  const { pacienteId } = route?.params?.pacienteId ?? { pacienteId: null };
 
   function handleBackActionClick() {
     navigation.goBack();
@@ -43,11 +35,11 @@ function MisPacientesScreen({ navigation, route }) {
         <Appbar.Content title="Mis Pacientes" />
       </Appbar.Header>
       {/* Lista de pacientes */}
-      {waitingResponse ?
+      {isLoading ?
         null :
         <PacienteList
           selectedId={pacienteId}
-          pacientes={pacientes}
+          pacientes={data.pacientes}
           onPacienteClick={handlePacienteClick}
         />
       }
