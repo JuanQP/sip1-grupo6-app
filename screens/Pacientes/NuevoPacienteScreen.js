@@ -5,17 +5,43 @@ import {
   withTheme
 } from 'react-native-paper';
 import PacienteForm from '../../components/Paciente/PacienteForm';
+import { useMutation, useQueryClient } from 'react-query';
+import { createPaciente } from '../../src/api/paciente';
+
+const initialValues = {
+  nombre: '',
+  fechaNacimiento: new Date(),
+  sexoId: 1,
+  tipoDocumentoId: 1,
+  numeroDocumento: '',
+  telefono: '',
+  domicilio: '',
+  provinciaId: 1,
+  localidad: '',
+  obraSocial: '',
+  numeroAfiliado: '',
+  observaciones: '',
+};
 
 function NuevoPacienteScreen({ navigation, ...props }) {
-
   const { colors } = props.theme;
+  const queryClient = useQueryClient();
+  const { mutate, isLoading } = useMutation(createPaciente, {
+    onSuccess: (data) => {
+      queryClient.invalidateQueries(['pacientes']);
+      navigation.navigate('MisPacientes');
+    },
+  });
 
   function handleBackActionClick() {
     navigation.goBack();
   }
 
-  function handleSavedPaciente(paciente) {
-    navigation.navigate('Paciente', { pacienteId: paciente.id });
+  function handleSubmit(paciente) {
+    mutate({
+      ...paciente,
+      usuarioId: 1,
+    });
   }
 
   return (
@@ -28,7 +54,9 @@ function NuevoPacienteScreen({ navigation, ...props }) {
       <View style={styles.formContainer}>
         <ScrollView>
           <PacienteForm
-            onSavedPaciente={handleSavedPaciente}
+            initialValues={initialValues}
+            onSubmit={handleSubmit}
+            loading={isLoading}
           />
         </ScrollView>
       </View>

@@ -3,9 +3,11 @@ import { NavigationContainer } from '@react-navigation/native';
 import { DefaultTheme, Provider as PaperProvider } from 'react-native-paper';
 import App from './src/App';
 import moment from 'moment';
-import { crearServer } from './dev-server/server.js'
+import { crearServer } from './dev-server/server.js';
+import { QueryClient, QueryClientProvider } from 'react-query';
 moment.locale("es");
 
+const queryClient = new QueryClient();
 const theme = {
   ...DefaultTheme,
   colors: {
@@ -23,10 +25,12 @@ window.server = dev ? crearServer() : null;
 
 export default function Main() {
   return (
-    <PaperProvider theme={theme}>
-      <NavigationContainer>
-        <App />
-      </NavigationContainer>
-    </PaperProvider>
+    <QueryClientProvider client={queryClient}>
+      <PaperProvider theme={theme}>
+        <NavigationContainer>
+          <App />
+        </NavigationContainer>
+      </PaperProvider>
+    </QueryClientProvider>
   );
 }

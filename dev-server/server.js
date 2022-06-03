@@ -99,11 +99,10 @@ export const crearServer = () => createServer({
 
       return schema.pacientes.find(request.params.id).update(paciente);
     });
-    this.post('/pacientes/', (schema, request) => {
+    this.post('/pacientes', (schema, request) => {
       const paciente = JSON.parse(request.requestBody);
-
       return schema.pacientes.create(paciente);
-    })
+    });
 
     // Actividades
     this.get('/actividads/:id');
