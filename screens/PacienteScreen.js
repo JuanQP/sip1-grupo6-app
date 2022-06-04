@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react'
+import React, { useState } from 'react'
 import { StatusBar } from 'expo-status-bar';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import {
@@ -11,16 +11,13 @@ import {
 import { imagenes } from '../utils/utils';
 import PacienteForm from '../components/Paciente/PacienteForm';
 import FamiliaresList from '../components/Paciente/FamiliaresList';
-import { useFocusEffect } from '@react-navigation/native';
-
-const axios = require('axios').default;
+import { useMutation, useQuery, useQueryClient } from 'react-query';
+import { getPaciente, updatePaciente } from '../src/api/paciente';
 
 function PacienteScreen({ navigation, route, ...props }) {
-
   const { colors } = props.theme;
   const { pacienteId } = route.params;
   const [imagen, setImagen] = useState('');
-  const [waitingResponse, setWaitingResponse] = useState(false);
   const [familiares, setFamiliares] = useState([]);
   const [initialValues, setInitialValues] = useState({
     nombre: '',
@@ -36,11 +33,12 @@ function PacienteScreen({ navigation, route, ...props }) {
     numeroAfiliado: '',
     observaciones: '',
   });
-
-  useFocusEffect(
-    useCallback(() => {
-      const fetchPaciente = async () => {
-        if(!pacienteId) return;
+  const queryClient = useQueryClient();
+  const { mutate, isLoading: isPacienteLoading } = useMutation(updatePaciente);
+  useQuery('paciente',
+    () => getPaciente(pacienteId),
+    {
+      onSuccess: (data) => {
         const {
           sexo,
           tipoDocumento,
@@ -48,8 +46,7 @@ function PacienteScreen({ navigation, route, ...props }) {
           familiars,
           imagen,
           ...paciente
-        } = (await axios.get(`/api/pacientes/${pacienteId}`)).data.paciente;
-  
+        } = data;
         setInitialValues({
           ...paciente,
           sexoId: sexo.id,
@@ -59,40 +56,34 @@ function PacienteScreen({ navigation, route, ...props }) {
         });
         setFamiliares(familiars);
         setImagen(imagen);
-      }
-      fetchPaciente().catch(console.error);
-    }, [])
+      },
+      enabled: !!pacienteId,
+    },
   );
 
   async function handleSubmit(formValues, actions) {
-    setWaitingResponse(true);
-    try {
-      const axiosMethod = formValues.id ? axios.patch : axios.post;
-      const url = `/api/pacientes/${formValues?.id ?? ''}`;
-      const {
-        sexo,
-        tipoDocumento,
-        provincia,
-        familiars,
-        imagen,
-        ...paciente
-      } = (await axiosMethod(url, formValues)).data.paciente;
-      actions.setValues({
-        ...paciente,
-        sexoId: sexo.id,
-        tipoDocumentoId: tipoDocumento.id,
-        provinciaId: provincia.id,
-        fechaNacimiento: new Date(paciente.fechaNacimiento),
-      });
-      setFamiliares(familiars);
-      setImagen(imagen);
-    }
-    catch (error) {
-      console.error(error.message);
-    }
-    finally {
-      setWaitingResponse(false);
-    }
+    mutate(formValues, {
+      onSuccess: (data) => {
+        const {
+          sexo,
+          tipoDocumento,
+          provincia,
+          familiars,
+          imagen,
+          ...paciente
+        } = data;
+        actions.setValues({
+          ...paciente,
+          sexoId: sexo.id,
+          tipoDocumentoId: tipoDocumento.id,
+          provinciaId: provincia.id,
+          fechaNacimiento: new Date(paciente.fechaNacimiento),
+        });
+        setFamiliares(familiars);
+        setImagen(imagen);
+        queryClient.invalidateQueries(['paciente']);
+      },
+    });
   }
 
   function handleBackActionClick() {
@@ -125,7 +116,7 @@ function PacienteScreen({ navigation, route, ...props }) {
           />
           <PacienteForm
             initialValues={initialValues}
-            loading={waitingResponse}
+            loading={isPacienteLoading}
             onSubmit={handleSubmit}
           />
           <View style={{ backgroundColor: colors.surface, marginTop: 20 }}>
