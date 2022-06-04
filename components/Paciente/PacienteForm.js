@@ -6,7 +6,7 @@ import DropDown from "react-native-paper-dropdown";
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import { useQuery } from "react-query";
-import { getSexos, getTiposDocumento, selectDropdownItems } from "../../src/api/dropdown";
+import { getProvincias, getSexos, getTiposDocumento, selectDropdownItems } from "../../src/api/dropdown";
 
 const reviewSchema = yup.object({
   nombre: yup.string().required(),
@@ -31,7 +31,7 @@ function PacienteForm({ initialValues, loading, onSubmit }) {
     select: selectDropdownItems,
     placeholderData: [],
   });
-  const { data: listaProvincias } = useQuery('provincias', getSexos, {
+  const { data: listaProvincias } = useQuery('provincias', getProvincias, {
     select: selectDropdownItems,
     placeholderData: [],
   });
