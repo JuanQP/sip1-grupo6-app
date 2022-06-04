@@ -13,6 +13,11 @@ function EstudioScreen({ navigation, route, ...props }) {
   const { pacienteId, actividadId } = route.params;
   const { data: paciente } = useQuery('paciente',
     () => getPaciente(pacienteId),
+    {
+      placeholderData: {
+        nombre: '',
+      },
+    },
   );
   const { data: actividad } = useQuery('actividad',
     () => getActividad(actividadId),
@@ -55,7 +60,6 @@ function EstudioScreen({ navigation, route, ...props }) {
 
   function hideModal() {
     setModalVisible(false);
-    navigation.navigate('Home', { pacienteId });
   }
 
   function handleBackActionClick() {

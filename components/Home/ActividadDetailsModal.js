@@ -1,10 +1,10 @@
 import { StyleSheet, View } from "react-native";
-import { Button, Caption, IconButton, Modal, Paragraph, Text, ToggleButton, withTheme } from "react-native-paper"
+import { Avatar, Button, Caption, IconButton, Modal, Paragraph, Text, ToggleButton, withTheme } from "react-native-paper"
 import { useEffect, useState } from "react";
-import { formatearFecha } from "../../utils/utils";
+import { formatearFecha, imagenes } from "../../utils/utils";
 import moment from "moment";
 
-function ActividadDetailsModal({ actividad, waiting, visible, onEditClick, onDismiss, onSubmit, ...props }) {
+function ActividadDetailsModal({ actividad, waiting, visible, mostrarPaciente, onEditClick, onDismiss, onSubmit, ...props }) {
 
   if(!actividad) {
     return null;
@@ -34,7 +34,7 @@ function ActividadDetailsModal({ actividad, waiting, visible, onEditClick, onDis
   }
 
   function handleEditClick() {
-    onEditClick(actividad.id);
+    onEditClick(actividad);
   }
 
   return (
@@ -65,6 +65,12 @@ function ActividadDetailsModal({ actividad, waiting, visible, onEditClick, onDis
         <Text style={{alignSelf: "center"}}>
           {formatearFecha(fecha)}
         </Text>
+        {mostrarPaciente && (
+          <View style={{flexDirection: 'column', alignItems: 'center', marginTop: 10}}>
+            <Avatar.Image size={64} source={imagenes[actividad.paciente.imagen]} />
+            <Text>{actividad.paciente.nombre}</Text>
+          </View>
+        )}
         <View style={{flexDirection: 'column'}}>
           <View style={styles.contenidoRow}>
             <Text>{actividad.nombre}</Text>

@@ -155,6 +155,24 @@ export const crearServer = () => createServer({
       return schema.familiars.create(familiar);
     });
 
+    this.get('/mi-semana', function(schema, request) {
+      const usuarioId = String(middleware(request));
+      const today = moment();
+      const pacientes = this.serialize(schema.pacientes.where({ usuarioId }))
+        .pacientes
+        .map(p => ({id: p.id, imagen: p.imagen, nombre: p.nombre}));
+      const actividades = schema.actividads.where(
+        a => pacientes.some(p => p.id == a.pacienteId) && today.isSame(a.fecha, 'week')
+      );
+
+      return actividades.models.sort(dateSort).map(
+        a => ({
+          ...a.attrs,
+          paciente: pacientes.find(p => p.id == a.pacienteId),
+        })
+      );
+    });
+
     // Dias
     this.get('/dias', 'dia');
 

@@ -15,7 +15,7 @@ export default function LoginScreen({ navigation }) {
   const { mutate, isLoading } = useMutation(login, {
     onSuccess: (data) => {
       axios.defaults.headers.common.Authorization = `Bearer ${data.token}`;
-      navigation.navigate('MisPacientes');
+      navigation.navigate('Overview');
     },
     onError: (error) => {
       Alert.alert('😞', error.response?.data?.message ?? 'Algo salió mal');
