@@ -38,10 +38,7 @@ function NuevoPacienteScreen({ navigation, ...props }) {
   }
 
   function handleSubmit(paciente) {
-    mutate({
-      ...paciente,
-      usuarioId: 1,
-    });
+    mutate(paciente);
   }
 
   return (

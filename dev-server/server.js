@@ -28,6 +28,18 @@ const estados = [
   'pospuesta',
 ];
 
+function middleware(request) {
+  try {
+    const token = request.requestHeaders.Authorization.split(' ')[1];
+    if (Number.isNaN(token)) {
+      throw new Error('No autorizado');
+    }
+    return token;
+  } catch (error) {
+    return null;
+  }
+}
+
 export const crearServer = () => createServer({
   serializers: {
     paciente: RestSerializer.extend({
@@ -83,16 +95,16 @@ export const crearServer = () => createServer({
       if(usuario === null) {
         return new Response(401, {}, { errors: ["Usuario o contraseña incorrectas 😞"] });
       }
-      usuario['token'] = 'asdqwe';
-
-      return usuario;
-  
+      return {
+        token: usuario.id,
+      };
     });
 
     // Pacientes
     this.get('/pacientes/:id', 'pacientes');
     this.get('/pacientes', (schema, request) => {
-      return schema.pacientes.where({ usuarioId: 1 });
+      const usuarioId = middleware(request);
+      return schema.pacientes.where({ usuarioId });
     });
     this.patch('/pacientes/:id', (schema, request) => {
       const {provincia, sexo, tipoDocumento, ...paciente} = JSON.parse(request.requestBody);
@@ -101,6 +113,8 @@ export const crearServer = () => createServer({
     });
     this.post('/pacientes', (schema, request) => {
       const paciente = JSON.parse(request.requestBody);
+      const usuarioId = middleware(request);
+      paciente.usuarioId = usuarioId;
       return schema.pacientes.create(paciente);
     });
 
