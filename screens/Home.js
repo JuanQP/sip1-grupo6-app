@@ -91,12 +91,11 @@ function HomeScreen({ navigation, route, ...props }) {
     navigation.navigate('Paciente', { pacienteId });
   }
 
-  function handleActividadEditClick(actividadId) {
+  function handleActividadEditClick(actividad) {
     const { pacienteId } = route.params;
-    const actividad = actividades.find(a => a.id === actividadId);
     const proximaPantalla = pantallasActividades[actividad.tipo];
     setModalVisible(false);
-    navigation.navigate(proximaPantalla, { pacienteId, actividadId });
+    navigation.navigate(proximaPantalla, { pacienteId, actividadId: actividad.id });
   }
 
   return (

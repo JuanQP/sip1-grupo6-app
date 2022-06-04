@@ -13,6 +13,11 @@ function ConsultaScreen({ navigation, route, ...props }) {
   const { pacienteId, actividadId } = route.params;
   const { data: paciente } = useQuery('paciente',
     () => getPaciente(pacienteId),
+    {
+      placeholderData: {
+        nombre: '',
+      },
+    },
   );
   useQuery('actividad',
     () => getActividad(actividadId),

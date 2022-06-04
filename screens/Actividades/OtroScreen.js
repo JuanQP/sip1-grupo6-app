@@ -14,6 +14,11 @@ function OtroScreen({ navigation, route, ...props }) {
   const { pacienteId, actividadId } = route.params;
   const { data: paciente } = useQuery('paciente',
     () => getPaciente(pacienteId),
+    {
+      placeholderData: {
+        nombre: '',
+      },
+    },
   );
   useQuery('actividad',
     () => getActividad(actividadId),
@@ -71,7 +76,6 @@ function OtroScreen({ navigation, route, ...props }) {
 
   function hideModal() {
     setModalVisible(false);
-    navigation.navigate('Home', { pacienteId });
   }
 
   function handleBackActionClick() {

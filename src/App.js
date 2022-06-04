@@ -11,6 +11,7 @@ import OtroScreen from '../screens/Actividades/OtroScreen';
 import PacienteScreen from '../screens/PacienteScreen';
 import NuevoPacienteScreen from '../screens/Pacientes/NuevoPacienteScreen';
 import FamiliarScreen from '../screens/FamiliarScreen';
+import OverviewScreen from '../screens/OverviewScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -21,6 +22,11 @@ export default function App() {
         name="Login"
         component={LoginScreen}
         options={{ title: 'Login' }}
+      />
+      <Stack.Screen
+        name="Overview"
+        component={OverviewScreen}
+        options={{ title: 'Overview' }}
       />
       <Stack.Screen
         name="Home"
