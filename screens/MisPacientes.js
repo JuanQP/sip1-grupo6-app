@@ -6,7 +6,6 @@ import 'moment/locale/es';
 import PacienteList from '../components/MisPacientes/PacienteList';
 import { useQuery } from 'react-query';
 import { getPacientes } from '../src/api/paciente';
-const axios = require('axios').default;
 
 function MisPacientesScreen({ navigation, route }) {
   const { data, isLoading } = useQuery('pacientes', getPacientes, {
