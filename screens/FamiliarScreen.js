@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { StatusBar } from 'expo-status-bar';
 import { Alert, ScrollView, StyleSheet, View } from 'react-native';
 import {
@@ -6,14 +6,14 @@ import {
   withTheme
 } from 'react-native-paper';
 import FamiliarForm from '../components/Familiares/FamiliarForm';
-
-const axios = require('axios').default;
+import { useMutation, useQuery, useQueryClient } from 'react-query';
+import { getFamiliar, saveFamiliar } from '../src/api/familiar';
 
 function FamiliarScreen({ navigation, route, ...props }) {
-
   const { colors } = props.theme;
-  const [waitingResponse, setWaitingResponse] = useState(false);
-  const [editando, setEditando] = useState(false);
+  const { familiarId, pacienteId } = route.params;
+  const queryClient = useQueryClient();
+  const { mutate, isLoading: isFamiliarLoading } = useMutation(saveFamiliar);
   const [initialValues, setInitialValues] = useState({
     id: undefined,
     nombre: '',
@@ -23,45 +23,40 @@ function FamiliarScreen({ navigation, route, ...props }) {
     telefono: '',
     esContactoDeEmergencia: false,
   });
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const familiarId = route.params?.familiarId;
-      if(!familiarId) return;
-
-      const response = await axios.get(`/api/familiars/${familiarId}`);
-      const {provincia, ...familiarNuevo} = response.data.familiar;
-
-      setInitialValues({
-        ...familiarNuevo,
-        provinciaId: provincia.id
-      });
-      setEditando(true);
-    }
-
-    fetchData().catch(console.error);
-  }, []);
+  useQuery('familiar',
+    () => getFamiliar(familiarId),
+    {
+      onSuccess: (data) => {
+        const { provincia, ...familiar } = data;
+        setInitialValues({
+          ...familiar,
+          provinciaId: provincia.id,
+          pacienteId,
+        });
+      },
+      enabled: !!familiarId,
+    },
+  );
 
   async function handleSubmit(familiar, actions) {
-    const { pacienteId } = route.params;
-    const axiosMethod = familiar.id ? axios.patch : axios.post;
-    const data = {
+    const nuevoFamiliar = {
       ...familiar,
-      pacienteId,
-    }
-
-    setWaitingResponse(true);
-    const response = await axiosMethod(`/api/familiars/${familiar.id ?? ''}`, data);
-    setWaitingResponse(false);
-
-    const {provincia, ...nuevoFamiliar} = response.data.familiar;
-    navigation.setParams({ familiarId: nuevoFamiliar.id });
-    actions.setValues({
-      ...nuevoFamiliar,
-      provinciaId: provincia.id,
+      pacienteId
+    };
+    mutate(nuevoFamiliar, {
+      onSuccess: (data) => {
+        const {provincia, ...nuevoFamiliar} = data;
+        navigation.setParams({ familiarId: nuevoFamiliar.id });
+        actions.setValues({
+          ...nuevoFamiliar,
+          provinciaId: provincia.id,
+          pacienteId,
+        });
+        queryClient.invalidateQueries(['paciente']);
+        queryClient.invalidateQueries(['familiar']);
+        Alert.alert("✅", "Familiar guardado");
+      },
     });
-    setEditando(true);
-    Alert.alert("✅", "Familiar guardado");
   }
 
   function handleBackActionClick() {
@@ -82,8 +77,7 @@ function FamiliarScreen({ navigation, route, ...props }) {
         <ScrollView>
           <FamiliarForm
             initialValues={initialValues}
-            editando={editando}
-            waitingResponse={waitingResponse}
+            loading={isFamiliarLoading}
             onCancel={handleCancel}
             onSubmit={handleSubmit}
           />

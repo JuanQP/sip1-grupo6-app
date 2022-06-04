@@ -2,11 +2,11 @@ import React, { useEffect, useRef, useState } from 'react'
 import { StyleSheet, View } from 'react-native';
 import { Button, Checkbox, Text, TextInput, withTheme } from 'react-native-paper';
 import DropDown from 'react-native-paper-dropdown';
-import { mapToLabelValue } from "../../utils/utils";
 import { Formik } from 'formik';
 import * as yup from 'yup';
+import { getProvincias, selectDropdownItems } from '../../src/api/dropdown';
+import { useQuery } from 'react-query';
 
-const axios = require('axios').default;
 const reviewSchema = yup.object({
   nombre: yup.string().required(),
   relacion: yup.string().required(),
@@ -17,20 +17,14 @@ const reviewSchema = yup.object({
 });
 
 function FamiliarForm({ initialValues, loading, onCancel, onSubmit, ...props }) {
-
   const { colors } = props.theme;
   const [showProvinciasDropDown, setShowProvinciasDropDown] = useState(false);
-  const [listaProvincias, setListaProvincias] = useState([]);  
+  const { data: listaProvincias } = useQuery('provincias', getProvincias, {
+    select: selectDropdownItems,
+    placeholderData: [],
+  });
   const relacionTextInput = useRef();
   const telefonoTextInput = useRef();
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const response = await axios.get(`/api/provincias/`);
-      setListaProvincias(response.data.provincia.map(p => mapToLabelValue(p)));
-    }
-    fetchData().catch(console.error);
-  }, []);
 
   function handleContactoEmergenciaChange(esContactoDeEmergencia, setFieldValue) {
     setFieldValue('esContactoDeEmergencia', !esContactoDeEmergencia)
@@ -63,7 +57,7 @@ function FamiliarForm({ initialValues, loading, onCancel, onSubmit, ...props }) 
           mode='flat'
           label='Nombre'
           placeholder="Juan Pérez"
-          blurOnSubmit={true}
+          blurOnSubmit={false}
           returnKeyType="next"
           onSubmitEditing={() => relacionTextInput.current.focus()}
           value={values.nombre}
@@ -101,7 +95,7 @@ function FamiliarForm({ initialValues, loading, onCancel, onSubmit, ...props }) 
           mode='flat'
           label='Localidad'
           placeholder="Tigre, Pilar..."
-          blurOnSubmit={true}
+          blurOnSubmit={false}
           returnKeyType="next"
           onSubmitEditing={() => telefonoTextInput.current.focus()}
           value={values.localidad}
