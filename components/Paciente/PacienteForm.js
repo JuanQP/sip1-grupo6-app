@@ -1,13 +1,13 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { Button, TextInput } from "react-native-paper";
 import FechaPicker from '../FechaPicker';
-import { mapToLabelValue } from '../../utils/utils';
 import DropDown from "react-native-paper-dropdown";
 import { Formik } from 'formik';
 import * as yup from 'yup';
+import { useQuery } from "react-query";
+import { getSexos, getTiposDocumento, selectDropdownItems } from "../../src/api/dropdown";
 
-const axios = require('axios').default;
 const reviewSchema = yup.object({
   nombre: yup.string().required(),
   fechaNacimiento: yup.date().required(),
@@ -23,9 +23,18 @@ const reviewSchema = yup.object({
 });
 
 function PacienteForm({ initialValues, loading, onSubmit }) {
-  const [listaSexos, setListaSexos] = useState([]);
-  const [listaTiposDocumento, setListaTiposDocumento] = useState([]);
-  const [listaProvincias, setListaProvincias] = useState([]);
+  const { data: listaSexos } = useQuery('sexos', getSexos, {
+    select: selectDropdownItems,
+    placeholderData: [],
+  });
+  const { data: listaTiposDocumento } = useQuery('tiposDocumento', getTiposDocumento, {
+    select: selectDropdownItems,
+    placeholderData: [],
+  });
+  const { data: listaProvincias } = useQuery('provincias', getSexos, {
+    select: selectDropdownItems,
+    placeholderData: [],
+  });
   const [showSexoDropDown, setShowSexoDropDown] = useState(false);
   const [showDocumentosDropDown, setShowDocumentosDropDown] = useState(false);
   const [showProvinciasDropDown, setShowProvinciasDropDown] = useState(false);
@@ -34,20 +43,6 @@ function PacienteForm({ initialValues, loading, onSubmit }) {
   const obraSocialTextInput = useRef();
   const numeroAfiliadoTextInput = useRef();
   const observacionesTextInput = useRef();
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const [tiposResp, provResp, sexosResp] = await Promise.all([
-        axios.get(`/api/tipos-documento`),
-        axios.get(`/api/provincias`),
-        axios.get(`/api/sexos`),
-      ]);
-      setListaTiposDocumento(tiposResp.data.tipoDocumentos.map(td => mapToLabelValue(td)));
-      setListaProvincias(provResp.data.provincia.map(p => mapToLabelValue(p)));
-      setListaSexos(sexosResp.data.sexos.map(s => mapToLabelValue(s)));
-    }
-    fetchData().catch(console.error);
-  }, []);
 
   function handleFormikSubmit(values, actions) {
     onSubmit({ ...values }, actions);

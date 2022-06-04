@@ -10,6 +10,11 @@ export async function createPaciente(paciente) {
   return response.data;
 }
 
+export async function updatePaciente(paciente) {
+  const response = await axios.patch(`/api/pacientes/${paciente.id}`, paciente);
+  return response.data.paciente;
+}
+
 export async function getPacienteActividades(pacienteId) {
   const response = await axios.get('/api/actividads', { params: { pacienteId } });
   return response.data.actividades;
