@@ -1,22 +1,21 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { StatusBar } from 'expo-status-bar';
 import { Alert, StyleSheet, View } from 'react-native';
 import { Appbar, FAB, Portal, Text, withTheme } from 'react-native-paper';
 import CalendarStrip from 'react-native-calendar-strip';
-import { dateSort, formatearFecha, stringToMomentMarkedDate } from '../utils/utils';
+import { formatearFecha, stringToMomentMarkedDate } from '../utils/utils';
 import moment from 'moment';
 import 'moment/locale/es';
 import EstadoActividad from '../components/Home/EstadoActividad';
 import PacienteCard from '../components/Home/PacienteCard';
 import ActividadDetailsModal from '../components/Home/ActividadDetailsModal';
-import { useFocusEffect } from '@react-navigation/native';
 import ActividadesList from '../components/Home/ActividadesList';
-
-const axios = require('axios').default;
+import { useQuery, useMutation, useQueryClient } from 'react-query';
+import { getPaciente, getPacienteActividades } from '../src/api/paciente';
+import { updateActividad } from '../src/api/actividad';
 
 const hoy = moment();
 const fecha = formatearFecha(hoy);
-
 const pantallasActividades = {
   'Medicación': 'Medicacion',
   'Consulta Médica': 'Consulta',
@@ -25,48 +24,37 @@ const pantallasActividades = {
 };
 
 function HomeScreen({ navigation, route, ...props }) {
-
-  const [paciente, setPaciente] = useState(null);
-  const [actividades, setActividades] = useState([]);
+  const { pacienteId } = route.params;
+  const queryClient = useQueryClient();
+  const { data: paciente } = useQuery('paciente',
+    () => getPaciente(pacienteId),
+    { placeholderData: null }
+  );
+  const { data: actividades } = useQuery('actividades',
+    () => getPacienteActividades(pacienteId),
+    {
+      placeholderData: [],
+      onSuccess: (data) => {
+        const newMarkedDates = data.map(a => stringToMomentMarkedDate(a.fecha, colors));
+        setMarkedDates(newMarkedDates);
+      },
+    },
+  );
+  const { mutate: actividadMutate, actividadIsLoading } = useMutation(
+    updateActividad,
+    { 
+      onSuccess: () => {
+        queryClient.invalidateQueries(['actividades']);
+        hideModal();
+      },
+      onError: () => Alert.alert("😞", "No se pudo actualizar esta actividad"),
+    },
+  );
   const [fechaSeleccionada] = useState(moment());
   const [markedDates, setMarkedDates] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [actividadSeleccionada, setActividadSeleccionada] = useState(null);
-  const [waitingResponse, setWaitingResponse] = useState(true);
-  const [waitingActividadResponse, setWaitingActividadResponse] = useState(false);
-
   const { colors } = props.theme;
-
-  const countEstadosActividades = actividades.reduce((acc, a) => {
-    acc[a.estado]++;
-    return acc;
-  }, {completada: 0, pendiente: 0, pospuesta: 0});
-
-
-  useFocusEffect(
-    useCallback(() => {
-      setWaitingResponse(true);
-      const fetchData = async () => {
-        const { pacienteId } = route.params;
-        const [pacienteResponse, actividadesResponse] = await Promise.all([
-          axios.get(`/api/pacientes/${pacienteId}`),
-          axios.get(`/api/actividads/`, {params: { pacienteId }}),
-        ]);
-        setActividades(actividadesResponse.data.actividads.sort(dateSort));
-        setPaciente(pacienteResponse.data.paciente);
-        setWaitingResponse(false);
-      }
-
-      fetchData()
-        .catch(console.error)
-        .finally(() => setWaitingResponse(false));
-    }, [])
-  );
-
-  useEffect(() => {
-    const newMarkedDates = actividades.map(a => stringToMomentMarkedDate(a.fecha, colors));
-    setMarkedDates(newMarkedDates);
-  }, [actividades]);
 
   function hideModal() {
     setModalVisible(false);
@@ -92,22 +80,10 @@ function HomeScreen({ navigation, route, ...props }) {
   }
 
   async function handleActividadModalSubmit(actividad) {
-    try {
-      setWaitingActividadResponse(true);
-      await axios.patch(`/api/actividads/${actividad.id}`, {
-        estado: actividad.estado,
-      });
-      const actividadesResponse = await axios.get(`/api/actividads/`, {
-        params: { pacienteId: route.params.pacienteId },
-      });
-      setActividades(actividadesResponse.data.actividads.sort(dateSort));
-      hideModal();
-    } catch (error) {
-      Alert.alert("😞", "No se pudo actualizar esta actividad");
-    }
-    finally {
-      setWaitingActividadResponse(false);
-    }
+    actividadMutate({
+      id: actividad.id,
+      estado: actividad.estado,
+    });
   }
 
   function handlePacienteDetailButtonClick() {
@@ -140,17 +116,17 @@ function HomeScreen({ navigation, route, ...props }) {
       <View style={styles.containerEstadosActividades}>
         <EstadoActividad
           titulo={'COMPLETADAS'}
-          cantidad={countEstadosActividades.completada}
+          actividades={actividades}
           color={colors.primary}
         />
         <EstadoActividad
           titulo={'PENDIENTES'}
-          cantidad={countEstadosActividades.pendiente}
+          actividades={actividades}
           color={colors.pendiente}
         />
         <EstadoActividad
           titulo={'POSPUESTAS'}
-          cantidad={countEstadosActividades.pospuesta}
+          actividades={actividades}
           color={colors.pospuesta}
         />
       </View>
@@ -180,7 +156,7 @@ function HomeScreen({ navigation, route, ...props }) {
         <ActividadDetailsModal
           actividad={actividadSeleccionada}
           visible={modalVisible}
-          waiting={waitingActividadResponse}
+          waiting={actividadIsLoading}
           onEditClick={handleActividadEditClick}
           onDismiss={hideModal}
           onSubmit={handleActividadModalSubmit}

@@ -1,6 +1,6 @@
 import { belongsTo, createServer, Factory, hasMany, Model, Response, RestSerializer } from "miragejs"
 import moment from 'moment';
-import { pickRandom, random } from "../utils/utils";
+import { dateSort, pickRandom, random } from "../utils/utils";
 
 // Fake server para usar la app
 
@@ -120,10 +120,10 @@ export const crearServer = () => createServer({
 
     // Actividades
     this.get('/actividads/:id');
-    this.get('/actividads', (schema, request) => {
+    this.get('/actividads', function(schema, request) {
       const { queryParams } = request;
-
-      return schema.actividads.where(queryParams);
+      const actividades = this.serialize(schema.actividads.where(queryParams)).actividads;
+      return { actividades: actividades.sort(dateSort) };
     });
     this.patch('/actividads/:id', (schema, request) => {
       const actividad = JSON.parse(request.requestBody);
