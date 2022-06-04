@@ -1,17 +1,40 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { StatusBar } from 'expo-status-bar';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { Appbar, Title, withTheme } from 'react-native-paper';
 import ActividadMessageModal from '../../components/ActividadMessageModal';
 import MedicacionForm from '../../components/Actividades/MedicacionForm';
 import { keyExtractor } from '../../utils/utils';
-
-const axios = require('axios').default;
+import { getPaciente } from '../../src/api/paciente';
+import { useQuery, useMutation, useQueryClient } from 'react-query';
+import { createOrUpdateActividad, getActividad } from '../../src/api/actividad';
 
 function MedicacionScreen({ navigation, route, ...props }) {
-
-  const { colors } = props.theme;
+  const queryClient = useQueryClient();
   const { pacienteId, actividadId } = route.params;
+  const { data: paciente } = useQuery('paciente',
+    () => getPaciente(pacienteId),
+  );
+  useQuery('actividad',
+    () => getActividad(actividadId),
+    {
+      onSuccess: (data) => {
+        console.log(data);
+        const { dias, ...actividad } = data;
+        setInitialValues({
+          ...actividad,
+          pacienteId,
+          diaIds: dias.map(keyExtractor),
+          fecha: new Date(actividad.fecha),
+          frecuencia: String(actividad.frecuencia),
+          duracion: String(actividad.duracion),
+        });
+      },
+      enabled: !!actividadId,
+    },
+  );
+  const { mutate, actividadIsLoading } = useMutation(createOrUpdateActividad);
+  const { colors } = props.theme;
   const [initialValues, setInitialValues] = useState({
     id: undefined,
     nombre: '',
@@ -23,56 +46,27 @@ function MedicacionScreen({ navigation, route, ...props }) {
     fecha: new Date(),
   });
   const [modalVisible, setModalVisible] = useState(false);
-  const [pacienteNombre, setPacienteNombre] = useState('');
-  const [waitingResponse, setWaitingResponse] = useState(false);
-
-  useEffect(() => {
-    const fetchPaciente = async () => {
-      const response = await axios.get(`/api/pacientes/${pacienteId}`);
-      setPacienteNombre(response.data.paciente.nombre);
-    }
-    const fetchActividad = async () => {
-      if(!actividadId) return;
-      const {dias, ...actividad} = (await axios.get(`/api/actividads/${actividadId}`)).data.actividad;
-      setInitialValues({
-        ...actividad,
-        pacienteId,
-        diaIds: dias.map(keyExtractor),
-        fecha: new Date(actividad.fecha),
-        frecuencia: String(actividad.frecuencia),
-        duracion: String(actividad.duracion),
-      });
-    }
-    fetchPaciente().catch(console.error);
-    fetchActividad().catch(console.error);
-  }, []);
 
   async function handleSubmit(formValues, actions) {
-    setWaitingResponse(true);
-    try {
-      const nuevaActividad = {
-        ...formValues,
-        pacienteId,
-      };
-      const axiosMethod = nuevaActividad.id ? axios.patch : axios.post;
-      const url = `/api/actividads/${nuevaActividad?.id ?? ''}`;
-      const { dias, ...actividad } = (await axiosMethod(url, nuevaActividad)).data.actividad;
-      actions.setValues({
-        ...actividad,
-        pacienteId,
-        diaIds: dias.map(keyExtractor),
-        fecha: new Date(actividad.fecha),
-        frecuencia: String(actividad.frecuencia),
-        duracion: String(actividad.duracion),
-      });
-      setModalVisible(true);
-    }
-    catch (error) {
-      console.error(error.message);
-    }
-    finally {
-      setWaitingResponse(false);
-    }
+    const nuevaActividad = {
+      ...formValues,
+      pacienteId,
+    };
+    mutate(nuevaActividad, {
+      onSuccess: (data) => {
+        const { dias, ...actividad } = data;
+        actions.setValues({
+          ...actividad,
+          pacienteId,
+          diaIds: dias.map(keyExtractor),
+          fecha: new Date(actividad.fecha),
+          frecuencia: String(actividad.frecuencia),
+          duracion: String(actividad.duracion),
+        });
+        setModalVisible(true);
+        queryClient.invalidateQueries(['actividades']);
+      },
+    });
   }
 
   function hideModal() {
@@ -90,11 +84,11 @@ function MedicacionScreen({ navigation, route, ...props }) {
         <Appbar.Content title={`${initialValues.id ? '' : 'Nueva '}Medicación`} />
       </Appbar.Header>
       <View style={styles.formContainer}>
-        <Title>{pacienteNombre}</Title>
+        <Title>{paciente.nombre}</Title>
         <ScrollView>
           <MedicacionForm
             initialValues={initialValues}
-            loading={waitingResponse}
+            loading={actividadIsLoading}
             onCancel={handleBackActionClick}
             onSubmit={handleSubmit}
           />

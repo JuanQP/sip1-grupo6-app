@@ -17,8 +17,10 @@ function ConsultaForm({ initialValues, loading, onCancel, onSubmit }) {
   const observacionesTextInput = useRef();
 
   function handleFormikSubmit(values, actions) {
+    const { dias, ...actividad } = values;
     onSubmit({
-      ...values,
+      ...actividad,
+      diaIds: [],
       tipo: 'Consulta Médica',
     }, actions);
   }
@@ -79,6 +81,7 @@ function ConsultaForm({ initialValues, loading, onCancel, onSubmit }) {
         onChangeText={handleChange('observaciones')}
         onBlur={handleBlur('observaciones')}
         error={touched.observaciones && errors.observaciones}
+        multiline
       />
       <View style={styles.bottomView}>
         <Button
