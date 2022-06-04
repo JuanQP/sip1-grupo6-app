@@ -4,13 +4,31 @@ import { ScrollView, StyleSheet, View } from 'react-native';
 import { Appbar, Title, withTheme } from 'react-native-paper';
 import ActividadMessageModal from '../../components/ActividadMessageModal';
 import EstudioForm from '../../components/Actividades/EstudioForm';
-
-const axios = require('axios').default;
+import { useQuery, useMutation, useQueryClient } from 'react-query';
+import { createOrUpdateActividad, getActividad } from '../../src/api/actividad';
+import { getPaciente } from '../../src/api/paciente';
 
 function EstudioScreen({ navigation, route, ...props }) {
-
-  const { colors } = props.theme;
+  const queryClient = useQueryClient();
   const { pacienteId, actividadId } = route.params;
+  const { data: paciente } = useQuery('paciente',
+    () => getPaciente(pacienteId),
+  );
+  const { data: actividad } = useQuery('actividad',
+    () => getActividad(actividadId),
+    {
+      onSuccess: (actividad) => {
+        setInitialValues({
+          ...actividad,
+          pacienteId,
+          fecha: new Date(actividad.fecha),
+        });
+      },
+      enabled: !!actividadId,
+    },
+  );
+  const { mutate, actividadIsLoading } = useMutation(createOrUpdateActividad);
+  const { colors } = props.theme;
   const [initialValues, setInitialValues] = useState({
     id: undefined,
     nombre: '',
@@ -18,51 +36,21 @@ function EstudioScreen({ navigation, route, ...props }) {
     direccion: '',
     fecha: new Date(),
   });
-  const [waitingResponse, setWaitingResponse] = useState(false);
-  const [pacienteNombre, setPacienteNombre] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const pacienteResponse = await axios.get(`/api/pacientes/${pacienteId}`);
-      setPacienteNombre(pacienteResponse.data.paciente.nombre);
-    }
-    const fetchActividad = async () => {
-      if(!actividadId) return;
-      const { actividad } = (await axios.get(`/api/actividads/${actividadId}`)).data;
-      setInitialValues({
-        ...actividad,
-        pacienteId,
-        fecha: new Date(actividad.fecha),
-      });
-    }
-    fetchData().catch(console.error);
-    fetchActividad().catch(console.error);
-  }, []);
-
   async function handleSubmit(formValues, actions) {
-    setWaitingResponse(true);
-    const nuevaActividad = {
-      pacienteId,
-      ...formValues,
-    };
-    try {
-      const axiosMethod = formValues.id ? axios.patch : axios.post;
-      const url = `/api/actividads/${nuevaActividad.id ?? ''}`;
-      const { actividad } = (await axiosMethod(url, nuevaActividad)).data;
-      actions.setValues({
-        ...actividad,
-        pacienteId,
-        fecha: new Date(actividad.fecha),
-      });
-      setModalVisible(true);
-    }
-    catch (error) {
-      console.error(error.message);
-    }
-    finally {
-      setWaitingResponse(false);
-    }
+    const nuevaActividad = { pacienteId, ...formValues };
+    mutate(nuevaActividad, {
+      onSuccess: (data) => {
+        actions.setValues({
+          ...data,
+          pacienteId,
+          fecha: new Date(data.fecha),
+        });
+        setModalVisible(true);
+        queryClient.invalidateQueries(['actividades']);
+      },
+    });
   }
 
   function hideModal() {
@@ -83,10 +71,10 @@ function EstudioScreen({ navigation, route, ...props }) {
       {/* Formulario */}
       <View style={styles.formContainer}>
         <ScrollView>
-          <Title>{pacienteNombre}</Title>
+          <Title>{paciente.nombre}</Title>
           <EstudioForm
             initialValues={initialValues}
-            loading={waitingResponse}
+            loading={actividadIsLoading}
             onCancel={handleBackActionClick}
             onSubmit={handleSubmit}
           />

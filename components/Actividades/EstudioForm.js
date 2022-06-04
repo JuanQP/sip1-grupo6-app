@@ -17,8 +17,10 @@ function EstudioForm({ initialValues, loading, onCancel, onSubmit }) {
   const observacionesTextInput = useRef();
 
   function handleFormikSubmit(values, actions) {
+    const { dias, ...actividad } = values;
     onSubmit({
-      ...values,
+      ...actividad,
+      diaIds: [],
       tipo: 'Estudio Médico',
     }, actions);
   }

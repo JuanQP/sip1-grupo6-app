@@ -127,16 +127,13 @@ export const crearServer = () => createServer({
     });
     this.patch('/actividads/:id', (schema, request) => {
       const actividad = JSON.parse(request.requestBody);
-
       return schema.actividads.find(request.params.id).update(actividad);
     });
     this.post('/actividads/', (schema, request) => {
       const actividad = JSON.parse(request.requestBody);
-
       if(!('estado' in actividad)) {
         actividad['estado'] = 'pendiente';
       }
-
       return schema.actividads.create(actividad);
     });
 

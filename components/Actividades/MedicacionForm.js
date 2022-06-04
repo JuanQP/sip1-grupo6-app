@@ -1,13 +1,14 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { StyleSheet, View } from 'react-native';
 import { Button, TextInput, withTheme } from 'react-native-paper';
 import DropDown from "react-native-paper-dropdown";
 import FechaPicker from "../FechaPicker";
 import { Formik } from 'formik';
 import * as yup from 'yup';
-import { useToggle } from '../../utils/utils';
+import { keyExtractor, mapToLabelValue, useToggle } from '../../utils/utils';
+import { useQuery } from 'react-query';
+import { getDias } from '../../src/api/dropdown';
 
-const axios = require('axios').default;
 const reviewSchema = yup.object({
   nombre: yup.string().required(),
   observaciones: yup.string().required(),
@@ -19,7 +20,11 @@ const reviewSchema = yup.object({
 });
 
 function MedicacionForm({ initialValues, loading, onCancel, onSubmit }) {
-
+  useQuery('dias', getDias, {
+    onSuccess: (dias) => {
+      setListaDias(dias.map(d => mapToLabelValue(d, 'descripcion', 'id')));
+    }
+  });
   const [listaDias, setListaDias] = useState([]);
   const [showDropDown, toggleShowDropDown] = useToggle(false);
   const observacionesTextInput = useRef();
@@ -27,17 +32,13 @@ function MedicacionForm({ initialValues, loading, onCancel, onSubmit }) {
   const duracionTextInput = useRef();
   const frecuenciaTextInput = useRef();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const response = await axios.get(`/api/dias`);
-      setListaDias(response.data.dia.map(d => ({label: d.descripcion, value: d.id})));
-    }
-    fetchData().catch(console.error);
-  }, []);
-
   function handleFormikSubmit(values, actions) {
+    const { dias, ...actividad } = values;
     onSubmit({
       ...values,
+      fecha: new Date(actividad.fecha),
+      frecuencia: String(actividad.frecuencia),
+      duracion: String(actividad.duracion),
       tipo: 'Medicación',
     }, actions);
   }

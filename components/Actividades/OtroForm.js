@@ -5,6 +5,9 @@ import FechaPicker from '../FechaPicker';
 import DropDown from "react-native-paper-dropdown";
 import { Formik } from 'formik';
 import * as yup from 'yup';
+import { useQuery } from "react-query";
+import { getDias } from '../../src/api/dropdown';
+import { mapToLabelValue } from '../../utils/utils';
 
 const axios = require('axios').default;
 const reviewSchema = yup.object({
@@ -19,32 +22,23 @@ const reviewSchema = yup.object({
 });
 
 function OtroForm({ initialValues, loading, onCancel, onSubmit, ...props }) {
-
+  useQuery('dias', getDias, {
+    onSuccess: (dias) => {
+      setListaDias(dias.map(d => mapToLabelValue(d, 'descripcion', 'id')));
+    }
+  });
   const { colors } = props.theme;
-  // const [nombre, setNombre] = useState('');
-  // const [observaciones, setObservaciones] = useState('');
-  // const [direccion, setDireccion] = useState('');
-  // const [repeticiones, setRepeticiones] = useState(false);
-  // const [duracion, setDuracion] = useState('');
-  // const [frecuencia, setFrecuencia] = useState('');
-  // const [dias, setDias] = useState('');
-  // const [fecha, setFecha] = useState(new Date());
   const [listaDias, setListaDias] = useState([]);
   const [showMultiSelectDropDown, setShowMultiSelectDropDown] = useState(false);
   const observacionesTextInput = useRef();
   const frecuenciaTextInput = useRef();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const response = await axios.get(`/api/dias`);
-      setListaDias(response.data.dia.map(d => ({label: d.descripcion, value: d.id})));
-    }
-    fetchData().catch(console.error);
-  }, []);
-
   function handleFormikSubmit(values, actions) {
     onSubmit({
       ...values,
+      fecha: new Date(values.fecha),
+      frecuencia: String(values.frecuencia),
+      duracion: String(values.duracion),
       tipo: 'Otro',
     }, actions);
   }
@@ -55,7 +49,7 @@ function OtroForm({ initialValues, loading, onCancel, onSubmit, ...props }) {
   }
 
   function handleSwitchChange(value, setFieldValue) {
-    setFieldValue(!value);
+    setFieldValue('repeticiones', !value);
   }
 
   function handleFechaChange(fecha, setFieldValue) {
