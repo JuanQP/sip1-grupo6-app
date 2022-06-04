@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { StyleSheet, View } from 'react-native';
 import { Button, Switch, Text, TextInput, withTheme } from 'react-native-paper';
 import FechaPicker from '../FechaPicker';

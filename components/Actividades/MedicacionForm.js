@@ -5,7 +5,7 @@ import DropDown from "react-native-paper-dropdown";
 import FechaPicker from "../FechaPicker";
 import { Formik } from 'formik';
 import * as yup from 'yup';
-import { keyExtractor, mapToLabelValue, useToggle } from '../../utils/utils';
+import { mapToLabelValue, useToggle } from '../../utils/utils';
 import { useQuery } from 'react-query';
 import { getDias } from '../../src/api/dropdown';
 

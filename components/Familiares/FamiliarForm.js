@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { StyleSheet, View } from 'react-native';
 import { Button, Checkbox, Text, TextInput, withTheme } from 'react-native-paper';
 import DropDown from 'react-native-paper-dropdown';
