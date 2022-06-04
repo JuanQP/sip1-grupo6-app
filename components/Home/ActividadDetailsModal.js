@@ -91,13 +91,13 @@ function ActividadDetailsModal({ actividad, waiting, visible, onEditClick, onDis
             value="completada"
           />
           <ToggleButton
-            color={colors.primary}
+            color={colors.pendiente}
             style={{flex: 1}}
             icon="clock-outline"
             value="pendiente"
             />
           <ToggleButton
-            color={colors.primary}
+            color={colors.pospuesta}
             style={{flex: 1}}
             icon="alert-circle-outline"
             value="pospuesta"
