@@ -1,5 +1,5 @@
 import { StyleSheet, View } from "react-native";
-import { Avatar, Button, Caption, IconButton, Modal, Paragraph, Text, ToggleButton, withTheme } from "react-native-paper"
+import { Avatar, Button, Caption, IconButton, Modal, Paragraph, Text, TextInput, ToggleButton, withTheme } from "react-native-paper"
 import { useEffect, useState } from "react";
 import { formatearFecha, imagenes } from "../../utils/utils";
 import moment from "moment";
@@ -87,6 +87,14 @@ function ActividadDetailsModal({ actividad, waiting, visible, mostrarPaciente, o
         </View>
         <Caption>Observaciones</Caption>
         <Paragraph>{actividad.observaciones}</Paragraph>
+        <TextInput
+          mode="flat"
+          label="Notas"
+          style={{backgroundColor: 'transparent'}}
+        />
+        <Button mode="outlined" style={{marginTop: 10}} onPress={() => {}}>
+          Cargar archivo
+        </Button>
       </View>
       <View>
         <ToggleButton.Row onValueChange={setEstado} value={estado}>
