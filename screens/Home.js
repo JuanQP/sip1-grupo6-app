@@ -60,8 +60,8 @@ function HomeScreen({ navigation, route, ...props }) {
     setModalVisible(false);
   }
 
-  function proximamenteAlert() {
-    Alert.alert("Próximamente...", "😁");
+  function handleHomeClick() {
+    navigation.navigate("Overview");
   }
 
   function onMisPacientesClick() {
@@ -101,7 +101,7 @@ function HomeScreen({ navigation, route, ...props }) {
   return (
     <View style={styles.container}>
       <Appbar.Header>
-        <Appbar.Action icon="menu" onPress={proximamenteAlert} />
+        <Appbar.Action icon="home" onPress={handleHomeClick} />
         <Appbar.Content title="Actividades" />
         <Appbar.Action icon="account-group" onPress={onMisPacientesClick} />
       </Appbar.Header>
