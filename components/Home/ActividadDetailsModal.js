@@ -91,10 +91,10 @@ function ActividadDetailsModal({ actividad, waiting, visible, mostrarPaciente, o
       <View>
         <ToggleButton.Row onValueChange={setEstado} value={estado}>
           <ToggleButton
-            color={colors.primary}
+            color={colors.pospuesta}
             style={{flex: 1}}
-            icon="check-circle-outline"
-            value="completada"
+            icon="alert-circle-outline"
+            value="pospuesta"
           />
           <ToggleButton
             color={colors.pendiente}
@@ -103,10 +103,10 @@ function ActividadDetailsModal({ actividad, waiting, visible, mostrarPaciente, o
             value="pendiente"
             />
           <ToggleButton
-            color={colors.pospuesta}
+            color={colors.primary}
             style={{flex: 1}}
-            icon="alert-circle-outline"
-            value="pospuesta"
+            icon="check-circle-outline"
+            value="completada"
           />
         </ToggleButton.Row>
       </View>
