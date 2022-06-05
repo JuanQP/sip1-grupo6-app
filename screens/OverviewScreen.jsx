@@ -78,6 +78,7 @@ function OverviewScreen({ navigation }) {
         <ActividadesList
           actividades={actividades}
           onActividadClick={handleActividadClick}
+          mostrarPaciente
         />
         <Portal>
           <ActividadDetailsModal

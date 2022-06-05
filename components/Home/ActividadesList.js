@@ -1,7 +1,7 @@
 import { FlatList } from "react-native";
 import ActividadRow from "./ActividadRow";
 
-function ActividadesList({ actividades, onActividadClick }) {
+function ActividadesList({ actividades, mostrarPaciente = false, onActividadClick }) {
   return (
     <FlatList
       data={actividades}
@@ -9,6 +9,7 @@ function ActividadesList({ actividades, onActividadClick }) {
         <ActividadRow
           onActividadClick={onActividadClick}
           actividad={item}
+          mostrarPaciente={mostrarPaciente}
         />
       }
       keyExtractor={actividad => actividad.id}
