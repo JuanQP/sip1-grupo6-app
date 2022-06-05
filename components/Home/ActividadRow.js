@@ -1,6 +1,7 @@
 import { StyleSheet, View } from 'react-native';
-import { Caption, IconButton, Text, Title, withTheme } from 'react-native-paper';
+import { Avatar, Caption, IconButton, Text, Title, withTheme } from 'react-native-paper';
 import moment from 'moment';
+import { imagenes } from '../../utils/utils';
 
 function iconSegunTipo(tipo) {
   switch (tipo.toLowerCase()) {
@@ -33,7 +34,7 @@ function colorSegunEstado(estado, colors) {
 /**
  * El tipo de fecha debe ser Moment
  */
-function ActividadRow({ actividad, onActividadClick, ...props }) {
+function ActividadRow({ actividad, mostrarPaciente = false, onActividadClick, ...props }) {
   const { nombre, estado } = actividad;
   const fecha = moment(actividad.fecha);
   const diaDelMes = fecha.format("DD");
@@ -72,6 +73,12 @@ function ActividadRow({ actividad, onActividadClick, ...props }) {
             mode="text"
           />
         </View>
+        {!mostrarPaciente ? null : (
+          <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <Avatar.Image style={{marginRight: 10}} size={32} source={imagenes[actividad.paciente.imagen]} />
+            <Text>{actividad.paciente.nombre}</Text>
+          </View>
+        )}
       </View>
     </View>
   )
