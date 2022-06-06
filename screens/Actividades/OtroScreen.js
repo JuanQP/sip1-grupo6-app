@@ -8,6 +8,7 @@ import { keyExtractor } from '../../utils/utils';
 import { createOrUpdateActividad, getActividad } from '../../src/api/actividad';
 import { getPaciente } from '../../src/api/paciente';
 import { useQuery, useMutation, useQueryClient } from "react-query";
+import { crearActividadAlert, fechaYHoraLibre } from './ActividadesScreen';
 
 function OtroScreen({ navigation, route, ...props }) {
   const queryClient = useQueryClient();
@@ -52,7 +53,7 @@ function OtroScreen({ navigation, route, ...props }) {
   });
   const [modalVisible, setModalVisible] = useState(false);
 
-  async function handleSubmit(formValues, actions) {
+  async function mutateActividad(formValues, actions) {
     const nuevaActividad = {
       ...formValues,
       pacienteId,
@@ -72,6 +73,18 @@ function OtroScreen({ navigation, route, ...props }) {
         queryClient.invalidateQueries(['actividades']);
       }
     });
+  }
+
+  async function handleSubmit(formValues, actions) {
+    const isfechaYHoraLibre = (await fechaYHoraLibre(formValues.fecha));
+    if(!isfechaYHoraLibre) {
+      crearActividadAlert(
+        () => mutateActividad(formValues, actions),
+        () => {},
+      );
+      return;
+    }
+    mutateActividad(formValues, actions);
   }
 
   function hideModal() {

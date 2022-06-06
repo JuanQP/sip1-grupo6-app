@@ -7,6 +7,7 @@ import EstudioForm from '../../components/Actividades/EstudioForm';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { createOrUpdateActividad, getActividad } from '../../src/api/actividad';
 import { getPaciente } from '../../src/api/paciente';
+import { crearActividadAlert, fechaYHoraLibre } from './ActividadesScreen';
 
 function EstudioScreen({ navigation, route, ...props }) {
   const queryClient = useQueryClient();
@@ -43,7 +44,7 @@ function EstudioScreen({ navigation, route, ...props }) {
   });
   const [modalVisible, setModalVisible] = useState(false);
 
-  async function handleSubmit(formValues, actions) {
+  function mutateActividad(formValues, actions) {
     const nuevaActividad = { pacienteId, ...formValues };
     mutate(nuevaActividad, {
       onSuccess: (data) => {
@@ -56,6 +57,18 @@ function EstudioScreen({ navigation, route, ...props }) {
         queryClient.invalidateQueries(['actividades']);
       },
     });
+  }
+
+  async function handleSubmit(formValues, actions) {
+    const isfechaYHoraLibre = await fechaYHoraLibre(formValues.fecha);
+    if(!isfechaYHoraLibre) {
+      crearActividadAlert(
+        () => mutateActividad(formValues, actions),
+        () => {},
+      );
+      return;
+    }
+    mutateActividad(formValues, actions);
   }
 
   function hideModal() {
