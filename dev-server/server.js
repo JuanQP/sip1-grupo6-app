@@ -125,6 +125,15 @@ export const crearServer = () => createServer({
       const actividades = this.serialize(schema.actividads.where(queryParams)).actividads;
       return { actividades: actividades.sort(dateSort) };
     });
+    this.get('/actividads-same-hour', (schema, request) => {
+      const datetime = moment(request.queryParams.datetime);
+      const usuarioId = String(middleware(request));
+      const pacientes = schema.pacientes.where({ usuarioId }).models;
+      const actividades = schema.actividads.where(
+        a => pacientes.some(p => p.id == a.pacienteId) && datetime.isSame(a.fecha, 'minute')
+      );
+      return actividades;
+    });
     this.patch('/actividads/:id', (schema, request) => {
       const actividad = JSON.parse(request.requestBody);
       return schema.actividads.find(request.params.id).update(actividad);

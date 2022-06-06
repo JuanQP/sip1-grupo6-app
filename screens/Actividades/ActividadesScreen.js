@@ -1,9 +1,28 @@
 import React from 'react'
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, View } from 'react-native';
+import { Alert, StyleSheet, View } from 'react-native';
 import { Appbar, withTheme } from 'react-native-paper';
 import 'moment/locale/es';
 import ActividadTouchableCard from '../../components/Actividades/ActividadTouchableCard';
+import { getActividadMismaHora } from '../../src/api/actividad';
+
+export async function fechaYHoraLibre(fecha) {
+  return (await getActividadMismaHora(fecha)).length === 0;
+}
+
+export function crearActividadAlert(handleSiPress = () => {}, handleNoPress = () => {}) {
+  Alert.alert(
+    "Agregar actividad",
+    "Ya existe otra actividad para esta fecha y hora, ¿Querés crearla igual?",
+    [
+      {text: 'Si', onPress: handleSiPress},
+      {text: 'No', onPress: handleNoPress},
+    ],
+    {
+      cancelable: true,
+    },
+  );
+}
 
 function ActividadesScreen({ navigation, route, ...props }) {
 
