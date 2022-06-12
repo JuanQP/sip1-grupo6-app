@@ -1,5 +1,5 @@
 import { StyleSheet, View } from "react-native";
-import { Avatar, Button, Caption, IconButton, Modal, Paragraph, Text, TextInput, ToggleButton, withTheme } from "react-native-paper"
+import { Avatar, Button, Caption, IconButton, Modal, Paragraph, Snackbar, Text, TextInput, ToggleButton, withTheme } from "react-native-paper"
 import { useEffect, useState } from "react";
 import { formatearFecha, imagenes } from "../../utils/utils";
 import moment from "moment";
@@ -11,6 +11,12 @@ function ActividadDetailsModal({ actividad, waiting, visible, mostrarPaciente, o
   }
 
   const [estado, setEstado] = useState('');
+  const [snackbarVisible, setSnackbarVisible] = useState(false);
+  const showSnackbar = (newValue) => {
+    setSnackbarVisible(true);
+    setEstado(newValue);
+  };
+  const onDismissSnackBar = () => setSnackbarVisible(false);
   const { colors } = props.theme;
   const modalStyles = {
     margin: 20,
@@ -38,87 +44,101 @@ function ActividadDetailsModal({ actividad, waiting, visible, mostrarPaciente, o
   }
 
   return (
-    <Modal
-      contentContainerStyle={modalStyles}
-      visible={visible}
-      onDismiss={onDismiss}
-    >
-      <View style={{...styles.header, borderColor: colors.disabled}}>
-        <Button
-          color={colors.accent}
-          mode="text"
-          onPress={onDismiss}
-          disabled={waiting}
-        >
-          Cancelar
-        </Button>
-        <Button
-          mode="text"
-          onPress={handleConfirmarClick}
-          disabled={waiting}
-          loading={waiting}
-        >
-          Confirmar
-        </Button>
-      </View>
-      <View style={styles.contenido}>
-        <Text style={{alignSelf: "center"}}>
-          {formatearFecha(fecha)}
-        </Text>
-        {mostrarPaciente && (
-          <View style={{flexDirection: 'column', alignItems: 'center', marginTop: 10}}>
-            <Avatar.Image size={64} source={imagenes[actividad.paciente.imagen]} />
-            <Text>{actividad.paciente.nombre}</Text>
-          </View>
-        )}
-        <View style={{flexDirection: 'column'}}>
-          <View style={styles.contenidoRow}>
-            <Text>{actividad.nombre}</Text>
-            <IconButton
-              color={colors.primary}
-              icon="pencil-outline"
-              onPress={handleEditClick}
-            />
-          </View>
-          <View style={styles.contenidoRow}>
-            <Text>{fecha.format("HH:mm")}</Text>
-            <Text>{actividad.dosis}</Text>
-          </View>
+    <>
+      <Modal
+        contentContainerStyle={modalStyles}
+        visible={visible}
+        onDismiss={onDismiss}
+      >
+        <View style={{...styles.header, borderColor: colors.disabled}}>
+          <Button
+            color={colors.accent}
+            mode="text"
+            onPress={onDismiss}
+            disabled={waiting}
+          >
+            Cancelar
+          </Button>
+          <Button
+            mode="text"
+            onPress={handleConfirmarClick}
+            disabled={waiting}
+            loading={waiting}
+          >
+            Confirmar
+          </Button>
         </View>
-        <Caption>Observaciones</Caption>
-        <Paragraph>{actividad.observaciones}</Paragraph>
-        <TextInput
-          mode="flat"
-          label="Notas"
-          style={{backgroundColor: 'transparent'}}
-        />
-        <Button mode="outlined" style={{marginTop: 10}} onPress={() => {}}>
-          Cargar archivo
-        </Button>
-      </View>
-      <View>
-        <ToggleButton.Row onValueChange={setEstado} value={estado}>
-          <ToggleButton
-            color={colors.pospuesta}
-            style={{flex: 1}}
-            icon="alert-circle-outline"
-            value="pospuesta"
+        <View style={styles.contenido}>
+          <Text style={{alignSelf: "center"}}>
+            {formatearFecha(fecha)}
+          </Text>
+          {mostrarPaciente && (
+            <View style={{flexDirection: 'column', alignItems: 'center', marginTop: 10}}>
+              <Avatar.Image size={64} source={imagenes[actividad.paciente.imagen]} />
+              <Text>{actividad.paciente.nombre}</Text>
+            </View>
+          )}
+          <View style={{flexDirection: 'column'}}>
+            <View style={styles.contenidoRow}>
+              <Text>{actividad.nombre}</Text>
+              <IconButton
+                color={colors.primary}
+                icon="pencil-outline"
+                onPress={handleEditClick}
+              />
+            </View>
+            <View style={styles.contenidoRow}>
+              <Text>{fecha.format("HH:mm")}</Text>
+              <Text>{actividad.dosis}</Text>
+            </View>
+          </View>
+          <Caption>Observaciones</Caption>
+          <Paragraph>{actividad.observaciones}</Paragraph>
+          <TextInput
+            mode="flat"
+            label="Notas"
+            style={{backgroundColor: 'transparent'}}
           />
-          <ToggleButton
-            color={colors.pendiente}
-            style={{flex: 1}}
-            icon="clock-outline"
-            value="pendiente"
+          <Button mode="outlined" style={{marginTop: 10}} onPress={() => {}}>
+            Cargar archivo
+          </Button>
+        </View>
+        <View>
+          <ToggleButton.Row onValueChange={showSnackbar} value={estado}>
+            <ToggleButton
+              color={estado === 'pospuesta' ? 'white' : colors.primary}
+              style={{flex: 1, backgroundColor: estado === 'pospuesta' ? colors.primary : 'transparent'}}
+              icon="alert-circle-outline"
+              value="pospuesta"
             />
-          <ToggleButton
-            color={colors.primary}
-            style={{flex: 1}}
-            icon="check-circle-outline"
-            value="completada"
-          />
-        </ToggleButton.Row>
-      </View>
-    </Modal>
+            <ToggleButton
+              color={estado === 'pendiente' ? 'white' : colors.primary}
+              style={{flex: 1, backgroundColor: estado === 'pendiente' ? colors.primary : 'transparent'}}
+              icon="clock-outline"
+              value="pendiente"
+            />
+            <ToggleButton
+              color={estado === 'completada' ? 'white' : colors.primary}
+              style={{flex: 1, backgroundColor: estado === 'completada' ? colors.primary : 'transparent'}}
+              icon="check-circle-outline"
+              value="completada"
+            />
+          </ToggleButton.Row>
+        </View>
+      </Modal>
+      <Snackbar
+        duration={5000}
+        visible={snackbarVisible}
+        onDismiss={onDismissSnackBar}
+        action={{
+          label: 'Cerrar',
+          onPress: () => {
+            setSnackbarVisible(false);
+          },
+        }}>
+        La tarea se va a cambiar a "{estado}"
+      </Snackbar>
+    </>
   )
 }
 
