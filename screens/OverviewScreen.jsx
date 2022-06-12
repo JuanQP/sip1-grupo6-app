@@ -1,13 +1,14 @@
 import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useState } from 'react';
 import { Alert, StyleSheet, View } from "react-native";
-import { Portal, Text, Title } from "react-native-paper";
+import { Portal, Subheading, Text, Title } from "react-native-paper";
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import ActividadDetailsModal from '../components/Home/ActividadDetailsModal';
 import ActividadesList from '../components/Home/ActividadesList';
 import NavbarLayout from '../layouts/NavbarLayout';
 import { updateActividad } from '../src/api/actividad';
 import { getMiSemana } from '../src/api/usuario';
+import moment from "moment";
 
 const pantallasActividades = {
   'Medicación': 'Medicacion',
@@ -18,6 +19,8 @@ const pantallasActividades = {
 
 function OverviewScreen({ navigation }) {
   const queryClient = useQueryClient();
+  const inicioSemana = moment().startOf('isoWeek').format('DD/MM');
+  const finSemana = moment().endOf('isoWeek').format('DD/MM');
   const { data: actividades,  } = useQuery('mi-semana', getMiSemana, {
     placeholderData: [],
   });
@@ -45,7 +48,7 @@ function OverviewScreen({ navigation }) {
 
   function handleMisPacientesPress() {
     navigation.navigate('MisPacientes');
-  } 
+  }
 
   async function handleActividadModalSubmit(actividad) {
     actividadMutate({
@@ -74,6 +77,7 @@ function OverviewScreen({ navigation }) {
     >
       <View style={styles.container}>
         <Title>Mi semana</Title>
+        <Subheading>Semana del {`${inicioSemana} al ${finSemana}`}</Subheading>
         <Text>Actividades de todos los pacientes para esta semana</Text>
         <ActividadesList
           actividades={actividades}
