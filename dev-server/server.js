@@ -234,12 +234,16 @@ export const crearServer = () => createServer({
       },
 
       repeticiones() {
-        return this.tipo === 'Otro' ? pickRandom([true, false]) : false; 
+        return this.tipo === 'Otro' ? pickRandom([true, false]) : false;
       },
 
       direccion() {
         return 'Lorem ipsum';
       },
+
+      nota() {
+        return '';
+      }
     })
   },
 

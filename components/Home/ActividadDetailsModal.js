@@ -11,6 +11,7 @@ function ActividadDetailsModal({ actividad, waiting, visible, mostrarPaciente, o
   }
 
   const [estado, setEstado] = useState('');
+  const [nota, setNota] = useState('');
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const showSnackbar = (newValue) => {
     setSnackbarVisible(true);
@@ -29,13 +30,16 @@ function ActividadDetailsModal({ actividad, waiting, visible, mostrarPaciente, o
   useEffect(() => {
     if(actividad) {
       setEstado(actividad.estado);
+      setNota(actividad.nota);
     }
   }, [actividad]);
 
   function handleConfirmarClick() {
+    setSnackbarVisible(false);
     onSubmit({
       ...actividad,
       estado,
+      nota,
     });
   }
 
@@ -98,6 +102,8 @@ function ActividadDetailsModal({ actividad, waiting, visible, mostrarPaciente, o
             mode="flat"
             label="Notas"
             style={{backgroundColor: 'transparent'}}
+            value={nota}
+            onChangeText={setNota}
           />
           <Button mode="outlined" style={{marginTop: 10}} onPress={() => {}}>
             Cargar archivo

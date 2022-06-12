@@ -42,7 +42,7 @@ function HomeScreen({ navigation, route, ...props }) {
   );
   const { mutate: actividadMutate, actividadIsLoading } = useMutation(
     updateActividad,
-    { 
+    {
       onSuccess: () => {
         queryClient.invalidateQueries(['actividades']);
         hideModal();
@@ -83,6 +83,7 @@ function HomeScreen({ navigation, route, ...props }) {
     actividadMutate({
       id: actividad.id,
       estado: actividad.estado,
+      nota: actividad.nota,
     });
   }
 
