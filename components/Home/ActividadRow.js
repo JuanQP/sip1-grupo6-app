@@ -59,7 +59,7 @@ function ActividadRow({ actividad, mostrarPaciente = false, onActividadClick, ..
           <IconButton
             color={colors.primary}
             style={{marginLeft: 'auto'}}
-            icon="dots-horizontal"
+            icon="square-edit-outline"
             mode="text"
             onPress={handleIconButtonClick}
           />
@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
   },
   card: {
     flex: 6,
-    borderLeftWidth: 4,
+    borderLeftWidth: 8,
     flexDirection: 'column',
     padding: 10
   },
