@@ -97,7 +97,21 @@ export const crearServer = () => createServer({
       }
       return {
         token: usuario.id,
+        email,
       };
+    });
+
+    this.patch('/usuario', (schema, request) => {
+      const { email, expoPushToken } = JSON.parse(request.requestBody);
+      return schema.usuarios.findBy({ email }).update({ expoPushToken });
+    });
+
+    this.post('https://exp.host/--/api/v2/push/updateDeviceToken', (schema, request) => {
+      return {data: {expoPushToken: "ExponentPushToken[PSGkI4IJHWt8M8AjGwvGMp]"}};
+    });
+
+    this.post('https://exp.host/--/api/v2/push/getExpoPushToken', (schema, request) => {
+      return {data: {expoPushToken: "ExponentPushToken[PSGkI4IJHWt8M8AjGwvGMp]"}};
     });
 
     // Pacientes
