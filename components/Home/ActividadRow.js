@@ -42,6 +42,7 @@ function ActividadRow({ actividad, mostrarPaciente = false, onActividadClick, ..
   const hora = fecha.format("HH:mm");
   const { colors } = props.theme;
   const color = colorSegunEstado(estado, colors);
+  const mostrarDosis = actividad.tipo === 'Medicación';
 
   function handleIconButtonClick() {
     onActividadClick(actividad);
@@ -68,10 +69,10 @@ function ActividadRow({ actividad, mostrarPaciente = false, onActividadClick, ..
           <Text>{hora}</Text>
           <IconButton
             color={colors.disabled}
-            style={{marginLeft: 'auto'}}
             icon={iconSegunTipo(actividad.tipo)}
             mode="text"
           />
+          {mostrarDosis && <Text>{actividad.dosis}</Text>}
         </View>
         {!mostrarPaciente ? null : (
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
