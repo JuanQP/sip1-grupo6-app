@@ -24,7 +24,7 @@ function ActividadDetailsModal({ actividad, waiting, visible, mostrarPaciente, o
     backgroundColor: colors.surface,
     borderRadius: 10,
   };
-
+  const mostrarDosis = actividad.tipo === 'Medicación';
   const fecha = moment(actividad.fecha);
 
   useEffect(() => {
@@ -93,7 +93,7 @@ function ActividadDetailsModal({ actividad, waiting, visible, mostrarPaciente, o
             </View>
             <View style={styles.contenidoRow}>
               <Text>{fecha.format("HH:mm")}</Text>
-              <Text>{actividad.dosis}</Text>
+              { mostrarDosis && <Text>{actividad.dosis}</Text>}
             </View>
           </View>
           <Caption>Observaciones</Caption>
