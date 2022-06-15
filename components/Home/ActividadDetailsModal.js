@@ -4,7 +4,17 @@ import { useEffect, useState } from "react";
 import { formatearFecha, imagenes } from "../../utils/utils";
 import moment from "moment";
 
-function ActividadDetailsModal({ actividad, waiting, visible, mostrarPaciente, onEditClick, onDismiss, onSubmit, ...props }) {
+function ActividadDetailsModal({
+  actividad,
+  waiting,
+  visible,
+  mostrarPaciente,
+  readOnly,
+  onEditClick,
+  onDismiss,
+  onSubmit,
+  ...props
+}) {
 
   if(!actividad) {
     return null;
@@ -63,14 +73,16 @@ function ActividadDetailsModal({ actividad, waiting, visible, mostrarPaciente, o
           >
             Cancelar
           </Button>
-          <Button
-            mode="text"
-            onPress={handleConfirmarClick}
-            disabled={waiting}
-            loading={waiting}
-          >
-            Confirmar
-          </Button>
+          {!readOnly && (
+            <Button
+              mode="text"
+              onPress={handleConfirmarClick}
+              disabled={waiting}
+              loading={waiting}
+            >
+              Confirmar
+            </Button>
+          )}
         </View>
         <View style={styles.contenido}>
           <Text style={{alignSelf: "center"}}>
@@ -86,9 +98,10 @@ function ActividadDetailsModal({ actividad, waiting, visible, mostrarPaciente, o
             <View style={styles.contenidoRow}>
               <Text>{actividad.nombre}</Text>
               <IconButton
-                color={colors.primary}
+                color={readOnly ? colors.disabled : colors.primary}
                 icon="pencil-outline"
-                onPress={handleEditClick}
+                onPress={readOnly ? () => {} : handleEditClick}
+                disabled={readOnly}
               />
             </View>
             <View style={styles.contenidoRow}>
@@ -98,19 +111,23 @@ function ActividadDetailsModal({ actividad, waiting, visible, mostrarPaciente, o
           </View>
           <Caption>Observaciones</Caption>
           <Paragraph>{actividad.observaciones}</Paragraph>
-          <TextInput
-            mode="flat"
-            label="Notas"
-            style={{backgroundColor: 'transparent'}}
-            value={nota}
-            onChangeText={setNota}
-          />
-          <Button mode="outlined" style={{marginTop: 10}} onPress={() => {}}>
-            Cargar archivo
-          </Button>
+          {!readOnly && (
+            <TextInput
+              mode="flat"
+              label="Notas"
+              style={{backgroundColor: 'transparent'}}
+              value={nota}
+              onChangeText={setNota}
+            />)
+          }
+          {!readOnly && (
+            <Button mode="outlined" style={{marginTop: 10}} onPress={() => {}}>
+              Cargar archivo
+            </Button>
+          )}
         </View>
         <View>
-          <ToggleButton.Row onValueChange={showSnackbar} value={estado}>
+          <ToggleButton.Row onValueChange={readOnly ? () => {} : showSnackbar} value={estado}>
             <ToggleButton
               color={estado === 'pospuesta' ? 'white' : colors.primary}
               style={{flex: 1, backgroundColor: estado === 'pospuesta' ? colors.primary : 'transparent'}}

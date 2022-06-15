@@ -12,6 +12,7 @@ import PacienteScreen from '../screens/PacienteScreen';
 import NuevoPacienteScreen from '../screens/Pacientes/NuevoPacienteScreen';
 import FamiliarScreen from '../screens/FamiliarScreen';
 import OverviewScreen from '../screens/OverviewScreen';
+import FamiliarHome from '../screens/FamiliarHome';
 
 const Stack = createNativeStackNavigator();
 
@@ -32,6 +33,11 @@ export default function App() {
         name="Home"
         component={HomeScreen}
         options={{ title: 'Actividades' }}
+      />
+      <Stack.Screen
+        name="FamiliarHome"
+        component={FamiliarHome}
+        options={{ title: 'Familiar' }}
       />
       <Stack.Screen
         name="MisPacientes"

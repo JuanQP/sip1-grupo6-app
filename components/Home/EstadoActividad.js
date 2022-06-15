@@ -17,6 +17,6 @@ export default function EstadoActividad({ titulo, actividades, color }) {
 const styles = StyleSheet.create({
   row: {
     alignItems: 'center',
-    borderBottomWidth: 1,
+    borderBottomWidth: 4,
   },
 });
