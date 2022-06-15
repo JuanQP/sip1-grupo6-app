@@ -14,6 +14,7 @@ import FamiliarScreen from '../screens/FamiliarScreen';
 import OverviewScreen from '../screens/OverviewScreen';
 import FamiliarHome from '../screens/FamiliarHome';
 import NotificacionesScreen from '../screens/Notificaciones';
+import GlosarioScreen from '../screens/GlosarioScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -29,6 +30,11 @@ export default function App() {
         name="Overview"
         component={OverviewScreen}
         options={{ title: 'Overview' }}
+      />
+      <Stack.Screen
+        name="Glosario"
+        component={GlosarioScreen}
+        options={{ title: 'Glosario' }}
       />
       <Stack.Screen
         name="Home"

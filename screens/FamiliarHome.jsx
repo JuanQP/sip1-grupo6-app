@@ -59,10 +59,15 @@ function FamiliarHome({ navigation, route, ...props }) {
     navigation.navigate(proximaPantalla, { pacienteId, actividadId: actividad.id });
   }
 
+  function handleGlosarioPress() {
+    navigation.navigate('Glosario', { esCuidador: false });
+  }
+
   return (
     <View style={styles.container}>
       <Appbar.Header>
         <Appbar.Content title="Actividades" />
+        <Appbar.Action icon="book-alphabet" onPress={handleGlosarioPress} />
         <Appbar.Action icon="bell" onPress={handleNotificacionesPress} />
       </Appbar.Header>
       {/* Acá va el header! */}

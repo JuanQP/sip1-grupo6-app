@@ -6,6 +6,9 @@ export const formatoFechas = "YYYY-MM-DD HH:mm:ss";
 export const imagenes = {
   'mirta.png': require('../assets/mirta.png'),
   'andras.png': require('../assets/andras.png'),
+  'completada': require('../assets/completada.png'),
+  'pendiente': require('../assets/pendiente.png'),
+  'pospuesta': require('../assets/pospuesta.png'),
 };
 
 /**
