@@ -2,6 +2,7 @@ import { StyleSheet, View } from 'react-native';
 import { Avatar, Caption, IconButton, Text, Title, withTheme } from 'react-native-paper';
 import moment from 'moment';
 import { imagenes } from '../../utils/utils';
+import { bordeSegunEstado } from '../../utils/styles';
 
 function iconSegunTipo(tipo) {
   switch (tipo.toLowerCase()) {
@@ -21,7 +22,7 @@ function iconSegunTipo(tipo) {
 function colorSegunEstado(estado, colors) {
   switch (estado.toLowerCase()) {
     case 'completada':
-      return colors.primary;
+      return colors.completada;
     case 'pendiente':
       return colors.pendiente;
     case 'pospuesta':
@@ -43,6 +44,9 @@ function ActividadRow({ actividad, readOnly = false, mostrarPaciente = false, on
   const { colors } = props.theme;
   const color = colorSegunEstado(estado, colors);
   const mostrarDosis = actividad.tipo === 'Medicación';
+  const borderStyle = {
+    borderStyle: bordeSegunEstado(actividad.estado),
+  };
 
   function handleIconButtonClick() {
     onActividadClick(actividad);
@@ -54,7 +58,7 @@ function ActividadRow({ actividad, readOnly = false, mostrarPaciente = false, on
         <Title>{diaDelMes}</Title>
         <Caption>{nombreDelDia}</Caption>
       </View>
-      <View style={{...styles.card, backgroundColor: colors.surface, borderColor: color}}>
+      <View style={{...styles.card, ...borderStyle, backgroundColor: colors.surface, borderColor: color}}>
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
           <Text>{nombre}</Text>
           <IconButton
@@ -102,7 +106,7 @@ const styles = StyleSheet.create({
   },
   card: {
     flex: 6,
-    borderLeftWidth: 8,
+    borderTopWidth: 8,
     flexDirection: 'column',
     padding: 10
   },

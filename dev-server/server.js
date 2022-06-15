@@ -208,7 +208,7 @@ export const crearServer = () => createServer({
             nombre: 'Jorge',
             paciente: {
               ...paciente,
-              actividades,
+              actividades: actividades.sort(dateSort),
             },
           }
         };
