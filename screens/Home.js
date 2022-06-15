@@ -117,7 +117,7 @@ function HomeScreen({ navigation, route, ...props }) {
         <EstadoActividad
           titulo={'COMPLETADAS'}
           actividades={actividades}
-          color={colors.primary}
+          color={colors.completada}
         />
         <EstadoActividad
           titulo={'PENDIENTES'}

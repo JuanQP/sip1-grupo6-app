@@ -14,7 +14,8 @@ const theme = {
     ...DefaultTheme.colors,
     primary: '#07ACB9',
     accent: '#a53364',
-    pendiente: '#ffeb6a',
+    completada: '#50d2c2',
+    pendiente: '#fadb02',
     pospuesta: '#f87575',
   }
 }

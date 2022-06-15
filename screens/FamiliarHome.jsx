@@ -108,7 +108,7 @@ function FamiliarHome({ navigation, route, ...props }) {
         <EstadoActividad
           titulo={'COMPLETADAS'}
           actividades={familiar?.paciente?.actividades ?? []}
-          color={colors.primary}
+          color={colors.completada}
         />
         <EstadoActividad
           titulo={'PENDIENTES'}
