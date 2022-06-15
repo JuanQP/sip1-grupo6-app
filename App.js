@@ -17,6 +17,7 @@ const theme = {
     completada: '#50d2c2',
     pendiente: '#fadb02',
     pospuesta: '#f87575',
+    disabled: '#6f6f6f',
   }
 }
 
