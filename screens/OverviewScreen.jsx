@@ -1,13 +1,14 @@
 import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useState } from 'react';
 import { Alert, StyleSheet, View } from "react-native";
-import { Portal, Subheading, Text, Title } from "react-native-paper";
+import { Portal, Subheading, Surface, useTheme } from "react-native-paper";
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import ActividadDetailsModal from '../components/Home/ActividadDetailsModal';
 import ActividadesList from '../components/Home/ActividadesList';
 import NavbarLayout from '../layouts/NavbarLayout';
 import { updateActividad } from '../src/api/actividad';
 import { getMiSemana } from '../src/api/usuario';
+import EstadoActividad from '../components/Home/EstadoActividad';
 import moment from "moment";
 
 const pantallasActividades = {
@@ -18,9 +19,10 @@ const pantallasActividades = {
 };
 
 function OverviewScreen({ navigation }) {
+  const { colors } = useTheme();
   const queryClient = useQueryClient();
-  const inicioSemana = moment().startOf('isoWeek').format('DD/MM');
-  const finSemana = moment().endOf('isoWeek').format('DD/MM');
+  const inicioSemana = moment().startOf('isoWeek').format('DD/MM/YYYY');
+  const finSemana = moment().endOf('isoWeek').format('DD/MM/YYYY');
   const { data: actividades,  } = useQuery('mi-semana', getMiSemana, {
     placeholderData: [],
   });
@@ -72,13 +74,41 @@ function OverviewScreen({ navigation }) {
 
   return (
     <NavbarLayout
-      title="Home"
+      title="Mi Semana"
       onMisPacientesPress={handleMisPacientesPress}
     >
+      <Surface style={{paddingVertical: 5}}>
+        <View style={{alignItems: 'center'}}>
+          <Subheading>
+            Semana del
+            <Subheading style={{fontWeight: 'bold'}}>
+              {` ${inicioSemana} `}
+            </Subheading>
+            al
+            <Subheading style={{fontWeight: 'bold'}}>
+              {` ${finSemana} `}
+            </Subheading>
+          </Subheading>
+        </View>
+        <View style={{flexDirection: 'row', justifyContent: 'space-evenly'}}>
+          <EstadoActividad
+            titulo={'Completadas'}
+            actividades={actividades}
+            color={colors.completada}
+          />
+          <EstadoActividad
+            titulo={'Pendientes'}
+            actividades={actividades}
+            color={colors.pendiente}
+          />
+          <EstadoActividad
+            titulo={'Pospuestas'}
+            actividades={actividades}
+            color={colors.pospuesta}
+          />
+        </View>
+      </Surface>
       <View style={styles.container}>
-        <Title>Mi semana</Title>
-        <Subheading>Semana del {`${inicioSemana} al ${finSemana}`}</Subheading>
-        <Text>Actividades de todos los pacientes para esta semana</Text>
         <ActividadesList
           actividades={actividades}
           onActividadClick={handleActividadClick}

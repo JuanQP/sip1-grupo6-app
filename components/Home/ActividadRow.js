@@ -38,6 +38,7 @@ function colorSegunEstado(estado, colors) {
 function ActividadRow({ actividad, readOnly = false, mostrarPaciente = false, onActividadClick, ...props }) {
   const { nombre, estado } = actividad;
   const fecha = moment(actividad.fecha);
+  const esFechaAntigua = fecha.isBefore(moment.now());
   const diaDelMes = fecha.format("DD");
   const nombreDelDia = fecha.format("ddd").toUpperCase().replace(".", "");
   const hora = fecha.format("HH:mm");
@@ -55,8 +56,8 @@ function ActividadRow({ actividad, readOnly = false, mostrarPaciente = false, on
   return (
     <View style={styles.row}>
       <View style={styles.date}>
-        <Title>{diaDelMes}</Title>
-        <Caption>{nombreDelDia}</Caption>
+        <Title style={{color: esFechaAntigua ? colors.disabled : colors.text}}>{diaDelMes}</Title>
+        <Caption style={{color: esFechaAntigua ? colors.disabled : colors.text}}>{nombreDelDia}</Caption>
       </View>
       <View style={{...styles.card, ...borderStyle, backgroundColor: colors.surface, borderColor: color}}>
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
