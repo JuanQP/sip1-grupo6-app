@@ -24,6 +24,8 @@ function ActividadDetailsModal({
   const [nota, setNota] = useState('');
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const showSnackbar = (newValue) => {
+    if(newValue === null) return;
+
     setSnackbarVisible(true);
     setEstado(newValue);
   };
