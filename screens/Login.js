@@ -59,8 +59,12 @@ export default function LoginScreen({ navigation }) {
     onSuccess: async (data) => {
       axios.defaults.headers.common.Authorization = `Bearer ${data.token}`;
       const expoPushToken = await registerForPushNotificationsAsync();
-      const { email } = data;
+      const { email, esFamiliar } = data;
       await axios.patch(`/api/usuario`, { email, expoPushToken });
+      if(esFamiliar) {
+        navigation.navigate('FamiliarHome');
+        return;
+      }
       navigation.navigate('Overview');
     },
     onError: (error) => {

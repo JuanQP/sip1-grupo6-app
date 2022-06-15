@@ -34,7 +34,7 @@ function colorSegunEstado(estado, colors) {
 /**
  * El tipo de fecha debe ser Moment
  */
-function ActividadRow({ actividad, mostrarPaciente = false, onActividadClick, ...props }) {
+function ActividadRow({ actividad, readOnly = false, mostrarPaciente = false, onActividadClick, ...props }) {
   const { nombre, estado } = actividad;
   const fecha = moment(actividad.fecha);
   const diaDelMes = fecha.format("DD");
@@ -60,7 +60,7 @@ function ActividadRow({ actividad, mostrarPaciente = false, onActividadClick, ..
           <IconButton
             color={colors.primary}
             style={{marginLeft: 'auto'}}
-            icon="square-edit-outline"
+            icon={readOnly ? "eye-outline" : "square-edit-outline"}
             mode="text"
             onPress={handleIconButtonClick}
           />

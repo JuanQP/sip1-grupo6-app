@@ -98,6 +98,7 @@ export const crearServer = () => createServer({
       return {
         token: usuario.id,
         email,
+        esFamiliar: usuario.esFamiliar,
       };
     });
 
@@ -176,6 +177,25 @@ export const crearServer = () => createServer({
       const familiar = JSON.parse(request.requestBody);
 
       return schema.familiars.create(familiar);
+    });
+
+    this.get('/familiar-home', function(schema, request) {
+      const usuarioId = String(middleware(request));
+      const usuario = schema.usuarios.find(usuarioId);
+      if(usuario.esFamiliar) {
+        const { paciente } = this.serialize(schema.pacientes.find("1"));
+        const { actividads: actividades } = this.serialize(schema.actividads.where({ pacienteId: "1" }));
+        const data = {
+          familiar: {
+            nombre: 'Jorge',
+            paciente: {
+              ...paciente,
+              actividades,
+            },
+          }
+        };
+        return data;
+      }
     });
 
     this.get('/mi-semana', function(schema, request) {
@@ -263,7 +283,8 @@ export const crearServer = () => createServer({
 
   seeds(server) {
     // Usuarios
-    const usuarioTest = server.create('usuario', {email: 'test@email.com', password: 'test'})
+    const usuarioCuidador = server.create('usuario', {email: 'cuidador@email.com', password: 'test', esFamiliar: false});
+    const usuarioFamiliar = server.create('usuario', {email: 'familiar@email.com', password: 'test', esFamiliar: true});
 
     // Sexos
     server.create('sexo', {descripcion: 'Masculino'});
@@ -375,8 +396,8 @@ export const crearServer = () => createServer({
     });
     andras.save();
 
-    usuarioTest.pacientes = [mirta, andras];
-    usuarioTest.save();
+    usuarioCuidador.pacientes = [mirta, andras];
+    usuarioCuidador.save();
   },
 });
 

@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { StatusBar } from 'expo-status-bar';
 import { Alert, StyleSheet, View } from 'react-native';
-import { Appbar, FAB, Portal, Text, withTheme } from 'react-native-paper';
+import { Appbar, Avatar, Card, Divider, FAB, Portal, Text, Title, Subheading, withTheme, IconButton, Caption } from 'react-native-paper';
 import CalendarStrip from 'react-native-calendar-strip';
 import { formatearFecha, stringToMomentMarkedDate } from '../utils/utils';
 import moment from 'moment';
@@ -11,7 +11,7 @@ import PacienteCard from '../components/Home/PacienteCard';
 import ActividadDetailsModal from '../components/Home/ActividadDetailsModal';
 import ActividadesList from '../components/Home/ActividadesList';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
-import { getPaciente, getPacienteActividades } from '../src/api/paciente';
+import { getHome } from '../src/api/familiarUsuario';
 import { updateActividad } from '../src/api/actividad';
 
 const hoy = moment();
@@ -23,31 +23,16 @@ const pantallasActividades = {
   'Otro': 'Otro',
 };
 
-function HomeScreen({ navigation, route, ...props }) {
-  const { pacienteId } = route.params;
-  const queryClient = useQueryClient();
-  const { data: paciente } = useQuery('paciente',
-    () => getPaciente(pacienteId),
-    { placeholderData: null }
-  );
-  const { data: actividades } = useQuery('actividades',
-    () => getPacienteActividades(pacienteId),
+function FamiliarHome({ navigation, route, ...props }) {
+  const { data: familiar } = useQuery('familiar-usuario',
+    getHome,
     {
-      placeholderData: [],
-      onSuccess: (data) => {
-        const newMarkedDates = data.map(a => stringToMomentMarkedDate(a.fecha, colors));
+      placeholderData: null,
+      onSuccess: (familiar) => {
+        const newMarkedDates = familiar.paciente.actividades.map(a => stringToMomentMarkedDate(a.fecha, colors));
         setMarkedDates(newMarkedDates);
       },
-    },
-  );
-  const { mutate: actividadMutate, actividadIsLoading } = useMutation(
-    updateActividad,
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries(['actividades']);
-        hideModal();
-      },
-      onError: () => Alert.alert("😞", "No se pudo actualizar esta actividad"),
+      select: (data) => data?.familiar,
     },
   );
   const [fechaSeleccionada] = useState(moment());
@@ -64,27 +49,9 @@ function HomeScreen({ navigation, route, ...props }) {
     navigation.navigate("Overview");
   }
 
-  function onMisPacientesClick() {
-    const { pacienteId } = route.params;
-    navigation.navigate("MisPacientes", { pacienteId });
-  }
-
-  function handleNuevaActividadClick() {
-    const { pacienteId } = route.params;
-    navigation.navigate("Actividad", { pacienteId });
-  }
-
   function handleActividadClick(actividad) {
     setActividadSeleccionada({...actividad});
     setModalVisible(true);
-  }
-
-  async function handleActividadModalSubmit(actividad) {
-    actividadMutate({
-      id: actividad.id,
-      estado: actividad.estado,
-      nota: actividad.nota,
-    });
   }
 
   function handlePacienteDetailButtonClick() {
@@ -102,31 +69,62 @@ function HomeScreen({ navigation, route, ...props }) {
   return (
     <View style={styles.container}>
       <Appbar.Header>
-        <Appbar.Action icon="home" onPress={handleHomeClick} />
         <Appbar.Content title="Actividades" />
-        <Appbar.Action icon="account-group" onPress={onMisPacientesClick} />
+        <Appbar.Action icon="bell" onPress={() => alert("Notificaciones")} />
       </Appbar.Header>
-      <PacienteCard
-        paciente={paciente}
-        onPacienteDetailClick={handlePacienteDetailButtonClick}
-      />
+      {/* Acá va el header! */}
+      <Card style={{padding: 4}}>
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          <Avatar.Image size={40} source="" />
+          <View style={{marginLeft: 8}}>
+            <Text>Mirta Pérez, 82</Text>
+            <Caption>Madre</Caption>
+          </View>
+          <IconButton
+            color={colors.primary}
+            style={{marginLeft: 'auto', margin: 0, padding: 0}}
+            icon="eye-outline"
+            mode="text"
+            onPress={() => {}}
+          />
+        </View>
+      </Card>
+      <Divider />
+      <Card style={{padding: 4}}>
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          <Avatar.Image size={40} source="" />
+          <View style={{marginLeft: 8}}>
+            <Text>Nancy González</Text>
+            <Caption>Cuidadora</Caption>
+          </View>
+          <IconButton
+            color={colors.primary}
+            style={{marginLeft: 'auto', margin: 0, padding: 0}}
+            icon="eye-outline"
+            mode="text"
+            onPress={() => {}}
+          />
+        </View>
+      </Card>
+      {/* Acá termina el header */}
+
       <Text style={{margin: 10, alignSelf: 'center'}}>
         {fecha}
       </Text>
       <View style={styles.containerEstadosActividades}>
         <EstadoActividad
           titulo={'COMPLETADAS'}
-          actividades={actividades}
+          actividades={familiar?.paciente?.actividades ?? []}
           color={colors.primary}
         />
         <EstadoActividad
           titulo={'PENDIENTES'}
-          actividades={actividades}
+          actividades={familiar?.paciente?.actividades ?? []}
           color={colors.pendiente}
         />
         <EstadoActividad
           titulo={'POSPUESTAS'}
-          actividades={actividades}
+          actividades={familiar?.paciente?.actividades ?? []}
           color={colors.pospuesta}
         />
       </View>
@@ -144,23 +142,19 @@ function HomeScreen({ navigation, route, ...props }) {
         showMonth={false}
       />
       <ActividadesList
-        actividades={actividades}
+        actividades={familiar?.paciente?.actividades ?? []}
+        readOnly={true}
         onActividadClick={handleActividadClick}
-      />
-      <FAB
-        style={styles.fab}
-        icon="plus"
-        onPress={handleNuevaActividadClick}
       />
       <Portal>
         <ActividadDetailsModal
           actividad={actividadSeleccionada}
           visible={modalVisible}
-          waiting={actividadIsLoading}
-          readOnly={false}
+          waiting={false}
+          readOnly={true}
           onEditClick={handleActividadEditClick}
           onDismiss={hideModal}
-          onSubmit={handleActividadModalSubmit}
+          onSubmit={() => {}}
         />
       </Portal>
       <StatusBar style="auto" />
@@ -185,4 +179,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default withTheme(HomeScreen);
+export default withTheme(FamiliarHome);
