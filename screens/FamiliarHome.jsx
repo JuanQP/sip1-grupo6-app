@@ -1,18 +1,16 @@
 import React, { useState } from 'react'
 import { StatusBar } from 'expo-status-bar';
-import { Alert, StyleSheet, View } from 'react-native';
-import { Appbar, Avatar, Card, Divider, FAB, Portal, Text, Title, Subheading, withTheme, IconButton, Caption } from 'react-native-paper';
+import { StyleSheet, View } from 'react-native';
+import { Appbar, Avatar, Card, Divider, Portal, Text, withTheme, IconButton, Caption } from 'react-native-paper';
 import CalendarStrip from 'react-native-calendar-strip';
 import { formatearFecha, stringToMomentMarkedDate } from '../utils/utils';
 import moment from 'moment';
 import 'moment/locale/es';
 import EstadoActividad from '../components/Home/EstadoActividad';
-import PacienteCard from '../components/Home/PacienteCard';
 import ActividadDetailsModal from '../components/Home/ActividadDetailsModal';
 import ActividadesList from '../components/Home/ActividadesList';
-import { useQuery, useMutation, useQueryClient } from 'react-query';
+import { useQuery } from 'react-query';
 import { getHome } from '../src/api/familiarUsuario';
-import { updateActividad } from '../src/api/actividad';
 
 const hoy = moment();
 const fecha = formatearFecha(hoy);
@@ -45,18 +43,13 @@ function FamiliarHome({ navigation, route, ...props }) {
     setModalVisible(false);
   }
 
-  function handleHomeClick() {
-    navigation.navigate("Overview");
+  function handleNotificacionesPress() {
+    navigation.navigate("Notificaciones", { usuarioId: familiar.id });
   }
 
   function handleActividadClick(actividad) {
     setActividadSeleccionada({...actividad});
     setModalVisible(true);
-  }
-
-  function handlePacienteDetailButtonClick() {
-    const { pacienteId } = route.params;
-    navigation.navigate('Paciente', { pacienteId });
   }
 
   function handleActividadEditClick(actividad) {
@@ -70,12 +63,12 @@ function FamiliarHome({ navigation, route, ...props }) {
     <View style={styles.container}>
       <Appbar.Header>
         <Appbar.Content title="Actividades" />
-        <Appbar.Action icon="bell" onPress={() => alert("Notificaciones")} />
+        <Appbar.Action icon="bell" onPress={handleNotificacionesPress} />
       </Appbar.Header>
       {/* Acá va el header! */}
       <Card style={{padding: 4}}>
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <Avatar.Image size={40} source="" />
+          <Avatar.Icon size={40} icon="account" />
           <View style={{marginLeft: 8}}>
             <Text>Mirta Pérez, 82</Text>
             <Caption>Madre</Caption>
@@ -92,7 +85,7 @@ function FamiliarHome({ navigation, route, ...props }) {
       <Divider />
       <Card style={{padding: 4}}>
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <Avatar.Image size={40} source="" />
+          <Avatar.Icon size={40} icon="account" />
           <View style={{marginLeft: 8}}>
             <Text>Nancy González</Text>
             <Caption>Cuidadora</Caption>

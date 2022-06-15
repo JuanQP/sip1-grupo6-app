@@ -179,6 +179,23 @@ export const crearServer = () => createServer({
       return schema.familiars.create(familiar);
     });
 
+    this.get('/notificaciones', function(schema, request) {
+      return {
+        notificaciones: [
+          {
+            fecha: new Date(2022, 4, 25, 17, 31, 0),
+            nombre: "Diurex",
+            razon: "Se alargó la sesión de kinesiología, debo esperar que termine.",
+          },
+          {
+            fecha: new Date(2022, 4, 25, 11, 3, 0),
+            nombre: "Vitaminas",
+            razon: "Se acabaron. Al mediodía salgo a comprar y se las doy al regreso.",
+          },
+        ],
+      };
+    });
+
     this.get('/familiar-home', function(schema, request) {
       const usuarioId = String(middleware(request));
       const usuario = schema.usuarios.find(usuarioId);
@@ -187,6 +204,7 @@ export const crearServer = () => createServer({
         const { actividads: actividades } = this.serialize(schema.actividads.where({ pacienteId: "1" }));
         const data = {
           familiar: {
+            id: usuarioId,
             nombre: 'Jorge',
             paciente: {
               ...paciente,
