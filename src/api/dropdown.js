@@ -7,7 +7,6 @@ export function selectDropdownItems(data) {
 
 export async function getDias() {
   const response = await axios.get(`/api/dias/`);
-  console.log(response.data.dia)
   return response.data.dia;
 }
 
