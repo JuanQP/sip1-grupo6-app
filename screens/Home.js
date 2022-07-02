@@ -2,17 +2,16 @@ import React, { useState } from 'react'
 import { StatusBar } from 'expo-status-bar';
 import { Alert, StyleSheet, View } from 'react-native';
 import { Appbar, FAB, Portal, Text, withTheme } from 'react-native-paper';
-import CalendarStrip from 'react-native-calendar-strip';
 import { formatearFecha, stringToMomentMarkedDate } from '../utils/utils';
 import moment from 'moment';
 import 'moment/locale/es';
 import EstadoActividad from '../components/Home/EstadoActividad';
 import PacienteCard from '../components/Home/PacienteCard';
 import ActividadDetailsModal from '../components/Home/ActividadDetailsModal';
-import ActividadesList from '../components/Home/ActividadesList';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { getPaciente, getPacienteActividades } from '../src/api/paciente';
 import { updateActividad } from '../src/api/actividad';
+import Calendario from '../components/Actividades/Calendario';
 
 const hoy = moment();
 const fecha = formatearFecha(hoy);
@@ -131,22 +130,12 @@ function HomeScreen({ navigation, route, ...props }) {
         />
       </View>
       {/* Date picker */}
-      <CalendarStrip
-        scrollable
-        style={{height: 70, marginTop: 10}}
-        calendarColor={colors.surface}
-        iconContainer={{flex: 0.1}}
-        selectedDate={fechaSeleccionada}
-        highlightDateContainerStyle={{ backgroundColor: colors.primary }}
-        highlightDateNumberStyle={{color: colors.surface}}
-        highlightDateNameStyle={{color: colors.surface}}
-        markedDates={markedDates}
-        showMonth={false}
-      />
-      <ActividadesList
-        actividades={actividades}
-        onActividadClick={handleActividadClick}
-      />
+      <View style={{flex: 1}}>
+        <Calendario 
+          actividades={actividades}
+          onActividadClick={handleActividadClick}
+        />
+      </View>
       <FAB
         style={styles.fab}
         icon="plus"

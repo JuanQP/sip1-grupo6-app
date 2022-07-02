@@ -55,10 +55,12 @@ function ActividadRow({ actividad, readOnly = false, mostrarPaciente = false, on
 
   return (
     <View style={styles.row}>
-      <View style={styles.date}>
-        <Title style={{color: esFechaAntigua ? colors.disabled : colors.text}}>{diaDelMes}</Title>
-        <Caption style={{color: esFechaAntigua ? colors.disabled : colors.text}}>{nombreDelDia}</Caption>
-      </View>
+      {!mostrarPaciente ? null : (
+        <View style={styles.date}>
+          <Title style={{color: esFechaAntigua ? colors.disabled : colors.text}}>{diaDelMes}</Title>
+          <Caption style={{color: esFechaAntigua ? colors.disabled : colors.text}}>{nombreDelDia}</Caption>
+        </View>
+      )}
       <View style={{...styles.card, ...borderStyle, backgroundColor: colors.surface, borderColor: color}}>
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
           <Text>{nombre}</Text>
