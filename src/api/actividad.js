@@ -53,8 +53,17 @@ export async function getActividadMismaHora(datetime) {
 }
 
 export async function updateActividad(actividad) {
-  const response = await axios.patch(`${baseUrl}/api/actividad-log/${actividad.id}`, actividad);
-  return response.data.actividad;
+  const id = actividad.actividad['_parts'][0][1];
+  const auth = axios.defaults.headers.common['Authorization'];
+
+  const response = await fetch(`${baseUrl}/api/actividad-log/${id}`, {
+    method: 'PATCH',
+    body: actividad.actividad,
+    headers: {
+      Authorization: auth
+    },
+  });
+  return response.data;
 }
 
 export async function createOrUpdateActividad(actividad) {

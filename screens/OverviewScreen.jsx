@@ -8,6 +8,7 @@ import ActividadesList from '../components/Home/ActividadesList';
 import NavbarLayout from '../layouts/NavbarLayout';
 import { updateActividad } from '../src/api/actividad';
 import { getMiSemana } from '../src/api/usuario';
+import { getDias } from '../src/api/dropdown';
 import EstadoActividad from '../components/Home/EstadoActividad';
 import moment from "moment";
 
@@ -20,9 +21,15 @@ const pantallasActividades = {
 
 function OverviewScreen({ navigation }) {
   const { colors } = useTheme();
+  const [dias, setDias] = useState([]);
   const queryClient = useQueryClient();
   const inicioSemana = moment().startOf('isoWeek').format('DD/MM/YYYY');
   const finSemana = moment().endOf('isoWeek').format('DD/MM/YYYY');
+  useQuery('dias', getDias, {
+    onSuccess: (data) => {
+      setDias(data);
+    }
+  });
   const { data: actividades,  } = useQuery('mi-semana', getMiSemana, {
     placeholderData: [],
   });
@@ -54,8 +61,7 @@ function OverviewScreen({ navigation }) {
 
   async function handleActividadModalSubmit(actividad) {
     actividadMutate({
-      id: actividad.id,
-      status: actividad.estado,
+      actividad,
     });
   }
 
@@ -69,7 +75,7 @@ function OverviewScreen({ navigation }) {
     const { pacienteId, id: actividadId, tipo } = actividad.detalle;
     const proximaPantalla = pantallasActividades[tipo];
     setModalVisible(false);
-    navigation.navigate('PacienteStack', { screen: proximaPantalla, params: { pacienteId, actividadId } });
+    navigation.navigate('PacienteStack', { screen: proximaPantalla, params: { pacienteId, actividadId, dias } });
   }
 
   return (

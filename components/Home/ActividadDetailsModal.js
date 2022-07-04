@@ -62,8 +62,8 @@ function ActividadDetailsModal({
     setSnackbarVisible(false);
     const fd = new FormData();
     fd.append("id", actividad.id)
-    fd.append("estado", estado);
-    fd.append("nota", nota);
+    fd.append("status", estado);
+    fd.append("notas", nota);
     if(archivo) {
       const uriParts = archivo.split('.');
       const fileType = uriParts[uriParts.length - 1];
