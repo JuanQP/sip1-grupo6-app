@@ -4,7 +4,13 @@ Grupo 6 - Trabajo Práctico
 
 Integrantes
 
+* CORONEL, Lukas Eliseo
+* ESTRANO COLINA, Maria Grazia
+* JUAREZ, Romina Vanesa
+* LEDESMA, Arnaldo David
+* NAVARRETE, Ezequiel Dario
 * QUINTEROS PARADA, Juan Ignacio
+* VERGARA ZATTI, Dario Alberto
 
 ## ¿Cómo correr esta app?
 
