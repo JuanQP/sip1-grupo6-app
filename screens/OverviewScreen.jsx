@@ -66,10 +66,10 @@ function OverviewScreen({ navigation }) {
   );
 
   function handleActividadEditClick(actividad) {
-    const { pacienteId, id: actividadId, tipo } = actividad;
+    const { pacienteId, id: actividadId, tipo } = actividad.detalle;
     const proximaPantalla = pantallasActividades[tipo];
     setModalVisible(false);
-    navigation.navigate(proximaPantalla, { pacienteId, actividadId });
+    navigation.navigate('PacienteStack', { screen: proximaPantalla, params: { pacienteId, actividadId } });
   }
 
   return (

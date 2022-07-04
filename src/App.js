@@ -3,6 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import LoginScreen from '../screens/Login';
 import FamiliarHome from '../screens/FamiliarHome';
 import AppTabs from '../screens/Tabs/AppTabs';
+import PacienteStack from '../screens/Tabs/PacienteStack';
 
 const Stack = createNativeStackNavigator();
 
@@ -17,6 +18,11 @@ export default function App() {
       <Stack.Screen
         name="AppTabs"
         component={AppTabs}
+        options={{headerShown: false }}
+      />
+      <Stack.Screen
+        name="PacienteStack"
+        component={PacienteStack}
         options={{headerShown: false }}
       />
       <Stack.Screen
