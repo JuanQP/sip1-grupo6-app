@@ -12,7 +12,7 @@ import { crearActividadAlert, fechaYHoraLibre } from './ActividadesScreen';
 
 function MedicacionScreen({ navigation, route, ...props }) {
   const queryClient = useQueryClient();
-  const { pacienteId, actividadId } = route.params;
+  const { pacienteId, actividadId, dias } = route.params;
   const { data: paciente } = useQuery('paciente',
     () => getPaciente(pacienteId),
     {
@@ -25,12 +25,17 @@ function MedicacionScreen({ navigation, route, ...props }) {
     () => getActividad(actividadId),
     {
       onSuccess: (data) => {
-        console.log(data);
-        const { dias, ...actividad } = data;
+        const actividad= data;
+        let diasSemana = actividad.diasSemana.split(",");
+        let diasIds = [];
+        diasSemana.forEach((d) => {
+          let sel = dias.find(dia => d == dia['descripcion']);
+          diasIds.push(sel.id);
+        })
         setInitialValues({
           ...actividad,
           pacienteId,
-          diaIds: dias.map(keyExtractor),
+          diaIds: diasIds,
           fecha: new Date(actividad.fecha),
           frecuencia: String(actividad.frecuencia),
           duracion: String(actividad.duracion),
@@ -102,7 +107,7 @@ function MedicacionScreen({ navigation, route, ...props }) {
         <Appbar.Content title={`${initialValues.id ? '' : 'Nueva '}Medicación`} />
       </Appbar.Header>
       <View style={styles.formContainer}>
-        <Title>{paciente.nombre}</Title>
+        {paciente && <Title>{paciente.nombre}</Title>}
         <ScrollView>
           <MedicacionForm
             initialValues={initialValues}

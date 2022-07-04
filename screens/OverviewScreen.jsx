@@ -72,7 +72,7 @@ function OverviewScreen({ navigation }) {
   );
 
   function handleActividadEditClick(actividad) {
-    const { pacienteId, id: actividadId, tipo } = actividad.detalle;
+    const { pacienteId, actividadId, tipo } = actividad.detalle;
     const proximaPantalla = pantallasActividades[tipo];
     setModalVisible(false);
     navigation.navigate('PacienteStack', { screen: proximaPantalla, params: { pacienteId, actividadId, dias } });
