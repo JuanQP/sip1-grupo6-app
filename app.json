@@ -28,6 +28,15 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Esta aplicación necesita permisos para subir imágenes",
+          "cameraPermission": "Esta aplicación necesita permisos para usar tu cámara y subir imágenes"
+        }
+      ]
+    ]
   }
 }
