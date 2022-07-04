@@ -21,7 +21,7 @@ const theme = {
   }
 }
 
-const dev = true;
+const dev = false;
 
 window.server = dev ? crearServer() : null;
 

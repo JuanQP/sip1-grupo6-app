@@ -1,12 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Alert, Platform, StyleSheet, View } from 'react-native';
+import { Alert, Platform, StyleSheet, View, Image } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { Appbar, Paragraph } from "react-native-paper";
 import LoginForm from '../components/Login/LoginForm';
-import { login } from '../src/api/usuario';
+import { login, updateUsuario } from '../src/api/usuario';
 import { useMutation } from 'react-query';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
+import { imagenes } from '../utils/utils';
 const axios = require('axios').default;
 const initialValues = {
   email: '',
@@ -58,9 +59,9 @@ export default function LoginScreen({ navigation }) {
   const { mutate, isLoading } = useMutation(login, {
     onSuccess: async (data) => {
       axios.defaults.headers.common.Authorization = `Bearer ${data.token}`;
-      const expoPushToken = await registerForPushNotificationsAsync();
+      data.expoPushToken = await registerForPushNotificationsAsync();
       const { email, esFamiliar } = data;
-      await axios.patch(`/api/usuario`, { email, expoPushToken });
+      updateUsuario(data);
       if(esFamiliar) {
         navigation.navigate('FamiliarHome');
         return;
@@ -100,6 +101,7 @@ export default function LoginScreen({ navigation }) {
         <Appbar.Content title="Login" />
       </Appbar.Header>
       <View style={styles.loginView}>
+      <Image style={styles.tinyLogo} source={imagenes['VITALITY_LOGO_TEXT.png']} />
         <Paragraph>
           ¡Bienvenido 😄!
         </Paragraph>
@@ -117,6 +119,10 @@ export default function LoginScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  tinyLogo: {
+    width: 112,
+    height: 150,
   },
   loginView: {
     padding: 32,
