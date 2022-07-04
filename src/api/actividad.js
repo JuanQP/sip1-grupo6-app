@@ -15,6 +15,22 @@ export async function updateActividad(actividad) {
   return response.data.actividad;
 }
 
+export async function updateActividadLog(actividadLog) {
+  const id = actividadLog['_parts'][0][1];
+  const auth = axios.defaults.headers.common['Authorization'];
+
+  const response = await fetch(`/api/actividad-log/${id}`, {
+    method: 'PATCH',
+    body: actividadLog,
+    headers: {
+      Accept: 'application/json',
+      Authorization: auth,
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+  return response.data.actividad;
+}
+
 export async function createOrUpdateActividad(actividad) {
   const axiosMethod = actividad.id ? axios.patch : axios.post;
   const response = await axiosMethod(`/api/actividads/${actividad.id ?? ''}`, actividad);

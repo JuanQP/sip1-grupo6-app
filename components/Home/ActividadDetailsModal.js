@@ -3,6 +3,17 @@ import { Avatar, Button, Caption, IconButton, Modal, Paragraph, Snackbar, Text, 
 import { useEffect, useState } from "react";
 import { formatearFecha, imagenes } from "../../utils/utils";
 import moment from "moment";
+import * as ImagePicker from 'expo-image-picker';
+
+const pickImage = async () => {
+  // No permissions request is necessary for launching the image library
+  const result = await ImagePicker.launchCameraAsync({
+    mediaTypes: ImagePicker.MediaTypeOptions.Images,
+    allowsEditing: true,
+    quality: 1,
+  });
+  return result.cancelled ? undefined : result.uri;
+};
 
 function ActividadDetailsModal({
   actividad,
@@ -23,6 +34,7 @@ function ActividadDetailsModal({
   const [estado, setEstado] = useState('');
   const [nota, setNota] = useState('');
   const [snackbarVisible, setSnackbarVisible] = useState(false);
+  const [archivo, setArchivo] = useState(undefined);
   const showSnackbar = (newValue) => {
     if(newValue === null) return;
 
@@ -48,15 +60,29 @@ function ActividadDetailsModal({
 
   function handleConfirmarClick() {
     setSnackbarVisible(false);
-    onSubmit({
-      ...actividad,
-      estado,
-      nota,
-    });
+    const fd = new FormData();
+    fd.append("id", actividad.id)
+    fd.append("estado", estado);
+    fd.append("nota", nota);
+    if(archivo) {
+      const uriParts = archivo.split('.');
+      const fileType = uriParts[uriParts.length - 1];
+      fd.append("archivo", {
+        uri: archivo,
+        type: `image/${fileType}`,
+        name: `photo.${fileType}`,
+      });
+    }
+    onSubmit(fd);
   }
 
   function handleEditClick() {
     onEditClick(actividad);
+  }
+
+  async function handleCargarArchivoPress() {
+    const imagenSeleccionada = await pickImage();
+    setArchivo(imagenSeleccionada);
   }
 
   return (
@@ -123,9 +149,12 @@ function ActividadDetailsModal({
             />)
           }
           {!readOnly && (
-            <Button mode="outlined" style={{marginTop: 10}} onPress={() => {}}>
-              Cargar archivo
-            </Button>
+            <View>
+              <Button mode="outlined" style={{marginTop: 10}} onPress={handleCargarArchivoPress}>
+                {archivo ? 'Cargar otro archivo' : 'Cargar archivo'}
+              </Button>
+              {archivo && <Text style={{textAlign: 'center'}}>Hay un archivo seleccionado</Text>}
+            </View>
           )}
         </View>
         <View>

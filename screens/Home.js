@@ -12,7 +12,7 @@ import ActividadDetailsModal from '../components/Home/ActividadDetailsModal';
 import ActividadesList from '../components/Home/ActividadesList';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { getPaciente, getPacienteActividades } from '../src/api/paciente';
-import { updateActividad } from '../src/api/actividad';
+import { updateActividadLog } from '../src/api/actividad';
 import * as Linking from "expo-linking";
 
 const hoy = moment();
@@ -42,7 +42,7 @@ function HomeScreen({ navigation, route, ...props }) {
     },
   );
   const { mutate: actividadMutate, actividadIsLoading } = useMutation(
-    updateActividad,
+    updateActividadLog,
     {
       onSuccess: () => {
         queryClient.invalidateQueries(['actividades']);
@@ -75,12 +75,8 @@ function HomeScreen({ navigation, route, ...props }) {
     setModalVisible(true);
   }
 
-  async function handleActividadModalSubmit(actividad) {
-    actividadMutate({
-      id: actividad.id,
-      estado: actividad.estado,
-      nota: actividad.nota,
-    });
+  async function handleActividadModalSubmit(actividadLogFormData) {
+    actividadMutate(actividadLogFormData);
   }
 
   function handlePacienteDetailButtonClick() {
