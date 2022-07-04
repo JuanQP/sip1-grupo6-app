@@ -36,7 +36,9 @@ function colorSegunEstado(estado, colors) {
  * El tipo de fecha debe ser Moment
  */
 function ActividadRow({ actividad, readOnly = false, mostrarPaciente = false, onActividadClick, ...props }) {
-  const { nombre, estado } = actividad;
+  const estado  = actividad.status;
+  const detalleActividad = actividad.detalle;
+  const nombre = detalleActividad.nombre;
   const fecha = moment(actividad.fecha);
   const esFechaAntigua = fecha.isBefore(moment.now());
   const diaDelMes = fecha.format("DD");
@@ -44,9 +46,9 @@ function ActividadRow({ actividad, readOnly = false, mostrarPaciente = false, on
   const hora = fecha.format("HH:mm");
   const { colors } = props.theme;
   const color = colorSegunEstado(estado, colors);
-  const mostrarDosis = actividad.tipo === 'Medicación';
+  const mostrarDosis = detalleActividad.tipo === 'Medicación';
   const borderStyle = {
-    borderStyle: bordeSegunEstado(actividad.estado),
+    borderStyle: bordeSegunEstado(estado),
   };
 
   function handleIconButtonClick() {
@@ -76,10 +78,10 @@ function ActividadRow({ actividad, readOnly = false, mostrarPaciente = false, on
           <Text>{hora}</Text>
           <IconButton
             color={colors.disabled}
-            icon={iconSegunTipo(actividad.tipo)}
+            icon={iconSegunTipo(detalleActividad.tipo)}
             mode="text"
           />
-          {mostrarDosis && <Text>{actividad.dosis}</Text>}
+          {mostrarDosis && <Text>{actividad.detalle.dosis}</Text>}
         </View>
         {!mostrarPaciente ? null : (
           <View style={{flexDirection: 'row', alignItems: 'center'}}>

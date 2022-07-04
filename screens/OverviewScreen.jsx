@@ -55,7 +55,7 @@ function OverviewScreen({ navigation }) {
   async function handleActividadModalSubmit(actividad) {
     actividadMutate({
       id: actividad.id,
-      estado: actividad.estado,
+      status: actividad.estado,
     });
   }
 

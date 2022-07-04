@@ -41,8 +41,8 @@ function ActividadDetailsModal({
 
   useEffect(() => {
     if(actividad) {
-      setEstado(actividad.estado);
-      setNota(actividad.nota);
+      setEstado(actividad.status);
+      setNota(actividad.notas);
     }
   }, [actividad]);
 
@@ -98,7 +98,7 @@ function ActividadDetailsModal({
           )}
           <View style={{flexDirection: 'column'}}>
             <View style={styles.contenidoRow}>
-              <Text>{actividad.nombre}</Text>
+              <Text>{actividad.detalle.nombre}</Text>
               <IconButton
                 color={readOnly ? colors.disabled : colors.primary}
                 icon="pencil-outline"
@@ -108,11 +108,11 @@ function ActividadDetailsModal({
             </View>
             <View style={styles.contenidoRow}>
               <Text>{fecha.format("HH:mm")}</Text>
-              { mostrarDosis && <Text>{actividad.dosis}</Text>}
+              { mostrarDosis && <Text>{actividad.detalle.dosis}</Text>}
             </View>
           </View>
           <Caption>Observaciones</Caption>
-          <Paragraph>{actividad.observaciones}</Paragraph>
+          <Paragraph>{actividad.detalle.observaciones}</Paragraph>
           {!readOnly && (
             <TextInput
               mode="flat"
@@ -131,22 +131,22 @@ function ActividadDetailsModal({
         <View>
           <ToggleButton.Row onValueChange={readOnly ? () => {} : showSnackbar} value={estado}>
             <ToggleButton
-              color={estado === 'pospuesta' ? 'white' : colors.primary}
-              style={{flex: 1, backgroundColor: estado === 'pospuesta' ? colors.primary : 'transparent'}}
+              color={estado === 'Pospuesta' ? 'white' : colors.primary}
+              style={{flex: 1, backgroundColor: estado === 'Pospuesta' ? colors.primary : 'transparent'}}
               icon="alert-circle-outline"
-              value="pospuesta"
+              value="Pospuesta"
             />
             <ToggleButton
-              color={estado === 'pendiente' ? 'white' : colors.primary}
-              style={{flex: 1, backgroundColor: estado === 'pendiente' ? colors.primary : 'transparent'}}
+              color={estado === 'Pendiente' ? 'white' : colors.primary}
+              style={{flex: 1, backgroundColor: estado === 'Pendiente' ? colors.primary : 'transparent'}}
               icon="clock-outline"
-              value="pendiente"
+              value="Pendiente"
             />
             <ToggleButton
-              color={estado === 'completada' ? 'white' : colors.primary}
-              style={{flex: 1, backgroundColor: estado === 'completada' ? colors.primary : 'transparent'}}
+              color={estado === 'Completada' ? 'white' : colors.primary}
+              style={{flex: 1, backgroundColor: estado === 'Completada' ? colors.primary : 'transparent'}}
               icon="check-circle-outline"
-              value="completada"
+              value="Completada"
             />
           </ToggleButton.Row>
         </View>
