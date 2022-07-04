@@ -4,6 +4,7 @@ import { Text, useTheme } from 'react-native-paper';
 import OverviewScreen from '../OverviewScreen';
 import GlosarioScreen from '../GlosarioScreen';
 import PacienteStack from './PacienteStack';
+import FiltrosScreen from '../FiltrosScreen';
 
 const Tab = createMaterialBottomTabNavigator();
 
@@ -36,7 +37,7 @@ export default function AppTabs({ route }) {
       />
       <Tab.Screen
         name="Filtros"
-        component={TextComponent}
+        component={FiltrosScreen}
         options={{tabBarIcon: 'filter-outline', tabBarLabel: 'Filtros'}}
       />
       <Tab.Screen
