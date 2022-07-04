@@ -13,6 +13,7 @@ import ActividadesList from '../components/Home/ActividadesList';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { getPaciente, getPacienteActividades } from '../src/api/paciente';
 import { updateActividad } from '../src/api/actividad';
+import * as Linking from "expo-linking";
 
 const hoy = moment();
 const fecha = formatearFecha(hoy);
@@ -60,13 +61,8 @@ function HomeScreen({ navigation, route, ...props }) {
     setModalVisible(false);
   }
 
-  function handleHomeClick() {
-    navigation.navigate("Overview");
-  }
-
-  function onMisPacientesClick() {
-    const { pacienteId } = route.params;
-    navigation.navigate("MisPacientes", { pacienteId });
+  function handlePhoneLongPress() {
+    Linking.openURL(`tel:${paciente.telefono}`);
   }
 
   function handleNuevaActividadClick() {
@@ -102,9 +98,8 @@ function HomeScreen({ navigation, route, ...props }) {
   return (
     <View style={styles.container}>
       <Appbar.Header>
-        <Appbar.Action icon="home" onPress={handleHomeClick} />
         <Appbar.Content title="Actividades" />
-        <Appbar.Action icon="account-group" onPress={onMisPacientesClick} />
+        <Appbar.Action icon="phone-plus" onPress={() => {}} onLongPress={handlePhoneLongPress} />
       </Appbar.Header>
       <PacienteCard
         paciente={paciente}

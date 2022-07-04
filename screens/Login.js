@@ -65,7 +65,7 @@ export default function LoginScreen({ navigation }) {
         navigation.navigate('FamiliarHome');
         return;
       }
-      navigation.navigate('Overview');
+      navigation.navigate('AppTabs', { esFamiliar });
     },
     onError: (error) => {
       Alert.alert('😞', error.response?.data?.message ?? 'Algo salió mal');

@@ -4,17 +4,11 @@ import { StyleSheet, View } from 'react-native';
 import { Appbar, withTheme } from 'react-native-paper';
 import 'moment/locale/es';
 
-function AppbarLayout({ title, navigation, route, onMisPacientesPress, onGlosarioPress, ...props }) {
+function AppbarLayout({ title, navigation, route, ...props }) {
   return (
     <View style={styles.container}>
       <Appbar.Header>
         <Appbar.Content title={title} />
-        {onGlosarioPress && (
-          <Appbar.Action icon="book-alphabet" onPress={onGlosarioPress} />
-        )}
-        {onMisPacientesPress && (
-          <Appbar.Action icon="account-group" onPress={onMisPacientesPress} />
-        )}
       </Appbar.Header>
       {props.children}
       <StatusBar style="auto" />
