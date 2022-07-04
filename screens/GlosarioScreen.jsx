@@ -10,7 +10,7 @@ const pendiente = imagenes['pendiente'];
 const pospuesta = imagenes['pospuesta'];
 
 function GlosarioScreen({ navigation, route }) {
-  const { esCuidador } = route.params;
+  const { esFamiliar } = route.params;
   const { colors } = useTheme();
 
   function handleMisPacientesPress() {
@@ -18,13 +18,10 @@ function GlosarioScreen({ navigation, route }) {
   }
 
   return (
-    <NavbarLayout
-      title="Glosario"
-      onMisPacientesPress={handleMisPacientesPress}
-    >
+    <NavbarLayout title="Glosario">
       <Surface style={{flex: 1, padding: 10}}>
         <ScrollView>
-          {esCuidador && (
+          {!esFamiliar && (
             <>
               <GlosarioItem icono="phone-plus">
                 Mantenga presionado por unos segundos para notificar al familiar predeterminado que ocurrió una emergencia y debe comunicarse a la brevedad.
@@ -58,7 +55,7 @@ function GlosarioScreen({ navigation, route }) {
           <GlosarioItem icono="ninguno" imagen={pospuesta} color={colors.disabled}>
             La actividad ha sido Pospuesta.
           </GlosarioItem>
-          {esCuidador && (
+          {!esFamiliar && (
             <>
               <GlosarioItem icono="clock-outline" color={colors.primary} transparentBackground>
                 Seleccione para cambiar el estado de la actividad a <Text style={{ fontWeight: 'bold' }}>Pendiente</Text>.
@@ -76,7 +73,7 @@ function GlosarioScreen({ navigation, route }) {
           <GlosarioItem icono="eye-outline" color={colors.primary} transparentBackground>
             Seleccione para ver el perfil o la actividad.
           </GlosarioItem>
-          {esCuidador && (
+          {!esFamiliar && (
             <GlosarioItem icono="square-edit-outline" color={colors.primary} transparentBackground>
               Seleccione para editar el perfil o la actividad.
             </GlosarioItem>

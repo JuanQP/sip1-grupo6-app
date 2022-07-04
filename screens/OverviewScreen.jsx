@@ -52,10 +52,6 @@ function OverviewScreen({ navigation }) {
     navigation.navigate('MisPacientes');
   }
 
-  function handleGlosarioPress() {
-    navigation.navigate('Glosario', { esCuidador: true });
-  }
-
   async function handleActividadModalSubmit(actividad) {
     actividadMutate({
       id: actividad.id,
@@ -77,11 +73,7 @@ function OverviewScreen({ navigation }) {
   }
 
   return (
-    <NavbarLayout
-      title="Mi Semana"
-      onMisPacientesPress={handleMisPacientesPress}
-      onGlosarioPress={handleGlosarioPress}
-    >
+    <NavbarLayout title="Mi Semana">
       <Surface style={{paddingVertical: 5}}>
         <View style={{alignItems: 'center'}}>
           <Subheading>
