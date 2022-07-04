@@ -27,8 +27,8 @@ export async function createOrUpdateActividad(actividad) {
 */
 
 export async function getActividad(actividadId) {
-  const response = await axios.get(`${baseUrl}/api/actividads/${actividadId}`);
-  return response.data.actividad;
+  const response = await axios.get(`${baseUrl}/api/actividad/${actividadId}`);
+  return response.data;
 }
 
 export async function getActividadMismaHora(datetime) {
