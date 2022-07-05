@@ -22,9 +22,9 @@ const reviewSchema = yup.object({
 });
 
 function OtroForm({ initialValues, loading, onCancel, onSubmit, ...props }) {
+  if(initialValues.diaIds.length > 0) initialValues.repeticiones = true;
   useQuery('dias', getDias, {
     onSuccess: (dias) => {
-      if(initialValues.diaIds.length > 0) initialValues.repeticiones = true;
       setListaDias(dias.map(d => mapToLabelValue(d, 'descripcion', 'id')));
     }
   });
