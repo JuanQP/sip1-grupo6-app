@@ -78,6 +78,8 @@ function Calendario({ actividades, readOnly, mostrarPaciente = false, onActivida
                 selected={moment().format("YYYY-MM-DD")}
                 renderItem={renderItem}
                 firstDay={1}
+                pastScrollRange={6}
+                futureScrollRange={6}
                 theme={{
                     dotColor: '#06838c',
                     selectedDayBackgroundColor: '#06838c',
