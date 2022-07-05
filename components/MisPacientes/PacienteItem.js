@@ -3,7 +3,9 @@ import { Avatar, List, withTheme } from 'react-native-paper';
 import { imagenes } from '../../utils/utils';
 
 function PacienteItem({ paciente, isSelected, onPacienteClick, ...props }) {
+
   const { id, nombre, provincia, localidad, imagen} = paciente;
+
   const { colors } = props.theme;
 
   const iconColor = isSelected ? colors.primary : colors.disabled;

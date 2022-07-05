@@ -38,7 +38,7 @@ function MisPacientesScreen({ navigation, route }) {
         null :
         <PacienteList
           selectedId={pacienteId}
-          pacientes={data.pacientes}
+          pacientes={data}
           onPacienteClick={handlePacienteClick}
         />
       }
