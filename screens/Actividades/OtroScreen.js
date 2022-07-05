@@ -12,7 +12,7 @@ import { crearActividadAlert, fechaYHoraLibre } from './ActividadesScreen';
 
 function OtroScreen({ navigation, route, ...props }) {
   const queryClient = useQueryClient();
-  const { pacienteId, actividadId } = route.params;
+  const { pacienteId, actividadId, dias } = route.params;
   const { data: paciente } = useQuery('paciente',
     () => getPaciente(pacienteId),
     {
@@ -25,7 +25,13 @@ function OtroScreen({ navigation, route, ...props }) {
     () => getActividad(actividadId),
     {
       onSuccess: (data) => {
-        const { dias, ...actividad } = data;
+        const actividad= data;
+        let diasSemana = actividad.diasSemana.split(",");
+        let diasIds = [];
+        diasSemana.forEach((d) => {
+          let sel = dias.find(dia => d == dia['descripcion']);
+          diasIds.push(sel.id);
+        })
         setInitialValues({
           ...actividad,
           pacienteId,
