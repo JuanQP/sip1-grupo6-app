@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { StatusBar } from 'expo-status-bar';
 import { Alert, StyleSheet, View } from 'react-native';
 import { Appbar, FAB, Portal, Text, withTheme } from 'react-native-paper';
@@ -9,7 +9,7 @@ import EstadoActividad from '../components/Home/EstadoActividad';
 import PacienteCard from '../components/Home/PacienteCard';
 import ActividadDetailsModal from '../components/Home/ActividadDetailsModal';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
-import { getPaciente, getPacienteActividades } from '../src/api/paciente';
+import { getPacientePredeterminado, getPaciente, getPacienteActividades } from '../src/api/paciente';
 import { updateActividadLog } from '../src/api/actividad';
 import * as Linking from "expo-linking";
 import Calendario from '../components/Actividades/Calendario';
@@ -24,22 +24,38 @@ const pantallasActividades = {
 };
 
 function HomeScreen({ navigation, route, ...props }) {
-  const { pacienteId } = route.params;
+
+  const [paciente, setPaciente] = useState({});
+  //const paciente = (route.params ? getPaciente(route.params.pacienteId) : getPacientePredeterminado());
+  const [pacienteId, setPacienteId] = useState(0);
+  const [actividades, setActividades] = useState([]);
+
+  useEffect(() => {
+    if(route.params) {
+      getPaciente(route.params.pacienteId)
+      .then(res => {
+        setPaciente(res)
+        getActividadesPaciente(res.pacienteId);
+      })
+    }
+    else {
+      getPacientePredeterminado()
+      .then(res => {
+        setPaciente(res)
+        getActividadesPaciente(res.pacienteId);
+      })
+    }
+
+
+    return () => {
+      setPaciente({});
+      setActividades([]);
+      setPacienteId(0);
+    }
+  }, []);
+
   const queryClient = useQueryClient();
-  const { data: paciente } = useQuery('paciente',
-    () => getPaciente(pacienteId),
-    { placeholderData: null }
-  );
-  const { data: actividades } = useQuery('actividades',
-    () => getPacienteActividades(pacienteId),
-    {
-      placeholderData: [],
-      onSuccess: (data) => {
-        const newMarkedDates = data.map(a => stringToMomentMarkedDate(a.fecha, colors));
-        setMarkedDates(newMarkedDates);
-      },
-    },
-  );
+
   const { mutate: actividadMutate, actividadIsLoading } = useMutation(
     updateActividadLog,
     {
@@ -55,6 +71,14 @@ function HomeScreen({ navigation, route, ...props }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [actividadSeleccionada, setActividadSeleccionada] = useState(null);
   const { colors } = props.theme;
+
+  function getActividadesPaciente(pacienteId) {
+    let fecha = moment().format("YYYY-MM-DD");
+    getPacienteActividades(pacienteId, fecha)
+    .then((res) => {
+      setActividades(res)})
+    .catch((err) => console.error(err))
+  }
 
   function hideModal() {
     setModalVisible(false);
@@ -106,17 +130,17 @@ function HomeScreen({ navigation, route, ...props }) {
       <View style={styles.containerEstadosActividades}>
         <EstadoActividad
           titulo={'COMPLETADAS'}
-          actividades={actividades}
+          actividades={actividades.filter(act => act.fecha.split('T')[0] == moment().format("YYYY-MM-DD"))}
           color={colors.completada}
         />
         <EstadoActividad
           titulo={'PENDIENTES'}
-          actividades={actividades}
+          actividades={actividades.filter(act => act.fecha.split('T')[0] == moment().format("YYYY-MM-DD"))}
           color={colors.pendiente}
         />
         <EstadoActividad
           titulo={'POSPUESTAS'}
-          actividades={actividades}
+          actividades={actividades.filter(act => act.fecha.split('T')[0] == moment().format("YYYY-MM-DD"))}
           color={colors.pospuesta}
         />
       </View>

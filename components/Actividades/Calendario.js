@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Agenda, AgendaSchedule, LocaleConfig } from 'react-native-calendars';
 import { withTheme } from 'react-native-paper';
+import moment from 'moment';
 import ActividadRow from '../Home/ActividadRow';
 
 LocaleConfig.locales['es'] = {
@@ -26,7 +27,7 @@ LocaleConfig.locales['es'] = {
 LocaleConfig.defaultLocale = 'es';
 
 function Calendario({ actividades, readOnly, mostrarPaciente = false, onActividadClick }) {
-
+  console.log('ACTIVIDADES',actividades)
     const [items, setItems] = useState({});
 
     const timeToString = (time) => {
@@ -74,7 +75,7 @@ function Calendario({ actividades, readOnly, mostrarPaciente = false, onActivida
             <Agenda
                 items={items}
                 loadItemsForMonth={loadItems}
-                selected={'2022-07-06'}
+                selected={moment().format("YYYY-MM-DD")}
                 renderItem={renderItem}
                 firstDay={1}
                 theme={{

@@ -16,7 +16,7 @@ const Stack = createNativeStackNavigator();
 
 export default function PacienteStack() {
   return (
-    <Stack.Navigator initialRouteName="MisPacientes" screenOptions={{headerShown: false}}>
+    <Stack.Navigator initialRouteName="Home" screenOptions={{headerShown: false}}>
       <Stack.Screen
         name="MisPacientes"
         component={MisPacientesScreen}
