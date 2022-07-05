@@ -48,8 +48,8 @@ export async function getActividad(actividadId) {
 }
 
 export async function getActividadMismaHora(datetime) {
-  const response = await axios.get(`${baseUrl}/api/actividads-same-hour/`, { params: { datetime } });
-  return response.data.actividads;
+  const response = await axios.get(`${baseUrl}/api/actividades-log-same-hour/`, { params: { datetime } });
+  return response.data;
 }
 
 export async function updateActividad(actividad) {
@@ -68,6 +68,6 @@ export async function updateActividad(actividad) {
 
 export async function createOrUpdateActividad(actividad) {
   const axiosMethod = actividad.id ? axios.patch : axios.post;
-  const response = await axiosMethod(`${baseUrl}/api/actividads/${actividad.id ?? ''}`, actividad);
-  return response.data.actividad;
+  const response = await axiosMethod((actividad.id ? `${baseUrl}/api/actividad/${actividad.id}` : `${baseUrl}/api/actividad`), actividad);
+  return response.data;
 }

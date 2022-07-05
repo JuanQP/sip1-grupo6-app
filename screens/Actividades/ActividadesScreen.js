@@ -27,14 +27,14 @@ export function crearActividadAlert(handleSiPress = () => {}, handleNoPress = ()
 function ActividadesScreen({ navigation, route, ...props }) {
 
   const { colors } = props.theme;
-  const { pacienteId } = route.params;
+  const { pacienteId, dias } = route.params;
 
   function handleBackActionClick() {
     navigation.goBack();
   }
 
   function handleNuevaMedicacion() {
-    navigation.navigate('Medicacion', { pacienteId });
+    navigation.navigate('Medicacion', { pacienteId, dias });
   }
 
   function handleNuevaConsulta() {
@@ -46,7 +46,7 @@ function ActividadesScreen({ navigation, route, ...props }) {
   }
 
   function handleNuevoOtro() {
-    navigation.navigate('Otro', { pacienteId });
+    navigation.navigate('Otro', { pacienteId, dias });
   }
 
   return (

@@ -13,6 +13,7 @@ import { getPacientePredeterminado, getPaciente, getPacienteActividades } from '
 import { updateActividadLog } from '../src/api/actividad';
 import * as Linking from "expo-linking";
 import Calendario from '../components/Actividades/Calendario';
+import { getDias } from '../src/api/dropdown';
 
 const hoy = moment();
 const fecha = formatearFecha(hoy);
@@ -26,14 +27,22 @@ const pantallasActividades = {
 function HomeScreen({ navigation, route, ...props }) {
 
   const [paciente, setPaciente] = useState({});
+  const [dias, setDias] = useState([]);
   const [pacienteId, setPacienteId] = useState(0);
   const [actividades, setActividades] = useState([]);
+
+  useQuery('dias', getDias, {
+    onSuccess: (data) => {
+      setDias(data);
+    }
+  });
 
   useEffect(() => {
     if(route.params) {
       getPaciente(route.params.pacienteId)
       .then(res => {
         setPaciente(res)
+        setPacienteId(route.params.pacienteId)
         getActividadesPaciente(res.pacienteId);
       })
     }
@@ -41,6 +50,7 @@ function HomeScreen({ navigation, route, ...props }) {
       getPacientePredeterminado()
       .then(res => {
         setPaciente(res)
+        setPacienteId(res.pacienteId)
         getActividadesPaciente(res.pacienteId);
       })
     }
@@ -88,7 +98,8 @@ function HomeScreen({ navigation, route, ...props }) {
   }
 
   function handleNuevaActividadClick() {
-    navigation.navigate("Actividad", { pacienteId });
+    console.log('PACIENTE', pacienteId)
+    navigation.navigate("Actividad", { pacienteId, dias});
   }
 
   function handleActividadClick(actividad) {

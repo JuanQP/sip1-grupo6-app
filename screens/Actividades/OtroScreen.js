@@ -85,7 +85,11 @@ function OtroScreen({ navigation, route, ...props }) {
     const isfechaYHoraLibre = (await fechaYHoraLibre(formValues.fecha));
     if(!isfechaYHoraLibre) {
       crearActividadAlert(
-        () => mutateActividad(formValues, actions),
+        () => {
+          formValues.diaIds = formValues.diaIds.map((dia) => dia = dias.find((d) => d.id == dia).descripcion);
+          formValues.diaIds = formValues.diaIds.toString();
+          mutateActividad(formValues, actions)
+        },
         () => {},
       );
       return;

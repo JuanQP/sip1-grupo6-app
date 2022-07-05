@@ -84,7 +84,10 @@ function MedicacionScreen({ navigation, route, ...props }) {
     const isfechaYHoraLibre = await fechaYHoraLibre(formValues.fecha);
     if(!isfechaYHoraLibre) {
       crearActividadAlert(
-        () => mutateActividad(formValues, actions),
+        () =>  {
+          formValues.diaIds = formValues.diaIds.map((dia) => dia = dias.find((d) => d.id == dia).descripcion);
+          formValues.diaIds = formValues.diaIds.toString();
+          mutateActividad(formValues, actions)},
         () => {},
       );
       return;
@@ -107,7 +110,7 @@ function MedicacionScreen({ navigation, route, ...props }) {
         <Appbar.Content title={`${initialValues.id ? '' : 'Nueva '}Medicación`} />
       </Appbar.Header>
       <View style={styles.formContainer}>
-        {paciente && <Title>{paciente.nombre}</Title>}
+        {paciente ? <Title>{paciente.nombre}</Title> : null}
         <ScrollView>
           <MedicacionForm
             initialValues={initialValues}
