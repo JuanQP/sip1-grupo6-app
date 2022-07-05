@@ -26,7 +26,6 @@ const pantallasActividades = {
 function HomeScreen({ navigation, route, ...props }) {
 
   const [paciente, setPaciente] = useState({});
-  //const paciente = (route.params ? getPaciente(route.params.pacienteId) : getPacientePredeterminado());
   const [pacienteId, setPacienteId] = useState(0);
   const [actividades, setActividades] = useState([]);
 
@@ -89,7 +88,6 @@ function HomeScreen({ navigation, route, ...props }) {
   }
 
   function handleNuevaActividadClick() {
-    const { pacienteId } = route.params;
     navigation.navigate("Actividad", { pacienteId });
   }
 
@@ -105,6 +103,10 @@ function HomeScreen({ navigation, route, ...props }) {
   function handlePacienteDetailButtonClick() {
     const { pacienteId } = route.params;
     navigation.navigate('Paciente', { pacienteId });
+  }
+
+  function handleOnMisPacientesPress() {
+    navigation.navigate('MisPacientes', { pacienteId });
   }
 
   function handleActividadEditClick(actividad) {
@@ -123,6 +125,7 @@ function HomeScreen({ navigation, route, ...props }) {
       <PacienteCard
         paciente={paciente}
         onPacienteDetailClick={handlePacienteDetailButtonClick}
+        onMisPacientesPress={handleOnMisPacientesPress}
       />
       <Text style={{margin: 10, alignSelf: 'center'}}>
         {fecha}
