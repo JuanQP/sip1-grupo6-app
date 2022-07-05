@@ -60,9 +60,7 @@ function OverviewScreen({ navigation }) {
   }
 
   async function handleActividadModalSubmit(actividad) {
-    actividadMutate({
-      actividad,
-    });
+    actividadMutate(actividad);
   }
 
   useFocusEffect(
