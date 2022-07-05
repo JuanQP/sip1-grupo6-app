@@ -53,17 +53,24 @@ export async function getActividadMismaHora(datetime) {
 }
 
 export async function updateActividad(actividad) {
-  const id = actividad.actividad['_parts'][0][1];
-  const auth = axios.defaults.headers.common['Authorization'];
+  try {
+    const id = actividad['_parts'][0][1];
+    const auth = axios.defaults.headers.common['Authorization'];
+  
+    const response = await fetch(`${baseUrl}/api/actividad-log/${id}`, {
+      method: 'PATCH',
+      body: actividad,
+      headers: {
+        Authorization: auth
+      },
+    });
 
-  const response = await fetch(`${baseUrl}/api/actividad-log/${id}`, {
-    method: 'PATCH',
-    body: actividad.actividad,
-    headers: {
-      Authorization: auth
-    },
-  });
-  return response.data;
+    return response.data;
+  }   
+  catch(err) {
+    console.error(err)
+  }
+
 }
 
 export async function createOrUpdateActividad(actividad) {

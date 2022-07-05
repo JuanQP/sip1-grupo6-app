@@ -36,7 +36,7 @@ function colorSegunEstado(estado, colors) {
  * El tipo de fecha debe ser Moment
  */
 function ActividadRow({ actividad, readOnly = false, mostrarPaciente = false, onActividadClick, ...props }) {
-  const estado  = actividad.status;
+  const estado = actividad.status;
   const detalleActividad = actividad.detalle;
   const nombre = detalleActividad.nombre;
   const fecha = moment(actividad.fecha);
@@ -57,24 +57,22 @@ function ActividadRow({ actividad, readOnly = false, mostrarPaciente = false, on
 
   return (
     <View style={styles.row}>
-      {!mostrarPaciente ? null : (
-        <View style={styles.date}>
-          <Title style={{color: esFechaAntigua ? colors.disabled : colors.text}}>{diaDelMes}</Title>
-          <Caption style={{color: esFechaAntigua ? colors.disabled : colors.text}}>{nombreDelDia}</Caption>
-        </View>
-      )}
-      <View style={{...styles.card, ...borderStyle, backgroundColor: colors.surface, borderColor: color}}>
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+      <View style={styles.date}>
+        <Title style={{ color: esFechaAntigua ? colors.disabled : colors.text }}>{diaDelMes}</Title>
+        <Caption style={{ color: esFechaAntigua ? colors.disabled : colors.text }}>{nombreDelDia}</Caption>
+      </View>
+      <View style={{ ...styles.card, ...borderStyle, backgroundColor: colors.surface, borderColor: color }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <Text>{nombre}</Text>
           <IconButton
             color={colors.primary}
-            style={{marginLeft: 'auto'}}
+            style={{ marginLeft: 'auto' }}
             icon={readOnly ? "eye-outline" : "square-edit-outline"}
             mode="text"
             onPress={handleIconButtonClick}
           />
         </View>
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <Text>{hora}</Text>
           <IconButton
             color={colors.disabled}
@@ -84,8 +82,8 @@ function ActividadRow({ actividad, readOnly = false, mostrarPaciente = false, on
           {mostrarDosis && <Text>{actividad.detalle.dosis}</Text>}
         </View>
         {!mostrarPaciente ? null : (
-          <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <Avatar.Image style={{marginRight: 10}} size={32} source={imagenes[actividad.paciente.imagen]} />
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Avatar.Image style={{ marginRight: 10 }} size={32} source={imagenes[actividad.paciente.imagen]} />
             <Text>{actividad.paciente.nombre}</Text>
           </View>
         )}

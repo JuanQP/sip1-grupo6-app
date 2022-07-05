@@ -8,12 +8,13 @@ import 'moment/locale/es';
 import EstadoActividad from '../components/Home/EstadoActividad';
 import PacienteCard from '../components/Home/PacienteCard';
 import ActividadDetailsModal from '../components/Home/ActividadDetailsModal';
-import { useQuery, useMutation, useQueryClient } from 'react-query';
+import { useQuery, useMutation, useQueryClient, setLogger } from 'react-query';
 import { getPacientePredeterminado, getPaciente, getPacienteActividades } from '../src/api/paciente';
-import { updateActividadLog } from '../src/api/actividad';
+import { updateActividad } from '../src/api/actividad';
 import * as Linking from "expo-linking";
-import Calendario from '../components/Actividades/Calendario';
+import CalendarStrip from 'react-native-calendar-strip';
 import { getDias } from '../src/api/dropdown';
+import ActividadesList from '../components/Home/ActividadesList';
 
 const hoy = moment();
 const fecha = formatearFecha(hoy);
@@ -30,6 +31,7 @@ function HomeScreen({ navigation, route, ...props }) {
   const [dias, setDias] = useState([]);
   const [pacienteId, setPacienteId] = useState(0);
   const [actividades, setActividades] = useState([]);
+  const [fechaSeleccionada, setFecha] = useState(moment().format("YYYY-MM-DD"));
 
   useQuery('dias', getDias, {
     onSuccess: (data) => {
@@ -43,7 +45,7 @@ function HomeScreen({ navigation, route, ...props }) {
       .then(res => {
         setPaciente(res)
         setPacienteId(route.params.pacienteId)
-        getActividadesPaciente(res.pacienteId);
+        getActividadesPaciente(res.pacienteId, fechaSeleccionada);
       })
     }
     else {
@@ -51,7 +53,7 @@ function HomeScreen({ navigation, route, ...props }) {
       .then(res => {
         setPaciente(res)
         setPacienteId(res.pacienteId)
-        getActividadesPaciente(res.pacienteId);
+        getActividadesPaciente(res.pacienteId, fechaSeleccionada);
       })
     }
 
@@ -60,33 +62,48 @@ function HomeScreen({ navigation, route, ...props }) {
       setPaciente({});
       setActividades([]);
       setPacienteId(0);
+      setFecha(moment().format("YYYY-MM-DD"));
     }
   }, []);
 
   const queryClient = useQueryClient();
 
   const { mutate: actividadMutate, actividadIsLoading } = useMutation(
-    updateActividadLog,
+    updateActividad,
     {
       onSuccess: () => {
-        queryClient.invalidateQueries(['actividades']);
+        getActividadesPaciente(pacienteId, fechaSeleccionada);
         hideModal();
       },
       onError: () => Alert.alert("😞", "No se pudo actualizar esta actividad"),
     },
   );
-  const [fechaSeleccionada] = useState(moment());
+
   const [markedDates, setMarkedDates] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [actividadSeleccionada, setActividadSeleccionada] = useState(null);
   const { colors } = props.theme;
 
-  function getActividadesPaciente(pacienteId) {
-    let fecha = moment().format("YYYY-MM-DD");
+  function getActividadesPaciente(pacienteId, fecha) {
+
     getPacienteActividades(pacienteId, fecha)
     .then((res) => {
-      setActividades(res)})
+      const actividadesToShow = [];
+      res.forEach((a) => {
+        if(moment(a.fecha).format("YYYY-MM-DD") >= moment(fecha).format("YYYY-MM-DD")) {
+          actividadesToShow.push(a)
+        }
+      })
+      const newMarkedDates = res.map(a => stringToMomentMarkedDate(a.fecha, colors));
+      setActividades(actividadesToShow)
+      setMarkedDates(newMarkedDates);
+    })
     .catch((err) => console.error(err))
+  }
+
+  function handleFechaSeleccionada(fecha) {
+    setFecha(fecha.toISOString().split('T')[0]);
+    getActividadesPaciente(pacienteId, fecha.toISOString().split('T')[0]);
   }
 
   function hideModal() {
@@ -160,7 +177,20 @@ function HomeScreen({ navigation, route, ...props }) {
       </View>
       {/* Date picker */}
       <View style={{flex: 1}}>
-        <Calendario 
+        <CalendarStrip
+          scrollable
+          style={{height: 70, marginTop: 10}}
+          calendarColor={colors.surface}
+          iconContainer={{flex: 0.1}}
+          selectedDate={fechaSeleccionada}
+          highlightDateContainerStyle={{ backgroundColor: colors.primary }}
+          highlightDateNumberStyle={{color: colors.surface}}
+          highlightDateNameStyle={{color: colors.surface}}
+          markedDates={markedDates}
+          showMonth={true}
+          onDateSelected={handleFechaSeleccionada}
+        />
+        <ActividadesList
           actividades={actividades}
           onActividadClick={handleActividadClick}
         />
