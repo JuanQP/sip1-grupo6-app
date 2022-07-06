@@ -45,7 +45,6 @@ function HomeScreen({ navigation, route, ...props }) {
   useEffect(() => {
     let filtrosAplicadosSubscription = new Subscription();
     filtrosAplicadosSubscription = filtrosActualizados$.subscribe(() => getActividadesPaciente(1, fechaSeleccionada))
-    
     if(route.params) {
       getPaciente(route.params.pacienteId)
       .then(res => {
@@ -71,7 +70,7 @@ function HomeScreen({ navigation, route, ...props }) {
       setFecha(moment().format("YYYY-MM-DD"));
       filtrosAplicadosSubscription.unsubscribe();
     }
-  }, []);
+  }, [route.params]);
 
   const queryClient = useQueryClient();
 
