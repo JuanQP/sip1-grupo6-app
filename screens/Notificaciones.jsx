@@ -8,12 +8,11 @@ import { getNotificaciones } from '../src/api/notificacion';
 import NotificacionCard from '../components/Notificaciones/NotificacionCard';
 
 function NotificacionesScreen({ navigation, route, ...props }) {
-  const { usuarioId } = route.params;
   const { data: notificaciones } = useQuery('notificaciones',
-    () => getNotificaciones(usuarioId),
+    () => getNotificaciones(),
     {
       placeholderData: { notificaciones: [] },
-      select: (data) => data.notificaciones,
+      select: (data) => data,
     },
   );
 
