@@ -75,7 +75,7 @@ export function dateSort(a, b) {
 }
 
 export function mapToLabelValue(object, labelKey = 'descripcion', valueKey = 'id') {
-  return {label: object[labelKey], value: object[valueKey]};
+  return {label: object[labelKey], value: object[valueKey].toString()};
 }
 
 export function keyExtractor(object) {
