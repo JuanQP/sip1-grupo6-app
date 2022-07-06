@@ -141,17 +141,17 @@ function FamiliarHome({ navigation, route, ...props }) {
       <View style={styles.containerEstadosActividades}>
         <EstadoActividad
           titulo={'COMPLETADAS'}
-          actividades={familiar?.paciente?.actividades ?? []}
+          actividades={actividades.filter(act => act.fecha.split('T')[0] == moment().format("YYYY-MM-DD")) ?? []}
           color={colors.completada}
         />
         <EstadoActividad
           titulo={'PENDIENTES'}
-          actividades={familiar?.paciente?.actividades ?? []}
+          actividades={actividades.filter(act => act.fecha.split('T')[0] == moment().format("YYYY-MM-DD")) ?? []}
           color={colors.pendiente}
         />
         <EstadoActividad
           titulo={'POSPUESTAS'}
-          actividades={familiar?.paciente?.actividades ?? []}
+          actividades={actividades.filter(act => act.fecha.split('T')[0] == moment().format("YYYY-MM-DD")) ?? []}
           color={colors.pospuesta}
         />
       </View>
@@ -173,6 +173,7 @@ function FamiliarHome({ navigation, route, ...props }) {
         <ActividadesList
           actividades={actividades}
           onActividadClick={handleActividadClick}
+          readOnly={true}
         />
       </View>
       <Portal>
