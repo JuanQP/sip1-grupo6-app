@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View } from 'react-native';
 import { Appbar, Avatar, Card, Divider, Portal, Text, withTheme, IconButton, Caption } from 'react-native-paper';
@@ -9,7 +9,9 @@ import EstadoActividad from '../components/Home/EstadoActividad';
 import ActividadDetailsModal from '../components/Home/ActividadDetailsModal';
 import { useQuery } from 'react-query';
 import { getHome } from '../src/api/familiarUsuario';
-import Calendario from '../components/Actividades/Calendario';
+import { getPacienteActividades } from '../src/api/paciente';
+import CalendarStrip from 'react-native-calendar-strip';
+import ActividadesList from '../components/Home/ActividadesList';
 
 const hoy = moment();
 const fecha = formatearFecha(hoy);
@@ -20,30 +22,53 @@ const pantallasActividades = {
   'Otro': 'Otro',
 };
 
+
 function FamiliarHome({ navigation, route, ...props }) {
-  const { data: familiar } = useQuery('familiar-usuario',
-    getHome,
-    {
-      placeholderData: null,
-      onSuccess: (familiar) => {
-        const newMarkedDates = familiar.paciente.actividades.map(a => stringToMomentMarkedDate(a.fecha, colors));
-        setMarkedDates(newMarkedDates);
-      },
-      select: (data) => data?.familiar,
-    },
-  );
-  const [fechaSeleccionada] = useState(moment());
+
+  useEffect(() => {
+    getHome()
+    .then(res => {
+      setFamiliar(res)
+      getActividadesPaciente(res.pacienteId, fechaSeleccionada);
+    })  
+
+  return () => {
+    setFamiliar({});
+    setActividades([]);
+    setFecha(moment().format("YYYY-MM-DD"));
+  }
+}, []);
+
   const [markedDates, setMarkedDates] = useState([]);
+  const [familiar, setFamiliar] = useState({});
   const [modalVisible, setModalVisible] = useState(false);
   const [actividadSeleccionada, setActividadSeleccionada] = useState(null);
   const { colors } = props.theme;
+  const [actividades, setActividades] = useState([]);
+  const [fechaSeleccionada, setFecha] = useState(moment().format("YYYY-MM-DD"));
+
+  function getActividadesPaciente(pacienteId, fecha) {
+    getPacienteActividades(pacienteId, fecha)
+    .then((res) => {
+      const actividadesToShow = [];
+      res.forEach((a) => {
+        if(moment(a.fecha).format("YYYY-MM-DD") >= moment(fecha).format("YYYY-MM-DD")) {
+          actividadesToShow.push(a)
+        }
+      })
+      const newMarkedDates = res.map(a => stringToMomentMarkedDate(a.fecha, colors));
+      setActividades(actividadesToShow)
+      setMarkedDates(newMarkedDates);
+    })
+    .catch((err) => console.error(err))
+  }
 
   function hideModal() {
     setModalVisible(false);
   }
 
   function handleNotificacionesPress() {
-    navigation.navigate("Notificaciones", { usuarioId: familiar.id });
+    navigation.navigate("Notificaciones", { usuarioId: familiar.familiarId });
   }
 
   function handleActividadClick(actividad) {
@@ -60,6 +85,11 @@ function FamiliarHome({ navigation, route, ...props }) {
 
   function handleGlosarioPress() {
     navigation.navigate('Glosario', { esCuidador: false });
+  }
+
+  function handleFechaSeleccionada(fecha) {
+    setFecha(fecha.toISOString().split('T')[0]);
+    getActividadesPaciente(familiar.pacienteId, fecha.toISOString().split('T')[0]);
   }
 
   return (
@@ -127,9 +157,21 @@ function FamiliarHome({ navigation, route, ...props }) {
       </View>
       {/* Date picker */}
       <View style={{flex: 1}}>
-        <Calendario 
-          actividades={familiar?.paciente?.actividades ?? []}
-          readOnly={true}
+        <CalendarStrip
+          scrollable
+          style={{height: 70, marginTop: 10}}
+          calendarColor={colors.surface}
+          iconContainer={{flex: 0.1}}
+          selectedDate={fechaSeleccionada}
+          highlightDateContainerStyle={{ backgroundColor: colors.primary }}
+          highlightDateNumberStyle={{color: colors.surface}}
+          highlightDateNameStyle={{color: colors.surface}}
+          markedDates={markedDates}
+          showMonth={true}
+          onDateSelected={handleFechaSeleccionada}
+        />
+        <ActividadesList
+          actividades={actividades}
           onActividadClick={handleActividadClick}
         />
       </View>

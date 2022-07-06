@@ -57,7 +57,6 @@ function HomeScreen({ navigation, route, ...props }) {
       })
     }
 
-
     return () => {
       setPaciente({});
       setActividades([]);
@@ -85,7 +84,6 @@ function HomeScreen({ navigation, route, ...props }) {
   const { colors } = props.theme;
 
   function getActividadesPaciente(pacienteId, fecha) {
-
     getPacienteActividades(pacienteId, fecha)
     .then((res) => {
       const actividadesToShow = [];
@@ -134,6 +132,7 @@ function HomeScreen({ navigation, route, ...props }) {
   }
 
   function handleOnMisPacientesPress() {
+    console.log(pacienteId)
     navigation.navigate('MisPacientes', { pacienteId });
   }
 
