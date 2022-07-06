@@ -8,7 +8,7 @@ function FamiliaresList({ familiares, onEditFamiliar }) {
       <List.Item title="No hay familiares agregados" /> :
       familiares.map(f => 
         <FamiliarItem
-          key={f.id}
+          key={f.familiarId}
           familiar={f}
           onEditFamiliar={onEditFamiliar}
         />
