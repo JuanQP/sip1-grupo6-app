@@ -68,7 +68,7 @@ function FamiliarHome({ navigation, route, ...props }) {
   }
 
   function handleNotificacionesPress() {
-    navigation.navigate("Notificaciones", { usuarioId: familiar.familiarId });
+    navigation.navigate('PacienteStack', { screen: 'Notificaciones' });
   }
 
   function handleActividadClick(actividad) {
@@ -84,7 +84,7 @@ function FamiliarHome({ navigation, route, ...props }) {
   }
 
   function handleGlosarioPress() {
-    navigation.navigate('Glosario', { esCuidador: false });
+    navigation.navigate('AppTabs', { screen: 'Glosario', params: { esFamiliar: true } });
   }
 
   function handleFechaSeleccionada(fecha) {

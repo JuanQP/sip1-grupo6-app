@@ -77,12 +77,11 @@ export default function LoginScreen({ navigation }) {
   });
 
   useEffect(() => {
-    // registerForPushNotificationsAsync().then(token => {});
-    // // This listener is fired whenever a user taps on or interacts with a notification (works when app is foregrounded, backgrounded, or killed)
-    // responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
-    //   // Acá va todo el código extra que tiene que correr cuando el usuario toca la notificación recibida:
-    //   // navigation.navigate('Notificaciones');
-    // });
+    // This listener is fired whenever a user taps on or interacts with a notification (works when app is foregrounded, backgrounded, or killed)
+    responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
+    // Acá va todo el código extra que tiene que correr cuando el usuario toca la notificación recibida:
+    navigation.navigate('PacienteStack', { screen: 'Notificaciones' });
+    });
 
     return () => {
       Notifications.removeNotificationSubscription(responseListener.current);
