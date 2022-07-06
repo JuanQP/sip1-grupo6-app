@@ -163,10 +163,10 @@ function HomeScreen({ navigation, route, ...props }) {
   }
 
   function handleActividadEditClick(actividad) {
-    const { pacienteId } = route.params;
-    const proximaPantalla = pantallasActividades[actividad.tipo];
+    const { pacienteId, actividadId, tipo } = actividad.detalle;
+    const proximaPantalla = pantallasActividades[tipo];
     setModalVisible(false);
-    navigation.navigate(proximaPantalla, { pacienteId, actividadId: actividad.id });
+    navigation.navigate('PacienteStack', { screen: proximaPantalla, params: { pacienteId, actividadId, dias } });
   }
 
   return (
