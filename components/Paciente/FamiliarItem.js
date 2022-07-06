@@ -3,12 +3,14 @@ import { IconButton, List, withTheme } from 'react-native-paper';
 
 function FamiliarItem({ familiar, onEditFamiliar, ...props }) {
   const {
-    nombre,
     relacion,
-    esContactoDeEmergencia,
+    esContactoDeEmergencia
+  } = familiar;
+  const {
+    nombre,
     provincia,
     localidad,
-  } = familiar;
+  } = familiar.usuario;
   const isSelected = esContactoDeEmergencia;
   const { colors } = props.theme;
 
@@ -23,7 +25,7 @@ function FamiliarItem({ familiar, onEditFamiliar, ...props }) {
     <List.Item
       style={styles.row}
       title={`${nombre}, ${relacion}`}
-      description={`${localidad}, ${provincia.descripcion}`}
+      //description={`${localidad}, ${provincia.descripcion}`}
       left={() =>
       <IconButton
         color={colors.primary}

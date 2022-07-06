@@ -29,6 +29,11 @@ export async function getFamiliar(familiarId) {
   return response.data.familiar;
 }
 
+export async function getFamiliares(pacienteId) {
+  const response = await axios.get(`${baseUrl}/api/familiares/${pacienteId}`);
+  return response.data;
+}
+
 export async function saveFamiliar(familiar) {
   return familiar.id ? updateFamiliar(familiar) : createFamiliar(familiar);
 }

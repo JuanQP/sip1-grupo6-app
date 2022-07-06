@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { StatusBar } from 'expo-status-bar';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import {
@@ -13,6 +13,7 @@ import PacienteForm from '../components/Paciente/PacienteForm';
 import FamiliaresList from '../components/Paciente/FamiliaresList';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { getPaciente, updatePaciente } from '../src/api/paciente';
+import { getFamiliares } from '../src/api/familiar';
 
 function PacienteScreen({ navigation, route, ...props }) {
   const { colors } = props.theme;
@@ -40,26 +41,34 @@ function PacienteScreen({ navigation, route, ...props }) {
     {
       onSuccess: (data) => {
         const {
-          sexo,
-          tipoDocumento,
-          provincia,
-          familiars,
+          sexoId,
+          tipoDocumentoId,
+          provinciaId,
           imagen,
           ...paciente
         } = data;
         setInitialValues({
           ...paciente,
-          sexoId: sexo.id,
-          tipoDocumentoId: tipoDocumento.id,
-          provinciaId: provincia.id,
+          sexoId: sexoId,
+          tipoDocumentoId: tipoDocumentoId,
+          provinciaId: provinciaId,
           fechaNacimiento: new Date(paciente.fechaNacimiento),
         });
-        setFamiliares(familiars);
         setImagen(imagen);
       },
       enabled: !!pacienteId,
     },
   );
+
+  useEffect(() => {
+    getFamiliares(pacienteId)
+    .then((res) => setFamiliares(res))
+    .catch((err) => console.error(err))
+
+    return () => {
+      setFamiliares([])
+    }
+  }, []);
 
   async function handleSubmit(formValues, actions) {
     mutate(formValues, {

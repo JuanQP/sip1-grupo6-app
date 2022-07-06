@@ -140,7 +140,6 @@ function HomeScreen({ navigation, route, ...props }) {
   }
 
   function handleNuevaActividadClick() {
-    console.log('PACIENTE', pacienteId)
     navigation.navigate("Actividad", { pacienteId, dias});
   }
 
@@ -154,8 +153,8 @@ function HomeScreen({ navigation, route, ...props }) {
   }
 
   function handlePacienteDetailButtonClick() {
-    const { pacienteId } = route.params;
-    navigation.navigate('Paciente', { pacienteId });
+    const pacienteId = paciente.pacienteId;
+    navigation.navigate('PacienteStack', { screen: 'Paciente', params: { pacienteId } });
   }
 
   function handleOnMisPacientesPress() {

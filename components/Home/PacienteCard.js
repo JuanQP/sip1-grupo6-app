@@ -22,7 +22,7 @@ function PacienteCard({ paciente, loading, onPacienteDetailClick, onMisPacientes
       </View>
       <IconButton
         style={{marginLeft: 'auto'}}
-        icon="dots-horizontal" mode="text"
+        icon="eye-outline" mode="text"
         color={colors.primary}
         onPress={onPacienteDetailClick}
       />
