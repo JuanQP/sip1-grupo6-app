@@ -4,7 +4,7 @@ import { Card, Text } from "react-native-paper";
 import moment from 'moment';
 
 function NotificacionCard({ notificacion, style }) {
-  const fecha = moment(notificacion.fecha).format('DD/MM/YYYY HH:mm');
+  const fecha = moment(notificacion.createdAt).format('DD/MM/YYYY HH:mm');
 
   return (
     <Card style={style}>
@@ -13,8 +13,8 @@ function NotificacionCard({ notificacion, style }) {
           <Text>Actividad Pospuesta</Text>
           <Text style={styles.grayText}>{fecha}</Text>
         </View>
-        <Text style={styles.grayText}>Nombre: {notificacion.nombre}</Text>
-        <Text style={styles.grayText}>Razón: "{notificacion.razon}"</Text>
+        <Text style={styles.grayText}>Nombre: {notificacion.titulo}</Text>
+        <Text style={styles.grayText}>Razón: "{notificacion.descripcion}"</Text>
       </Card.Content>
     </Card>
   )
