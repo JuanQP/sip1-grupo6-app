@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Agenda, AgendaSchedule, LocaleConfig } from 'react-native-calendars';
+import { Agenda, ExpandableCalendar, CalendarProvider, WeekCalendar, LocaleConfig } from 'react-native-calendars';
 import { withTheme } from 'react-native-paper';
 import moment from 'moment';
 import ActividadRow from '../Home/ActividadRow';
@@ -27,7 +27,6 @@ LocaleConfig.locales['es'] = {
 LocaleConfig.defaultLocale = 'es';
 
 function Calendario({ actividades, readOnly, mostrarPaciente = false, onActividadClick }) {
-  console.log('ACTIVIDADES',actividades)
     const [items, setItems] = useState({});
 
     const timeToString = (time) => {
@@ -60,6 +59,15 @@ function Calendario({ actividades, readOnly, mostrarPaciente = false, onActivida
         }, 1000);
     }
 
+    onDateChanged = (/* date, updateSource */) => {
+      // console.warn('ExpandableCalendarScreen onDateChanged: ', date, updateSource);
+      // fetch and set data for date + week ahead
+    };
+  
+    onMonthChange = (/* month, updateSource */) => {
+      // console.warn('ExpandableCalendarScreen onMonthChange: ', month, updateSource);
+    };
+
     const renderItem = (item) => {
         return (
             <ActividadRow
@@ -72,24 +80,41 @@ function Calendario({ actividades, readOnly, mostrarPaciente = false, onActivida
     }
 
     return (
-            <Agenda
-                items={items}
-                loadItemsForMonth={loadItems}
-                selected={moment().format("YYYY-MM-DD")}
-                renderItem={renderItem}
-                firstDay={1}
-                pastScrollRange={6}
-                futureScrollRange={6}
-                theme={{
-                    dotColor: '#06838c',
-                    selectedDayBackgroundColor: '#06838c',
-                    todayTextColor: '#CC3F7C',
-                    textDayFontWeight: '500',
-                    agendaTodayColor: '#CC3F7C',
-                    agendaDayTextColor: '#6f6f6f',
-                    agendaDayNumColor: '#6f6f6f',
-                }}
-            />
+      <CalendarProvider
+        date={moment().format("YYYY-MM-DD")}
+       // onDateChanged={onDateChanged}
+       // onMonthChange={onMonthChange}
+        showTodayButton
+        disabledOpacity={0.6}
+        theme={{
+          dotColor: '#06838c',
+          selectedDayBackgroundColor: '#06838c',
+          todayTextColor: '#CC3F7C',
+          textDayFontWeight: '500',
+          agendaTodayColor: '#CC3F7C',
+          agendaDayTextColor: '#6f6f6f',
+          agendaDayNumColor: '#6f6f6f',
+            }}
+        >
+        {weekView ? ( <WeekCalendar firstDay={1} markedDates={this.marked}/> ) : (
+          <ExpandableCalendar
+            // horizontal={false}
+            // hideArrows
+            // disablePan
+            // hideKnob
+            // initialPosition={ExpandableCalendar.positions.OPEN}
+            // calendarStyle={styles.calendar}
+            // headerStyle={styles.calendar} // for horizontal only
+            // disableWeekScroll
+            // disableAllTouchEventsForDisabledDays
+            firstDay={1}
+            // markedDates={marked}
+            leftArrowImageSource={leftArrowIcon}
+            rightArrowImageSource={rightArrowIcon}
+            // animateScroll
+          />
+        )}
+      </CalendarProvider>
        
     )
 

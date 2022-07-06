@@ -1,13 +1,11 @@
 import axios from 'axios';
 import { mapToLabelValue } from '../../utils/utils';
+import { environment } from '../../environments/environment';
+
+const baseUrl = environment.baseUrl;
 
 export function selectDropdownItems(data) {
   return data.map(d => mapToLabelValue(d, 'descripcion', 'id'));  
-}
-
-export async function getDias() {
-  const response = await axios.get(`/api/dias/`);
-  return response.data.dia;
 }
 
 export async function getTiposActividades() {
@@ -29,6 +27,12 @@ export async function getEstados() {
   return ESTADOS;
 }
 
+/*
+export async function getDias() {
+  const response = await axios.get(`/api/dias/`);
+  return response.data.dia;
+}
+
 export async function getSexos() {
   const response = await axios.get(`/api/sexos/`);
   return response.data.sexos;
@@ -40,4 +44,23 @@ export async function getTiposDocumento() {
 export async function getProvincias() {
   const response = await axios.get(`/api/provincias/`);
   return response.data.provincia;
+}
+*/
+
+export async function getDias() {
+  const response = await axios.get(`${baseUrl}/api/dias/`);
+  return response.data;
+}
+
+export async function getSexos() {
+  const response = await axios.get(`${baseUrl}/api/sexos/`);
+  return response.data;
+}
+export async function getTiposDocumento() {
+  const response = await axios.get(`${baseUrl}/api/tipos-documento/`);
+  return response.data;
+}
+export async function getProvincias() {
+  const response = await axios.get(`${baseUrl}/api/provincias/`);
+  return response.data;
 }

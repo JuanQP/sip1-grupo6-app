@@ -11,9 +11,9 @@ function PacienteList({ selectedId, pacientes, onPacienteClick, ...props }) {
     <List.Section style={{ backgroundColor: colors.surface }}>
      {Array.from(pacientes).map(p =>
         <PacienteItem
-          key={p.id}
+          key={p.pacienteId}
           paciente={p}
-          isSelected={p.id === selectedId}
+          isSelected={p.pacienteId === selectedId}
           onPacienteClick={onPacienteClick}
         />
       )}

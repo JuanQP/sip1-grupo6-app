@@ -1,11 +1,12 @@
 import { StyleSheet, View } from 'react-native';
 import { Avatar, Caption, IconButton, Text, withTheme } from 'react-native-paper';
 import moment from 'moment';
-import { imagenes } from '../../utils/utils';
+import { imagenes, getProvincias } from '../../utils/utils';
 
-function PacienteCard({ paciente, loading, onPacienteDetailClick, ...props }) {
+function PacienteCard({ paciente, loading, onPacienteDetailClick, onMisPacientesPress, ...props }) {
 
-  const { nombre, provincia, localidad, obraSocial, numeroAfiliado, imagen } = paciente ?? {};
+  const { nombre, localidad, obraSocial, numeroAfiliado, imagen } = paciente ?? {};
+  const provincia = getProvincias().find(prov => prov.id == paciente.provinciaId);
   const hoy = moment();
   const edad = hoy.diff(moment(paciente?.fechaNacimiento, "YYYY-MM-DD"), 'years');
   const ubicacion = `${provincia?.descripcion}, ${localidad}`;
@@ -24,6 +25,12 @@ function PacienteCard({ paciente, loading, onPacienteDetailClick, ...props }) {
         icon="dots-horizontal" mode="text"
         color={colors.primary}
         onPress={onPacienteDetailClick}
+      />
+      <IconButton
+        style={{marginLeft: 'auto'}}
+        icon="account-group" mode="text"
+        color={colors.primary}
+        onPress={onMisPacientesPress}
       />
     </View>
   )
