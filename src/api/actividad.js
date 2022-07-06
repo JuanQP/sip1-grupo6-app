@@ -1,7 +1,12 @@
 import axios from 'axios';
 import { environment } from '../../environments/environment';
+import { Observable, Subject } from 'rxjs';
 
 const baseUrl = environment.baseUrl;
+export let filtrosAplicados = {estadosIds: '', tiposIds: ''};
+
+export let filtrosAct = new Subject();
+export let filtrosActualizados$ = filtrosAct.asObservable();
 
 /*
 export async function getActividad(actividadId) {
@@ -41,6 +46,15 @@ export async function createOrUpdateActividad(actividad) {
   return response.data.actividad;
 }
 */
+
+export function updateFiltrosObs() {
+  filtrosAct.next();
+}
+
+export function updateFiltrosAplicados(filtros) {
+  filtrosAplicados = filtros;
+  updateFiltrosObs();
+}
 
 export async function getActividad(actividadId) {
   const response = await axios.get(`${baseUrl}/api/actividad/${actividadId}`);

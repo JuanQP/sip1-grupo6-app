@@ -11,6 +11,9 @@ import { getMiSemana } from '../src/api/usuario';
 import { getDias } from '../src/api/dropdown';
 import EstadoActividad from '../components/Home/EstadoActividad';
 import moment from "moment";
+import { filtrosAplicados, filtrosActualizados$ } from '../src/api/actividad';
+import { useEffect } from 'react';
+import { Subscription } from 'rxjs';
 
 const pantallasActividades = {
   'Medicación': 'Medicacion',
@@ -22,22 +25,32 @@ const pantallasActividades = {
 function OverviewScreen({ navigation }) {
   const { colors } = useTheme();
   const [dias, setDias] = useState([]);
+  const [actividades, setActividades] = useState([]);
   const queryClient = useQueryClient();
   const inicioSemana = moment().startOf('isoWeek').format('DD/MM/YYYY');
   const finSemana = moment().endOf('isoWeek').format('DD/MM/YYYY');
+
+  useEffect(() => {
+    getSemana()
+    let filtrosAplicadosSubscription = new Subscription();
+    filtrosAplicadosSubscription = filtrosActualizados$.subscribe(() => getSemana())
+    return () => {
+      setActividades([]);
+      filtrosAplicadosSubscription.unsubscribe();
+    }
+  }, []);
+
   useQuery('dias', getDias, {
     onSuccess: (data) => {
       setDias(data);
     }
   });
-  const { data: actividades,  } = useQuery('mi-semana', getMiSemana, {
-    placeholderData: [],
-  });
+
   const { mutate: actividadMutate, actividadIsLoading } = useMutation(
     updateActividad,
     {
       onSuccess: () => {
-        queryClient.invalidateQueries(['mi-semana']);
+        getSemana()
         hideModal();
       },
       onError: () => Alert.alert("😞", "No se pudo actualizar esta actividad"),
@@ -45,6 +58,33 @@ function OverviewScreen({ navigation }) {
   );
   const [modalVisible, setModalVisible] = useState(false);
   const [actividadSeleccionada, setActividadSeleccionada] = useState(null);
+
+  function getSemana() {
+    getMiSemana()
+    .then((res) => {
+      let aux = [];
+      let actividades = [];
+      if(filtrosAplicados) {
+        if(filtrosAplicados.tiposIds.length > 0) {
+          res.forEach((act) => filtrosAplicados.tiposIds.find((tipo) => act.detalle.tipo === tipo) ? aux.push(act) : null)
+        } 
+        if(filtrosAplicados.tiposIds.length > 0 && filtrosAplicados.estadosIds.length > 0) {
+          aux.forEach((act) => filtrosAplicados.estadosIds.find((estado) => act.status === estado) ? actividades.push(act) : null)
+        }
+        if(filtrosAplicados.tiposIds.length == 0 && filtrosAplicados.estadosIds.length > 0) {
+          res.forEach((act) => filtrosAplicados.estadosIds.find((estado) => act.status === estado) ? actividades.push(act) : null)
+        }
+        if(filtrosAplicados.tiposIds.length > 0 && filtrosAplicados.estadosIds.length == 0) {
+          actividades = aux;
+        }
+        if(filtrosAplicados.tiposIds.length == 0 && filtrosAplicados.estadosIds.length == 0) {
+          actividades = res;
+        }
+      }
+      setActividades(actividades)
+    })
+    .catch(err => console.error(err))
+  }
 
   function hideModal() {
     setModalVisible(false);
