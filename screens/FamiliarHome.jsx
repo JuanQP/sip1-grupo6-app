@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View } from 'react-native';
 import { Appbar, Avatar, Card, Divider, Portal, Text, withTheme, IconButton, Caption } from 'react-native-paper';
-import { formatearFecha, stringToMomentMarkedDate } from '../utils/utils';
+import { imagenes, formatearFecha, stringToMomentMarkedDate } from '../utils/utils';
 import moment from 'moment';
 import 'moment/locale/es';
 import EstadoActividad from '../components/Home/EstadoActividad';
@@ -102,7 +102,7 @@ function FamiliarHome({ navigation, route, ...props }) {
       {/* Acá va el header! */}
       <Card style={{padding: 4}}>
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <Avatar.Icon size={40} icon="account" />
+          <Avatar.Image size={40} source={imagenes['mirta.png']} />
           <View style={{marginLeft: 8}}>
             <Text>Mirta Pérez, 82</Text>
             <Caption>Madre</Caption>
@@ -119,7 +119,7 @@ function FamiliarHome({ navigation, route, ...props }) {
       <Divider />
       <Card style={{padding: 4}}>
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <Avatar.Icon size={40} icon="account" />
+          <Avatar.Image size={40} source={imagenes['nancy.jpg']} />
           <View style={{marginLeft: 8}}>
             <Text>Nancy González</Text>
             <Caption>Cuidadora</Caption>
