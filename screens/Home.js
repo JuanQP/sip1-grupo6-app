@@ -15,6 +15,8 @@ import * as Linking from "expo-linking";
 import CalendarStrip from 'react-native-calendar-strip';
 import { getDias } from '../src/api/dropdown';
 import ActividadesList from '../components/Home/ActividadesList';
+import { filtrosAplicados, filtrosActualizados$ } from '../src/api/actividad';
+import { Subscription } from 'rxjs';
 
 const hoy = moment();
 const fecha = formatearFecha(hoy);
@@ -30,6 +32,7 @@ function HomeScreen({ navigation, route, ...props }) {
   const [paciente, setPaciente] = useState({});
   const [dias, setDias] = useState([]);
   const [pacienteId, setPacienteId] = useState(0);
+  const [actividadesToShow, setActividadesToShow] = useState([]);
   const [actividades, setActividades] = useState([]);
   const [fechaSeleccionada, setFecha] = useState(moment().format("YYYY-MM-DD"));
 
@@ -40,6 +43,9 @@ function HomeScreen({ navigation, route, ...props }) {
   });
 
   useEffect(() => {
+    let filtrosAplicadosSubscription = new Subscription();
+    filtrosAplicadosSubscription = filtrosActualizados$.subscribe(() => getActividadesPaciente(1, fechaSeleccionada))
+    
     if(route.params) {
       getPaciente(route.params.pacienteId)
       .then(res => {
@@ -60,8 +66,10 @@ function HomeScreen({ navigation, route, ...props }) {
     return () => {
       setPaciente({});
       setActividades([]);
+      setActividadesToShow([]);
       setPacienteId(0);
       setFecha(moment().format("YYYY-MM-DD"));
+      filtrosAplicadosSubscription.unsubscribe();
     }
   }, []);
 
@@ -87,13 +95,33 @@ function HomeScreen({ navigation, route, ...props }) {
     getPacienteActividades(pacienteId, fecha)
     .then((res) => {
       const actividadesToShow = [];
-      res.forEach((a) => {
+      let aux = [];
+      let actividades = [];
+      if(filtrosAplicados) {
+        if(filtrosAplicados.tiposIds.length > 0) {
+          res.forEach((act) => filtrosAplicados.tiposIds.find((tipo) => act.detalle.tipo === tipo) ? aux.push(act) : null)
+        } 
+        if(filtrosAplicados.tiposIds.length > 0 && filtrosAplicados.estadosIds.length > 0) {
+          aux.forEach((act) => filtrosAplicados.estadosIds.find((estado) => act.status === estado) ? actividades.push(act) : null)
+        }
+        if(filtrosAplicados.tiposIds.length == 0 && filtrosAplicados.estadosIds.length > 0) {
+          res.forEach((act) => filtrosAplicados.estadosIds.find((estado) => act.status === estado) ? actividades.push(act) : null)
+        }
+        if(filtrosAplicados.tiposIds.length > 0 && filtrosAplicados.estadosIds.length == 0) {
+          actividades = aux;
+        }
+        if(filtrosAplicados.tiposIds.length == 0 && filtrosAplicados.estadosIds.length == 0) {
+          actividades = res;
+        }
+      }
+      setActividades(actividades)
+      actividades.forEach((a) => {
         if(moment(a.fecha).format("YYYY-MM-DD") >= moment(fecha).format("YYYY-MM-DD")) {
           actividadesToShow.push(a)
         }
       })
       const newMarkedDates = res.map(a => stringToMomentMarkedDate(a.fecha, colors));
-      setActividades(actividadesToShow)
+      setActividadesToShow(actividadesToShow)
       setMarkedDates(newMarkedDates);
     })
     .catch((err) => console.error(err))
@@ -190,7 +218,7 @@ function HomeScreen({ navigation, route, ...props }) {
           onDateSelected={handleFechaSeleccionada}
         />
         <ActividadesList
-          actividades={actividades}
+          actividades={actividadesToShow}
           onActividadClick={handleActividadClick}
         />
       </View>
