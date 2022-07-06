@@ -13,7 +13,7 @@ function MisPacientesScreen({ navigation, route }) {
       pacientes: [],
     },
   });
-  const { pacienteId } = route?.params?.pacienteId ?? { pacienteId: null };
+  const { pacienteId } = route.params;
 
   function handleBackActionClick() {
     navigation.goBack();

@@ -5,7 +5,7 @@ import { getProvincias } from "../../utils/utils";
 
 function PacienteItem({ paciente, isSelected, onPacienteClick, ...props }) {
 
-  const { id, nombre, localidad, imagen} = paciente;
+  const { pacienteId, nombre, localidad, imagen} = paciente;
 
   const provincia = getProvincias().find(prov => prov.id == paciente.provinciaId);
 
@@ -15,7 +15,7 @@ function PacienteItem({ paciente, isSelected, onPacienteClick, ...props }) {
   const icon = isSelected ? 'checkbox-marked-circle' : 'checkbox-blank-circle-outline';
 
   function handlePacienteClickeado() {
-    onPacienteClick(id);
+    onPacienteClick(pacienteId);
   }
 
   return (

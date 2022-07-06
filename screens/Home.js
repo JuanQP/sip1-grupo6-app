@@ -160,7 +160,6 @@ function HomeScreen({ navigation, route, ...props }) {
   }
 
   function handleOnMisPacientesPress() {
-    console.log(pacienteId)
     navigation.navigate('MisPacientes', { pacienteId });
   }
 
