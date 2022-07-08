@@ -14,3 +14,8 @@ export async function getNotificaciones() {
   const response = await axios.get(`${baseUrl}/api/notificaciones`);
   return response.data;
 }
+
+export async function updateNotificaciones(notificaciones) {
+  const response = await axios.patch(`${baseUrl}/api/notificaciones`, notificaciones);
+  return response.data;
+}

@@ -4,7 +4,7 @@ import { StyleSheet, View } from 'react-native';
 import { Appbar, withTheme } from 'react-native-paper';
 import 'moment/locale/es';
 import { useQuery } from 'react-query';
-import { getNotificaciones } from '../src/api/notificacion';
+import { getNotificaciones, updateNotificaciones } from '../src/api/notificacion';
 import NotificacionCard from '../components/Notificaciones/NotificacionCard';
 import { useState } from 'react';
 import { useEffect } from 'react';
@@ -15,7 +15,10 @@ function NotificacionesScreen({ navigation, route, ...props }) {
 
   useEffect(() => {
     getNotificaciones()
-    .then((res) => setNotificaciones(res))
+    .then((res) => {
+      setNotificaciones(res);
+      updateEstadoNotificaciones(res);
+    })
     .catch((err) => console.error(err))
 
     return () => {
@@ -25,6 +28,18 @@ function NotificacionesScreen({ navigation, route, ...props }) {
 
   function handleBackClick() {
     navigation.navigate('FamiliarHome');
+  }
+
+  function updateEstadoNotificaciones(notificaciones) {
+
+    const noLeidas = notificaciones.filter(notif => notif.esNotificacionLeida == false);
+
+    if(noLeidas.length > 0) {
+      updateNotificaciones(noLeidas)
+      .then((res) => console.log('Notificaciones marcadas como leídas.'))
+      .catch((err) => console.error(err))
+    }
+
   }
 
   return (
