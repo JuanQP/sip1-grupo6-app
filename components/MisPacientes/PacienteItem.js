@@ -23,7 +23,7 @@ function PacienteItem({ paciente, isSelected, onPacienteClick, ...props }) {
       style={styles.row}
       title={nombre}
       description={`${provincia.descripcion}, ${localidad}`}
-      left={() => <Avatar.Image source={{uri: actividad.paciente.imagen}} />}
+      left={() => <Avatar.Image source={{uri: paciente.imagen}} />}
       right={() => <List.Icon color={iconColor} icon={icon} />}
       onPress={handlePacienteClickeado}
     />
