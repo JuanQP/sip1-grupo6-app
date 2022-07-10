@@ -7,13 +7,12 @@ import PacienteList from '../components/MisPacientes/PacienteList';
 import { useQuery } from 'react-query';
 import { getPacientes } from '../src/api/paciente';
 
-function MisPacientesScreen({ navigation, route }) {
+function MisPacientesScreen({ navigation }) {
   const { data, isLoading } = useQuery('pacientes', getPacientes, {
     placeholderData: {
       pacientes: [],
     },
   });
-  const { pacienteId } = route.params;
 
   function handleBackActionClick() {
     navigation.goBack();
@@ -37,7 +36,6 @@ function MisPacientesScreen({ navigation, route }) {
       {isLoading ?
         null :
         <PacienteList
-          selectedId={pacienteId}
           pacientes={data}
           onPacienteClick={handlePacienteClick}
         />

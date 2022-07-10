@@ -13,6 +13,7 @@ const reviewSchema = yup.object({
   fechaNacimiento: yup.date().required(),
   sexoId: yup.number().required(),
   tipoDocumentoId: yup.number().required(),
+  numeroDocumento: yup.string().required(),
   telefono: yup.string().required(),
   domicilio: yup.string().required(),
   provinciaId: yup.number().required(),

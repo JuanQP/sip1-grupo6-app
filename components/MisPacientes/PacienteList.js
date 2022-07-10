@@ -3,7 +3,7 @@ import { List, withTheme } from "react-native-paper";
 import PacienteItem from "./PacienteItem";
 
 
-function PacienteList({ selectedId, pacientes, onPacienteClick, ...props }) {
+function PacienteList({ pacientes, onPacienteClick, ...props }) {
 
   const { colors } = props.theme;
 
@@ -13,7 +13,7 @@ function PacienteList({ selectedId, pacientes, onPacienteClick, ...props }) {
         <PacienteItem
           key={p.pacienteId}
           paciente={p}
-          isSelected={p.pacienteId === selectedId}
+          isSelected={p.esPacientePredeterminado}
           onPacienteClick={onPacienteClick}
         />
       )}

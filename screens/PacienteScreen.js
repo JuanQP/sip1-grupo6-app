@@ -88,10 +88,13 @@ function PacienteScreen({ navigation, route, ...props }) {
           provinciaId: provincia.id,
           fechaNacimiento: new Date(paciente.fechaNacimiento),
         });
-        setFamiliares(familiars);
+        setFamiliares(familiars ?? []);
         setImagen(imagen);
         queryClient.invalidateQueries(['paciente']);
       },
+      onError: (error) => {
+        console.log(error.message);
+      }
     });
   }
 
