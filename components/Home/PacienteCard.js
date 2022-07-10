@@ -20,18 +20,18 @@ function PacienteCard({ paciente, loading, onPacienteDetailClick, onMisPacientes
         <Caption>{provincia ? ubicacion : ''}</Caption>
         <Caption>{obraSocial ? `${obraSocial} - ${numeroAfiliado}` : ''}</Caption>
       </View>
-      <IconButton
-        style={{marginLeft: 'auto'}}
-        icon="eye-outline" mode="text"
-        color={colors.primary}
-        onPress={onPacienteDetailClick}
-      />
-      <IconButton
-        style={{marginLeft: 'auto'}}
-        icon="account-group" mode="text"
-        color={colors.primary}
-        onPress={onMisPacientesPress}
-      />
+      <View style={{marginLeft: 'auto'}}>
+        <IconButton
+          icon="eye-outline" mode="text"
+          color={colors.primary}
+          onPress={onPacienteDetailClick}
+        />
+        <IconButton
+          icon="account-group" mode="text"
+          color={colors.primary}
+          onPress={onMisPacientesPress}
+        />
+      </View>
     </View>
   )
 }
@@ -40,6 +40,7 @@ const styles = StyleSheet.create({
   card: {
     flexDirection: 'row',
     padding: 10,
+    alignItems: 'center'
   },
 });
 
