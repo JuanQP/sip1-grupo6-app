@@ -30,7 +30,7 @@ function FamiliarHome({ navigation, route, ...props }) {
     .then(res => {
       setFamiliar(res)
       getActividadesPaciente(res.pacienteId, fechaSeleccionada);
-    })  
+    })
 
   return () => {
     setFamiliar({});
@@ -84,7 +84,7 @@ function FamiliarHome({ navigation, route, ...props }) {
   }
 
   function handleGlosarioPress() {
-    navigation.navigate('AppTabs', { screen: 'Glosario', params: { esFamiliar: true } });
+    navigation.navigate('FamiliarGlosario');
   }
 
   function handleFechaSeleccionada(fecha) {

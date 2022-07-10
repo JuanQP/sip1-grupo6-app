@@ -4,6 +4,7 @@ import LoginScreen from '../screens/Login';
 import FamiliarHome from '../screens/FamiliarHome';
 import AppTabs from '../screens/Tabs/AppTabs';
 import PacienteStack from '../screens/Tabs/PacienteStack';
+import FamiliarGlosarioScreen from '../screens/FamiliarGlosarioScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -29,6 +30,11 @@ export default function App() {
         name="FamiliarHome"
         component={FamiliarHome}
         options={{ title: 'Familiar' }}
+      />
+      <Stack.Screen
+        name="FamiliarGlosario"
+        component={FamiliarGlosarioScreen}
+        options={{ title: 'Glosario Familiar' }}
       />
     </Stack.Navigator>
   )
