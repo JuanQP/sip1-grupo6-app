@@ -92,6 +92,14 @@ function FamiliarHome({ navigation, route, ...props }) {
     getActividadesPaciente(familiar.pacienteId, fecha.toISOString().split('T')[0]);
   }
 
+  function handlePacientePress() {
+    navigation.navigate('FamiliarDetallePaciente');
+  }
+
+  function handleCuidadorPress() {
+    navigation.navigate('FamiliarDetalleCuidador');
+  }
+
   return (
     <View style={styles.container}>
       <Appbar.Header>
@@ -112,7 +120,7 @@ function FamiliarHome({ navigation, route, ...props }) {
             style={{marginLeft: 'auto', margin: 0, padding: 0}}
             icon="eye-outline"
             mode="text"
-            onPress={() => {}}
+            onPress={handlePacientePress}
           />
         </View>
       </Card>
@@ -129,7 +137,7 @@ function FamiliarHome({ navigation, route, ...props }) {
             style={{marginLeft: 'auto', margin: 0, padding: 0}}
             icon="eye-outline"
             mode="text"
-            onPress={() => {}}
+            onPress={handleCuidadorPress}
           />
         </View>
       </Card>
