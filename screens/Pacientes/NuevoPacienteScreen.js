@@ -21,6 +21,7 @@ const initialValues = {
   obraSocial: '',
   numeroAfiliado: '',
   observaciones: '',
+  esPacientePredeterminado: false,
 };
 
 function NuevoPacienteScreen({ navigation, ...props }) {

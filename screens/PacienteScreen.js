@@ -33,6 +33,7 @@ function PacienteScreen({ navigation, route, ...props }) {
     obraSocial: '',
     numeroAfiliado: '',
     observaciones: '',
+    esPacientePredeterminado: false,
   });
   const queryClient = useQueryClient();
   const { mutate, isLoading: isPacienteLoading } = useMutation(updatePaciente);
@@ -74,18 +75,12 @@ function PacienteScreen({ navigation, route, ...props }) {
     mutate(formValues, {
       onSuccess: (data) => {
         const {
-          sexo,
-          tipoDocumento,
-          provincia,
           familiars,
           imagen,
           ...paciente
         } = data;
         actions.setValues({
           ...paciente,
-          sexoId: sexo.id,
-          tipoDocumentoId: tipoDocumento.id,
-          provinciaId: provincia.id,
           fechaNacimiento: new Date(paciente.fechaNacimiento),
         });
         setFamiliares(familiars ?? []);

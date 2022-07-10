@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
 import { StyleSheet, View } from "react-native";
-import { Button, TextInput } from "react-native-paper";
+import { Button, Checkbox, Text, TextInput } from "react-native-paper";
 import FechaPicker from '../FechaPicker';
 import DropDown from "react-native-paper-dropdown";
 import { Formik } from 'formik';
@@ -21,6 +21,7 @@ const reviewSchema = yup.object({
   obraSocial: yup.string().required(),
   numeroAfiliado: yup.string().required(),
   observaciones: yup.string().required(),
+  esPacientePredeterminado: yup.bool().required(),
 });
 
 function PacienteForm({ initialValues, loading, onSubmit }) {
@@ -244,6 +245,15 @@ function PacienteForm({ initialValues, loading, onSubmit }) {
           onBlur={handleBlur('observaciones')}
           error={touched.observaciones && errors.observaciones}
         />
+        <View style={{flexDirection: 'row', alignItems: 'center', marginTop: 10}}>
+          <Text>Es paciente predeterminado</Text>
+          <Checkbox
+            status={values.esPacientePredeterminado ? 'checked' : 'unchecked'}
+            onPress={() => {
+              setFieldValue('esPacientePredeterminado', !values.esPacientePredeterminado);
+            }}
+          />
+        </View>
         <View style={styles.bottomView}>
           <Button
             mode='contained'

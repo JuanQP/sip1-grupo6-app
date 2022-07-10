@@ -41,7 +41,7 @@ export async function createPaciente(paciente) {
 }
 
 export async function updatePaciente(paciente) {
-  const response = await axios.patch(`${baseUrl}/api/pacientes/${paciente.id}`, paciente);
+  const response = await axios.patch(`${baseUrl}/api/pacientes/${paciente.pacienteId}`, paciente);
   return response.data;
 }
 
