@@ -94,7 +94,7 @@ function PacienteForm({ initialValues, loading, onSubmit }) {
               list={listaSexos}
               dropDownStyle={{width: '100%', flex: 1}}
               inputProps={{ style: { flex: 1, backgroundColor: 'transparent' } }}
-              value={values.sexoId || ''}
+              value={String(values.sexoId) || ''}
               setValue={handleChange('sexoId')}
             />
           </View>
@@ -111,7 +111,7 @@ function PacienteForm({ initialValues, loading, onSubmit }) {
               list={listaTiposDocumento}
               dropDownStyle={{ flex: 1}}
               inputProps={{ style: { backgroundColor: 'transparent' } }}
-              value={values.tipoDocumentoId || ''}
+              value={String(values.tipoDocumentoId) || ''}
               setValue={handleChange('tipoDocumentoId')}
             />
           </View>
@@ -175,7 +175,7 @@ function PacienteForm({ initialValues, loading, onSubmit }) {
               list={listaProvincias}
               dropDownStyle={{ flex: 1}}
               inputProps={{ style: { backgroundColor: 'transparent' } }}
-              value={values.provinciaId || ''}
+              value={String(values.provinciaId) || ''}
               setValue={handleChange('provinciaId')}
             />
           </View>
