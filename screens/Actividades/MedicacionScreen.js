@@ -4,7 +4,7 @@ import { ScrollView, StyleSheet, View } from 'react-native';
 import { Appbar, Title, withTheme } from 'react-native-paper';
 import ActividadMessageModal from '../../components/ActividadMessageModal';
 import MedicacionForm from '../../components/Actividades/MedicacionForm';
-import { keyExtractor } from '../../utils/utils';
+import { diasSemanaAIds, idsADiasSemana } from '../../utils/utils';
 import { getPaciente } from '../../src/api/paciente';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { createOrUpdateActividad, getActividad } from '../../src/api/actividad';
@@ -26,16 +26,10 @@ function MedicacionScreen({ navigation, route, ...props }) {
     {
       onSuccess: (data) => {
         const actividad= data;
-        let diasSemana = actividad.diasSemana.split(",");
-        let diasIds = [];
-        diasSemana.forEach((d) => {
-          let sel = dias.find(dia => d == dia['descripcion']);
-          diasIds.push(sel.id);
-        })
         setInitialValues({
           ...actividad,
           pacienteId,
-          diaIds: diasIds,
+          diaIds: diasSemanaAIds(actividad.diasSemana, dias),
           fecha: new Date(actividad.fecha),
           frecuencia: String(actividad.frecuencia),
           duracion: String(actividad.duracion),
@@ -65,11 +59,11 @@ function MedicacionScreen({ navigation, route, ...props }) {
     };
     mutate(nuevaActividad, {
       onSuccess: (data) => {
-        const { dias, ...actividad } = data;
+        const { diasSemana, ...actividad } = data;
         actions.setValues({
           ...actividad,
           pacienteId,
-          diaIds: dias.map(keyExtractor),
+          diaIds: diasSemanaAIds(diasSemana, dias),
           fecha: new Date(actividad.fecha),
           frecuencia: String(actividad.frecuencia),
           duracion: String(actividad.duracion),
@@ -82,11 +76,13 @@ function MedicacionScreen({ navigation, route, ...props }) {
 
   async function handleSubmit(formValues, actions) {
     const isfechaYHoraLibre = await fechaYHoraLibre(formValues.fecha);
+    const { diaIds } = formValues;
+    const diasSemanaSeleccionados = idsADiasSemana(diaIds, dias);
+    formValues.diaIds = diasSemanaSeleccionados;
+
     if(!isfechaYHoraLibre) {
       crearActividadAlert(
         () =>  {
-          formValues.diaIds = formValues.diaIds.map((dia) => dia = dias.find((d) => d.id == dia).descripcion);
-          formValues.diaIds = formValues.diaIds.toString();
           mutateActividad(formValues, actions)},
         () => {},
       );

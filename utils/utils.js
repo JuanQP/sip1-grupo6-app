@@ -93,3 +93,32 @@ export function useToggle(defaultValue) {
 
   return [value, toggleValue];
 }
+
+/**
+ * Mapea de la siguiente forma "Lunes,Miércoles,Viernes" => ["1", "3", "5"]
+ * @param {*} diasSemana
+ * @param {*} dias
+ * @returns
+ */
+export function diasSemanaAIds(diasSemana, dias) {
+  // {Lunes: 1, Martes: 2, ...}
+  const diasDiccionario = Object.fromEntries(dias.map(d => [d.descripcion, d.id]));
+
+  return diasSemana
+    .split(',')
+    .map(dia => String(diasDiccionario[dia].id));
+}
+
+/**
+ * Mapea de la siguiente forma ["1", "3", "5"] => "Lunes,Miércoles,Viernes"
+ * @param {*} ids
+ * @param {*} dias
+ * @returns
+ */
+export function idsADiasSemana(diaIds, dias) {
+  const diaIdsNumber = diaIds.map(Number);
+  return dias
+    .filter(d => diaIdsNumber.includes(d.id))
+    .map(d => d.descripcion)
+    .join(',');
+}
