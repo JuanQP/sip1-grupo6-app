@@ -113,7 +113,10 @@ function ActividadDetailsModal({
           </Text>
           {mostrarPaciente && (
             <View style={{flexDirection: 'column', alignItems: 'center', marginTop: 10}}>
-              <Avatar.Image size={64} source={imagenes[actividad.paciente.imagen]} />
+              <Avatar.Image
+                size={64}
+                source={{uri: actividad.paciente.imagen}}
+              />
               <Text>{actividad.paciente.nombre}</Text>
             </View>
           )}

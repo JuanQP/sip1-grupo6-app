@@ -119,7 +119,7 @@ function PacienteScreen({ navigation, route, ...props }) {
           <Avatar.Image
             style={{alignSelf: "center"}}
             size={64}
-            source={imagenes[imagen]}
+            source={{uri: imagen}}
           />
           <PacienteForm
             initialValues={initialValues}

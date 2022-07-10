@@ -83,7 +83,11 @@ function ActividadRow({ actividad, readOnly = false, mostrarPaciente = false, on
         </View>
         {!mostrarPaciente ? null : (
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Avatar.Image style={{ marginRight: 10 }} size={32} source={imagenes[actividad.paciente.imagen]} />
+            <Avatar.Image
+              style={{ marginRight: 10 }}
+              size={32}
+              source={{uri: actividad.paciente.imagen}}
+            />
             <Text>{actividad.paciente.nombre}</Text>
           </View>
         )}

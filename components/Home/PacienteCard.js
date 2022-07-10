@@ -14,7 +14,10 @@ function PacienteCard({ paciente, loading, onPacienteDetailClick, onMisPacientes
 
   return (
     <View style={{ ...styles.card, backgroundColor: colors.surface }}>
-      <Avatar.Image size={64} source={imagenes[imagen]} />
+      <Avatar.Image
+        size={64}
+        source={{ uri: imagen }}
+      />
       <View style={{marginLeft: 10}}>
         <Text>{nombre ? `${nombre}, ${edad}` : ''}</Text>
         <Caption>{provincia ? ubicacion : ''}</Caption>
