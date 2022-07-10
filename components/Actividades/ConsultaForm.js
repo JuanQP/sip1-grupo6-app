@@ -12,7 +12,7 @@ const reviewSchema = yup.object({
   fecha: yup.date().required(),
 });
 
-function ConsultaForm({ initialValues, loading, onCancel, onSubmit }) {
+function ConsultaForm({ initialValues, loading, onDelete, onSubmit }) {
 
   const observacionesTextInput = useRef();
 
@@ -84,12 +84,16 @@ function ConsultaForm({ initialValues, loading, onCancel, onSubmit }) {
         multiline
       />
       <View style={styles.bottomView}>
-        <Button
-          mode='outlined'
-          onPress={onCancel}
-        >
-          Cancelar
-        </Button>
+        {initialValues.actividadId && (
+          <Button
+            color="red"
+            mode='outlined'
+            onPress={() => onDelete(initialValues.actividadId)}
+            icon="delete"
+          >
+            Borrar
+          </Button>
+        )}
         <Button
           mode='contained'
           onPress={handleSubmit}

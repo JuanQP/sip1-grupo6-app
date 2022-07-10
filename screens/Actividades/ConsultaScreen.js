@@ -1,12 +1,12 @@
 import React, { useState } from 'react'
 import { StatusBar } from 'expo-status-bar';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { Alert, ScrollView, StyleSheet, View } from 'react-native';
 import { Appbar, Title, withTheme } from 'react-native-paper';
 import ActividadMessageModal from '../../components/ActividadMessageModal';
 import ConsultaForm from '../../components/Actividades/ConsultaForm';
 import { getPaciente } from '../../src/api/paciente';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
-import { createOrUpdateActividad, getActividad } from '../../src/api/actividad';
+import { createOrUpdateActividad, deleteActividad, getActividad } from '../../src/api/actividad';
 import { crearActividadAlert, fechaYHoraLibre } from './ActividadesScreen';
 
 function ConsultaScreen({ navigation, route, ...props }) {
@@ -34,6 +34,13 @@ function ConsultaScreen({ navigation, route, ...props }) {
     },
   );
   const { mutate, actividadIsLoading } = useMutation(createOrUpdateActividad);
+  const { mutate: deleteMutation } = useMutation(deleteActividad, {
+    onSuccess: () => {
+      queryClient.invalidateQueries(['actividades']);
+      navigation.popToTop();
+      navigation.navigate('Home');
+    },
+  });
   const { colors } = props.theme;
   const [initialValues, setInitialValues] = useState({
     id: undefined,
@@ -75,6 +82,25 @@ function ConsultaScreen({ navigation, route, ...props }) {
     setModalVisible(false);
   }
 
+  function handleDelete(actividadId) {
+    Alert.alert(
+      "Borrar actividad",
+      "Se van a borrar las actividades agendadas, pero no las que ya ocurrieron. ¿Estás seguro?",
+      [
+        {
+          text: 'No',
+          onPress: () => {},
+          style: 'cancel'
+        },
+        {
+          text: 'Si',
+          onPress: () => deleteMutation(actividadId),
+          style: 'destructive',
+        }
+      ]
+    );
+  }
+
   function handleBackActionClick() {
     navigation.goBack();
   }
@@ -92,7 +118,7 @@ function ConsultaScreen({ navigation, route, ...props }) {
           <ConsultaForm
             initialValues={initialValues}
             loading={actividadIsLoading}
-            onCancel={handleBackActionClick}
+            onDelete={handleDelete}
             onSubmit={handleSubmit}
           />
         </ScrollView>

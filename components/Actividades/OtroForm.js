@@ -21,7 +21,7 @@ const reviewSchema = yup.object({
   fecha: yup.date(),
 });
 
-function OtroForm({ initialValues, loading, onCancel, onSubmit, ...props }) {
+function OtroForm({ initialValues, loading, onDelete, onSubmit, ...props }) {
   if(initialValues.diaIds.length > 0) initialValues.repeticiones = true;
   useQuery('dias', getDias, {
     onSuccess: (dias) => {
@@ -43,7 +43,7 @@ function OtroForm({ initialValues, loading, onCancel, onSubmit, ...props }) {
       tipo: 'Otro',
     }, actions);
   }
-  
+
   function handleDiasChange(diasString, setFieldValue) {
     const ids = diasString.split(",").filter(id => id !== "");
     setFieldValue('diaIds', ids);
@@ -172,12 +172,16 @@ function OtroForm({ initialValues, loading, onCancel, onSubmit, ...props }) {
       </>
       )}
       <View style={styles.bottomView}>
-        <Button
-          mode='outlined'
-          onPress={onCancel}
-        >
-          Cancelar
-        </Button>
+        {initialValues.actividadId && (
+          <Button
+            color="red"
+            mode='outlined'
+            onPress={() => onDelete(initialValues.actividadId)}
+            icon="delete"
+          >
+            Borrar
+          </Button>
+        )}
         <Button
           mode='contained'
           onPress={handleSubmit}

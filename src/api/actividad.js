@@ -70,7 +70,7 @@ export async function updateActividad(actividad) {
   try {
     const id = actividad['_parts'][0][1];
     const auth = axios.defaults.headers.common['Authorization'];
-  
+
     const response = await fetch(`${baseUrl}/api/actividad-log/${id}`, {
       method: 'PATCH',
       body: actividad,
@@ -80,7 +80,7 @@ export async function updateActividad(actividad) {
     });
 
     return response.data;
-  }   
+  }
   catch(err) {
     console.error(err)
   }
@@ -90,5 +90,10 @@ export async function updateActividad(actividad) {
 export async function createOrUpdateActividad(actividad) {
   const axiosMethod = actividad.id ? axios.patch : axios.post;
   const response = await axiosMethod((actividad.id ? `${baseUrl}/api/actividad/${actividad.id}` : `${baseUrl}/api/actividad`), actividad);
+  return response.data;
+}
+
+export async function deleteActividad(actividadId) {
+  const response = await axios.delete(`${baseUrl}/api/actividad/${actividadId}`);
   return response.data;
 }

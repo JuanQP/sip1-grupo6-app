@@ -12,7 +12,7 @@ const reviewSchema = yup.object({
   fecha: yup.date().required(),
 });
 
-function EstudioForm({ initialValues, loading, onCancel, onSubmit }) {
+function EstudioForm({ initialValues, loading, onDelete, onSubmit }) {
 
   const observacionesTextInput = useRef();
 
@@ -83,12 +83,16 @@ function EstudioForm({ initialValues, loading, onCancel, onSubmit }) {
         error={touched.observaciones && errors.observaciones}
       />
       <View style={styles.bottomView}>
-        <Button
-          mode='outlined'
-          onPress={onCancel}
-        >
-          Cancelar
-        </Button>
+        {initialValues.actividadId && (
+          <Button
+            color="red"
+            mode='outlined'
+            onPress={() => onDelete(initialValues.actividadId)}
+            icon="delete"
+          >
+            Borrar
+          </Button>
+        )}
         <Button
           mode='contained'
           onPress={handleSubmit}

@@ -19,7 +19,7 @@ const reviewSchema = yup.object({
   fecha: yup.date().required(),
 });
 
-function MedicacionForm({ initialValues, loading, onCancel, onSubmit }) {
+function MedicacionForm({ initialValues, loading, onDelete, onSubmit }) {
   useQuery('dias', getDias, {
     onSuccess: (dias) => {
       setListaDias(dias.map(d => mapToLabelValue(d, 'descripcion', 'id')));
@@ -160,12 +160,16 @@ function MedicacionForm({ initialValues, loading, onCancel, onSubmit }) {
         setValue={(diasString) => handleDiasChange(diasString, setFieldValue)}
       />
       <View style={styles.bottomView}>
-        <Button
-          mode='outlined'
-          onPress={onCancel}
-        >
-          Cancelar
-        </Button>
+        {initialValues.actividadId && (
+          <Button
+            color="red"
+            mode='outlined'
+            onPress={() => onDelete(initialValues.actividadId)}
+            icon="delete"
+          >
+            Borrar
+          </Button>
+        )}
         <Button
           mode='contained'
           onPress={handleSubmit}
