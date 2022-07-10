@@ -1,5 +1,5 @@
 import { StyleSheet, View } from "react-native";
-import { Avatar, Button, Caption, IconButton, Modal, Paragraph, Snackbar, Text, TextInput, ToggleButton, withTheme } from "react-native-paper"
+import { Avatar, Button, Caption, IconButton, Modal, Paragraph, Text, TextInput, ToggleButton, withTheme } from "react-native-paper"
 import { useEffect, useState } from "react";
 import { formatearFecha, imagenes } from "../../utils/utils";
 import moment from "moment";
@@ -33,15 +33,11 @@ function ActividadDetailsModal({
 
   const [estado, setEstado] = useState('');
   const [nota, setNota] = useState('');
-  const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [archivo, setArchivo] = useState(undefined);
-  const showSnackbar = (newValue) => {
+  const handleValueChange = (newValue) => {
     if(newValue === null) return;
-
-    setSnackbarVisible(true);
     setEstado(newValue);
   };
-  const onDismissSnackBar = () => setSnackbarVisible(false);
   const { colors } = props.theme;
   const modalStyles = {
     margin: 20,
@@ -59,7 +55,6 @@ function ActividadDetailsModal({
   }, [actividad]);
 
   function handleConfirmarClick() {
-    setSnackbarVisible(false);
     const fd = new FormData();
     fd.append("id", actividad.id)
     fd.append("status", estado);
@@ -158,7 +153,7 @@ function ActividadDetailsModal({
           )}
         </View>
         <View>
-          <ToggleButton.Row onValueChange={readOnly ? () => {} : showSnackbar} value={estado}>
+          <ToggleButton.Row onValueChange={handleValueChange} value={estado}>
             <ToggleButton
               color={estado === 'Pospuesta' ? 'white' : colors.primary}
               style={{flex: 1, backgroundColor: estado === 'Pospuesta' ? colors.primary : 'transparent'}}
@@ -180,18 +175,6 @@ function ActividadDetailsModal({
           </ToggleButton.Row>
         </View>
       </Modal>
-      <Snackbar
-        duration={5000}
-        visible={snackbarVisible}
-        onDismiss={onDismissSnackBar}
-        action={{
-          label: 'Cerrar',
-          onPress: () => {
-            setSnackbarVisible(false);
-          },
-        }}>
-        La tarea se va a cambiar a "{estado}"
-      </Snackbar>
     </>
   )
 }
