@@ -1,7 +1,7 @@
 import { StyleSheet, View } from "react-native";
-import { Avatar, Button, Caption, IconButton, Modal, Paragraph, Text, TextInput, ToggleButton, withTheme } from "react-native-paper"
+import { Avatar, Button, Caption, IconButton, Modal, Paragraph, Text, TextInput, TouchableRipple, withTheme } from "react-native-paper"
 import { useEffect, useState } from "react";
-import { formatearFecha, imagenes } from "../../utils/utils";
+import { formatearFecha } from "../../utils/utils";
 import moment from "moment";
 import * as ImagePicker from 'expo-image-picker';
 
@@ -155,27 +155,79 @@ function ActividadDetailsModal({
             </View>
           )}
         </View>
-        <View>
-          <ToggleButton.Row onValueChange={handleValueChange} value={estado}>
-            <ToggleButton
-              color={estado === 'Pospuesta' ? 'white' : colors.primary}
-              style={{flex: 1, backgroundColor: estado === 'Pospuesta' ? colors.primary : 'transparent'}}
-              icon="alert-circle-outline"
-              value="Pospuesta"
-            />
-            <ToggleButton
-              color={estado === 'Pendiente' ? 'white' : colors.primary}
-              style={{flex: 1, backgroundColor: estado === 'Pendiente' ? colors.primary : 'transparent'}}
-              icon="clock-outline"
-              value="Pendiente"
-            />
-            <ToggleButton
-              color={estado === 'Completada' ? 'white' : colors.primary}
-              style={{flex: 1, backgroundColor: estado === 'Completada' ? colors.primary : 'transparent'}}
-              icon="check-circle-outline"
-              value="Completada"
-            />
-          </ToggleButton.Row>
+        <View style={{flexDirection: 'row', flexGrow: 1}}>
+          <TouchableRipple
+            style={{
+              flex: 1,
+              alignItems: 'center',
+              backgroundColor: estado === 'Pospuesta' ? colors.primary : undefined,
+            }}
+            onPress={() => {setEstado('Pospuesta')}}
+            rippleColor="rgba(0, 0, 0, .33)"
+          >
+            <View style={{alignItems: 'center'}}>
+              <Avatar.Icon
+                icon="alert-circle-outline"
+                size={48}
+                color={estado === 'Pospuesta' ? undefined : colors.primary}
+                style={{
+                  backgroundColor: 'transparent',
+                  margin: 0,
+                }}
+              />
+              <Text style={{color: estado === 'Pospuesta' ? 'white' : colors.primary }}>
+                Pospuesta
+              </Text>
+            </View>
+          </TouchableRipple>
+          <TouchableRipple
+            style={{
+              flex: 1,
+              alignItems: 'center',
+              backgroundColor: estado === 'Pendiente' ? colors.primary : undefined,
+            }}
+            onPress={() => {setEstado('Pendiente')}}
+            rippleColor="rgba(0, 0, 0, .33)"
+          >
+            <View style={{alignItems: 'center'}}>
+              <Avatar.Icon
+                icon="clock-outline"
+                size={48}
+                color={estado === 'Pendiente' ? undefined : colors.primary}
+                style={{
+                  backgroundColor: 'transparent',
+                  margin: 0,
+                }}
+              />
+              <Text style={{color: estado === 'Pendiente' ? 'white' : colors.primary }}>
+                Pendiente
+              </Text>
+            </View>
+          </TouchableRipple>
+          <TouchableRipple
+            style={{
+              flex: 1,
+              alignItems: 'center',
+              backgroundColor: estado === 'Completada' ? colors.primary : undefined,
+            }}
+            onPress={() => {setEstado('Completada')}}
+            rippleColor="rgba(0, 0, 0, .33)"
+          >
+            <View style={{alignItems: 'center'}}>
+              <Avatar.Icon
+                icon="check-circle-outline"
+                size={48}
+                color={estado === 'Completada' ? undefined : colors.primary}
+                style={{
+                  backgroundColor: 'transparent',
+                  margin: 0,
+                }}
+              />
+              <Text style={{color: estado === 'Completada' ? 'white' : colors.primary }}>
+                Completada
+              </Text>
+            </View>
+          </TouchableRipple>
         </View>
       </Modal>
     </>
