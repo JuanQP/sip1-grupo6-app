@@ -149,9 +149,9 @@ function ActividadDetailsModal({
           {!readOnly && (
             <View>
               <Button mode="outlined" style={{marginTop: 10}} onPress={handleCargarArchivoPress}>
-                {archivo ? 'Cargar otro archivo' : 'Cargar archivo'}
+                {archivo ? 'Elegir otra imagen' : 'Agregar imagen'}
               </Button>
-              {archivo && <Text style={{textAlign: 'center'}}>Hay un archivo seleccionado</Text>}
+              {archivo && <Text style={{textAlign: 'center'}}>Hay una imagen seleccionada</Text>}
             </View>
           )}
         </View>
