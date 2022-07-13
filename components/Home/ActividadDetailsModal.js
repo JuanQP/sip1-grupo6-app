@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { formatearFecha } from "../../utils/utils";
 import moment from "moment";
 import * as ImagePicker from 'expo-image-picker';
+import * as Linking from 'expo-linking';
+import { environment } from "../../environments/environment";
 
 const pickImage = async () => {
   // No permissions request is necessary for launching the image library
@@ -80,6 +82,11 @@ function ActividadDetailsModal({
     setArchivo(imagenSeleccionada);
   }
 
+  function handleOpenURL() {
+    const photoURL = `${environment.baseUrl}/uploads/${actividad.archivo}`;
+    Linking.openURL(photoURL);
+  }
+
   return (
     <>
       <Modal
@@ -153,6 +160,11 @@ function ActividadDetailsModal({
               </Button>
               {archivo && <Text style={{textAlign: 'center'}}>Hay una imagen seleccionada</Text>}
             </View>
+          )}
+          {actividad.archivo && (
+            <Button mode="outlined" style={{marginTop: 10}} onPress={handleOpenURL}>
+              Ver imagen adjunta
+            </Button>
           )}
         </View>
         <View style={{flexDirection: 'row', flexGrow: 1}}>
